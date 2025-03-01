@@ -2,14 +2,14 @@
 {% block content %}
 <!-- start from here -->
 <h1>
-    User Login
+    Admin Login
 </h1>
-<form action="{% url 'login' %}" method="post">
+<form action="{% url 'admin-login' %}" method="post">
     {% csrf_token %}
-    <input type="text" name="username" id="username">
+    <input type="text" name="admin_username" id="admin_username">
     <br>
     <br>
-    <input type="password" name="password" id="password">
+    <input type="password" name="admin_password" id="admin_password">
     <br>
     <br>
     <button type="submit">Login</button>
