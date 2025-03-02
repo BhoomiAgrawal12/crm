@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 from .models import User, Customer, Contact, Task
 
 
@@ -16,10 +16,12 @@ def register_user(request):
         if User.objects(username=data['username']).first():
             return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
         
+        hash_password = make_password(data['password'])
+        
         user = User(
             username=data['username'],
             email=data['email'],
-            password=data['password']
+            password=hash_password
         )
         user.save()
         refresh = RefreshToken.for_user(user)
