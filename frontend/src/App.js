@@ -79,9 +79,9 @@ function App() {
 
     try {
       // Send POST request using Axios
-      const response = await axios.post('https://example.com/api/login', {
-        username,
-        password
+      const response = await axios.post('http://127.0.0.1:8000/api/login/', {
+        "username" : username,
+        "password" : password
       });
 
       // If successful, handle the response (you can store the data like a token)
