@@ -53,15 +53,15 @@
 // export default App;
 
 
-
 import React, { useState } from 'react';
+import axios from 'axios';  // Import Axios
 import './App.css';
 
 function App() {
-  // State variables for username and password
+  // State variables for username, password, loading, and error
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);  // To show loading state
+  const [loading, setLoading] = useState(false);  // For showing loading state
   const [error, setError] = useState(null);  // To handle errors
 
   // Handle form submission
@@ -75,32 +75,28 @@ function App() {
 
     // Set loading to true while waiting for the response
     setLoading(true);
-    setError(null);  // Reset error message
+    setError(null);  // Reset error message before making the request
 
     try {
-      // Send POST request to the backend
-      const response = await fetch('https://example.com/api/login', {
-        method: 'POST', // Specify the method
-        headers: {
-          'Content-Type': 'application/json', // We are sending JSON data
-        },
-        body: JSON.stringify({ username, password }), // The payload with login data
+      // Send POST request using Axios
+      const response = await axios.post('https://example.com/api/login', {
+        username,
+        password
       });
 
-      // Check if the response is OK (status code 200-299)
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      // If successful, parse the response JSON
-      const data = await response.json();
-
-      // Handle successful login (you can store a token or redirect, etc.)
+      // If successful, handle the response (you can store the data like a token)
       alert('Login Successful!');
-      console.log(data);  // You can store the data (e.g., JWT token) as needed
+      console.log(response.data);  // Store the response data, like JWT token, user data, etc.
+
     } catch (error) {
-      // Handle error (e.g., show an error message)
-      setError('Login failed! Please try again.');
+      // If there's an error (like invalid login), display an error message
+      if (error.response) {
+        // Server responded with a status code other than 2xx
+        setError('Login failed! Please try again.');
+      } else {
+        // Some network error (no response)
+        setError('Network error! Please try again later.');
+      }
     } finally {
       // Set loading to false after the request finishes
       setLoading(false);
