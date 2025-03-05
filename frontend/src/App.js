@@ -148,21 +148,21 @@
 
 // src/App.js
 
+// frontend/src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Import necessary Router components
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-
-// Import the LoginPage and Dashboard components
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Define the routes */}
-        <Route path="/" element={<LoginPage />} />       {/* Login Page Route */}
-        <Route path="/dashboard" element={<Dashboard />} /> {/* Dashboard Page Route */}
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
     </Router>
   );
