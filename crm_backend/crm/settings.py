@@ -3,6 +3,8 @@ from datetime import timedelta
 import os
 from dotenv import load_dotenv
 
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-h+@6g1%-xkdmb+gt%-^8^*c_@plisga3ip^iu@ytf-(5asafxj'
@@ -53,11 +55,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crm.wsgi.application'
 
-# MongoDB Configuration
-MONGODB_USERNAME = 'sanaldabre6c37'
-MONGODB_PASSWORD = 'yrgyCo33uNKqdUwX'
-MONGODB_CLUSTER = 'cluster0.u81hy.mongodb.net'
-MONGODB_DATABASE = 'crm_db'
+MONGODB_USERNAME = os.getenv("MONGODB_USERNAME")
+MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
+MONGODB_CLUSTER = os.getenv("MONGODB_CLUSTER")
+MONGODB_DATABASE = os.getenv("MONGODB_DATABASE")
 MONGODB_HOST = f"mongodb+srv://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_CLUSTER}/{MONGODB_DATABASE}?retryWrites=true&w=majority&appName=Cluster0"
 
 from mongoengine import connect
