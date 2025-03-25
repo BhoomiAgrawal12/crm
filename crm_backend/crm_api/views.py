@@ -1,3 +1,5 @@
+import requests
+import base64
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -8,6 +10,14 @@ from django.contrib.auth.hashers import check_password, make_password
 from .models import User
 from .permissions import IsAdminUserCustom
 from .serializers import UserSerializer
+
+#Google Mail
+from email.message import EmailMessage
+import google.auth
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from google_auth_oauthlib.flow import InstalledAppFlow
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -79,3 +89,38 @@ def user_detail(request, username):
     elif request.method == "DELETE":
         user.delete()
         return Response({"message": "User deleted"}, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAdminUserCustom])
+def send_email(request):
+    SCOPES = ['https://mail.google.com/']
+    flow = InstalledAppFlow.from_client_secrets_file('client_secret.json', SCOPES)
+    creds = flow.run_local_server(port=0)
+    
+    try:
+        service = build("gmail", "v1", credentials=creds)
+        message = EmailMessage()
+        email_content = request.data.get('email_content')
+        #print(email_content)
+        message.set_content(email_content)
+        message["To"] = request.data.get('to_email_id')
+        message["From"] = "immortalsoftwaregithub@gmail.com"
+        message["Subject"] = request.data.get('email_subject')
+        
+        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+        
+        send_message = {"raw":encoded_message}
+        sent_message = (
+            service.users()
+            .messages()
+            .send(userId="me", body=send_message)
+            .execute()
+        )
+        print(f'Message id: {sent_message["id"]}')
+    except HttpError as error:
+        print(f"An error occured: {error}")
+        sent_message = None
+        return Response({'error': str(error)}, status=status.HTTP_400_BAD_REQUEST) 
+    return Response({'Email Sent With ID': sent_message["id"]}, status=status.HTTP_200_OK)
+        

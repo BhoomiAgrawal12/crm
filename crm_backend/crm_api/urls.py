@@ -5,6 +5,7 @@ from .views import (
     logout_user,
     user_create_list,
     user_detail,
+    send_email,
     # customer_list,
     # customer_detail,
     # contact_list,
@@ -27,5 +28,6 @@ urlpatterns = [
     # path('tasks/', task_list, name='task-list'),
     # path('tasks/<str:pk>/', task_detail, name='task-detail'),
     # path('analytics/', analytics, name='analytics'),
+    path("send_email/", send_email, name='send-email'),
     
 ]
