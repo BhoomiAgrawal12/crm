@@ -123,4 +123,35 @@ def send_email(request):
         sent_message = None
         return Response({'error': str(error)}, status=status.HTTP_400_BAD_REQUEST) 
     return Response({'Email Sent With ID': sent_message["id"]}, status=status.HTTP_200_OK)
+ 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, IsAdminUserCustom])        
+def read_email(request):
+    SCOPES = ['https://mail.google.com/']
+    flow = InstalledAppFlow.from_client_secrets_file('client_secret.json', SCOPES)
+    creds = flow.run_local_server(port=0)
+    try:
+        service = build("gmail","v1", credentials = creds)
+        results = service.users().messages().list(userId="me", maxResults=5).execute()
+        messages = results.get("messages", [])
         
+        if not messages:
+            print("No messages found")
+            return
+        email_data = []
+        for message in messages:
+            msg = service.users().messages().get(userId="me", id=message["id"]).execute()
+            headers = msg.get("payload", {}).get("headers", [])
+            sender = next((header["value"] for header in headers if header["name"] == "From"), "Unknown Sender")
+            snippet = msg.get("snippet", "")
+            email_data.append({
+                "message_id":message["id"],
+                "sender":sender,
+                "snippet":snippet,
+            })
+        return Response({'emails':email_data}, status=status.HTTP_200_OK)
+    except HttpError as error:
+        return Response({'error': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    

@@ -29,5 +29,6 @@ urlpatterns = [
     # path('tasks/<str:pk>/', task_detail, name='task-detail'),
     # path('analytics/', analytics, name='analytics'),
     path("send_email/", send_email, name='send-email'),
+    path("read_email/", read_email, name='read-email'),
     
 ]
