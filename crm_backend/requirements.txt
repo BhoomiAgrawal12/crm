@@ -1,7 +1,0 @@
-django
-djangorestframework
-djangorestframework-simplejwt
-mongoengine
-django-mongoengine
-python-dotenv
-django-cors-headers
