@@ -6,6 +6,7 @@ from .views import (
     user_create_list,
     user_detail,
     send_email,
+    read_email,
     # customer_list,
     # customer_detail,
     # contact_list,
