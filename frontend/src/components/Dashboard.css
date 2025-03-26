@@ -1,30 +1,488 @@
-/* frontend/src/components/Dashboard.css */
-.dashboard {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .dashboard-header {
+.dash-1{
+    margin: 0px;
+    padding: 0px;
+}
+
+.dash-1 h1{
+    background-color: rgb(222, 79, 79);
+    margin: 0px;
+    padding: 0px;
+}
+
+.dash-2{
+    display: grid;
+    grid-template-columns: 0.9fr 2fr 1fr;
+    gap: 10px;
+    margin: 0px;
+    padding: 5px;
+    border: 2px solid black;
+    background-color: rgb(227, 241, 245);
+    
+}
+
+/* ----------------------------------------------------------- */
+
+.dash-2_1{
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(227, 241, 245);
+}
+
+.dash-2_1 .Appointment{
+    background: linear-gradient(blue,rgba(38, 2, 247, 0.847), rgb(24, 12, 191));
+    margin: 4px;
+    padding: 20px 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+    color: aliceblue;
+}
+
+/* ----------------------------------------------------------- */
+
+.dash-2_1 .Appointment div:nth-child(1){
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0px;
+    padding: 0px 0px 15px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(1) h3{
+    margin: 0px;
+    padding: 0px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(1) span{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .dashboard h2 {
-    color: #333;
-  }
-  
-  .logout-btn {
-    padding: 0.5rem 1rem;
-    background-color: #6c757d;
-    border: none;
-    border-radius: 4px;
-    color: white;
+    margin: 0px;
+    padding: 0px 0px;
+}
+
+/* ----------------------------------------------------------- */
+
+.dash-2_1 .Appointment div:nth-child(2){
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin: 0px;
+    padding: 0px 0px 15px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(2) span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px 10px 0px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(2) div{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(2) div h5,p{
+    margin: 0px;
+    padding: 0px 0px 4px 0px;
+}
+
+/* ----------------------------------------------------------- */
+
+.dash-2_1 .Appointment div:nth-child(3){
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px 0px 15px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(3) p,h5{
+    margin: 0px;
+    padding: 0px 0px 15px 0px;
+}
+
+/* ----------------------------------------------------------- */
+
+.dash-2_1 .Appointment div:nth-child(4){
+    display: flex;
+    flex-direction: row;
+    margin: 0px;
+    padding: 0px 0px 15px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(4) div{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(4) div:nth-child(1){
+    margin: 0px;
+    padding: 0px 50px 0px 0px;
+}
+
+/* ----------------------------------------------------------- */
+
+.dash-2_1 .Appointment div:nth-child(5){
+    display: flex;
+    flex-direction: row;
+    margin: 0px;
+    padding: 0px 0px 15px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(5) div{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(5) div:nth-child(1){
+    margin: 0px;
+    padding: 0px 50px 0px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(5) div:nth-child(2){
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    margin: 0px;
+    padding: 10px 0px 0px 0px;
+}
+
+.dash-2_1 .Appointment div:nth-child(5) div:nth-child(2) button{
+    margin: 0px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: white;
     cursor: pointer;
-  }
-  
-  .logout-btn:hover {
-    background-color: #5a6268;
-  }
+}
+
+/* ----------------------------------------------------------- */
+
+.dash-2_1 .customers{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    background-color:whitesmoke;
+    margin: 4px;
+    padding: 0px 4px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.dash-2_1 .customers div:nth-child(2){
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:whitesmoke;
+}
+
+.dash-2_1 .customers span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    color: green;
+    background: linear-gradient(rgb(34, 224, 53),rgb(199, 220, 199), white);
+}
+
+.dash-2_1 .customers h4{
+    color: rgb(123, 117, 117);
+}
+
+.dash-2_1 .deals{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    background-color:whitesmoke;
+    margin: 4px;
+    padding: 0px 4px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.dash-2_1 .deals div:nth-child(2){
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:whitesmoke;
+}
+
+.dash-2_1 .deals span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    color:crimson;
+    background: linear-gradient(rgb(221, 97, 97),rgb(228, 217, 217), white);
+}
+
+.dash-2_1 .deals h4{
+    color: gray;
+}
+
+/* ----------------------------------------------------------- */
+/* ---------------- Recent deals section starts here ---------------------- */
+
+.dash-2_2{
+    display: flex;
+    flex-direction: column;
+    background-color:rgb(227, 241, 245);
+}
+
+.recent_deal_block{
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(238, 243, 243);
+    border: 1px solid blue;
+    border-radius: 18px;
+    margin: 4px 0px 0px 0px;
+    padding: 5px 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.recent_block1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0px;
+    padding: 8px 12px 15px 12px;
+    border-radius: 20px 20px 0px 0px;
+    border-bottom: 1px solid black;
+    background-color: rgb(238, 243, 243);
+}
+
+.recent_block1 h3{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px 0px;
+}
+.recent_block1 p{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px 0px;
+    color: blue;
+    cursor: pointer;
+}
+
+
+.recent_block2{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background-color: rgb(238, 243, 243);
+}
+
+.recent_deals_items{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.re_de_item_1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-right: 10px;
+}
+
+.re_de_item_1 div{
+    padding-right: 15px;
+}
+
+.re_de_item_1 div:nth-child(2) h5{
+    margin: 0px;
+    padding: 0px;
+}
+
+.re_de_item_1 div:nth-child(2) p{
+    margin: 0px;
+    padding: 0px;
+    color: grey;
+}
+
+.re_de_item_2 h5{
+    margin: 0px;
+    padding: 0px;
+}
+
+.re_de_item_2 p{
+    margin: 0px;
+    padding: 0px;
+    color: grey;
+}
+
+/* ---------------- Progress section starts here ---------------------- */
+
+.progress_block{
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(238, 243, 243);
+    border: 2px solid blue;
+    border-radius: 12px;
+    margin: 10px 0px;
+    padding: 15px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.prog_block1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0px;
+    padding: 2px 2px 15px 2px;
+    border-bottom: 1px solid black;
+}
+
+.prog_block1 div:nth-child(1){
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0px;
+    padding: 0px;
+}
+
+.prog_block1 div:nth-child(1) div:nth-child(1){
+    padding-right: 25px;
+}
+
+.prog_block1 div:nth-child(1) div:nth-child(2) h5{
+    margin: 0px;
+    padding: 0px;
+}
+
+.prog_block1 div:nth-child(1) div:nth-child(2) p{
+    font-size: smaller;
+    margin: 0px;
+    padding: 0px;
+}
+
+.progArrosec{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding-right: 15px;
+}
+
+.progArrosec h6{
+    margin: 0px;
+    padding: 8px 10px 8px 10px;
+    border-radius: 15px;
+    background-color: rgb(168, 195, 219);
+    color: royalblue;
+}
+.progArrosec button{
+    text-decoration: none;
+    border: none;
+    margin: 0px;
+    padding-right: 15px;
+    background: none;
+    color: blue;
+}
+
+
+.prog_sec{
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 20px;
+}
+
+.prog_sec div:nth-child(2){
+    display: flex;
+    flex-direction: column;
+    padding: 0px 0px 0px 15px;
+}
+
+.prog_sec div:nth-child(2) h5{
+    margin: 0px;
+    padding: 0px;
+    color: grey;
+}
+
+.prog_sec div:nth-child(2) h4{
+    margin: 0px;
+    padding: 4px 0px 0px 0px;
+}
+
+.prog_block2{
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0px 0px 0px;
+}
+
+.load{
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    padding: 10px 0px;
+    color: blue;
+}
+
+/* ----------------------------------------------------------- */
+/* ---------------- Column-3 starts here ---------------------- */
+
+
+.dash-2_3{
+    display: flex;
+    flex-direction: column;
+    background-color:cornflowerblue;
+}
+
+.task{
+    display: flex;
+    flex-direction: column;
+    background-color: blueviolet;
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid black;
+    border-radius: 12px;
+}
+
+.task_sec1{
+    display: flex;
+    justify-content: space-between;
+    background-color: antiquewhite;
+}
+
+.task_sec1 h4{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+    padding: 10px 10px;
+    background-color: rgb(110, 79, 40);
+}
+
+.task_sec1 h5{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(96, 83, 68);
+}
+
+.task_sec2{
+    background-color: rgb(214, 129, 18);
+}
+
+.add_task{
+    background-color: rgb(131, 113, 89);
+}
