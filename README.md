@@ -13,3 +13,5 @@ Create a .env file inside crm_backend with contents
 ```MONGODB_PASSWORD = ```  
 ```MONGODB_CLUSTER = ```  
 ```MONGODB_DATABASE = ```  
+
+Add ```client_secret.json``` file in crm_backend
