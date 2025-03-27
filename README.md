@@ -6,7 +6,11 @@ To Start vitual environment
 ```venv/Scripts/activate```
 
 Download Required Libraries  
+1. For Python:  
 ```pip install -r requirements.txt```
+
+2. For React: ```cd frontend```
+   ```npm install```
 
 Create a .env file inside crm_backend with contents  
 ```MONGODB_USERNAME = ```  
