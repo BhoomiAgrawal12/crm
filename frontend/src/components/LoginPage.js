@@ -23,10 +23,8 @@ function Login() {
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
 
-      // Redirect based on user role
-      if (response.data.is_admin) {
-        navigate("/home");
-      }
+      // Redirect to /home for all authenticated users
+      navigate("/home");
     } catch (err) {
       // Handle error response
       if (err.response && err.response.status === 401) {
