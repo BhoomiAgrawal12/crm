@@ -205,8 +205,36 @@ const Dashboard = () => {
                         <h4>Tasks To Do</h4>
                         <h5>View All</h5>
                     </div>
-                    <div className='task_sec2'>2</div>
-                    <div className='add_task'>3</div>
+                    <div className='task_sec2'>
+                        <div className='task_sec_child'>
+                            <h5>30 Nov 2021</h5>
+                            <h5>Meeting with partners</h5>
+                        </div>
+                        <div className='task_sec_child'>
+                            <h5>30 Nov 2021</h5>
+                            <h5>Meeting with partners</h5>
+                        </div>
+                        <div className='task_sec_child'>
+                            <h5>30 Nov 2021</h5>
+                            <h5>Meeting with partners</h5>
+                        </div>
+                        <div className='task_sec_child'>
+                            <h5>30 Nov 2021</h5>
+                            <h5>Meeting with partners</h5>
+                        </div>
+                        <div className='task_sec_child'>
+                            <h5>30 Nov 2021</h5>
+                            <h5>Meeting with partners</h5>
+                        </div>
+                        <div className='task_sec_child'>
+                            <h5>30 Nov 2021</h5>
+                            <h5>Meeting with partners</h5>
+                        </div>
+                    </div>
+                    <div className='add_task'>
+                        <div>Add new task</div>
+                        <div><ArrowForwardIcon /></div>
+                    </div>
                 </div>
             </div>
         </div>

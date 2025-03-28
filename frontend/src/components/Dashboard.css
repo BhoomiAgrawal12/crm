@@ -1,10 +1,11 @@
 .dash-1{
     margin: 0px;
     padding: 0px;
+    border-bottom: 1px solid gray;
 }
 
 .dash-1 h1{
-    background-color: rgb(222, 79, 79);
+    background-color: rgb(227, 241, 245);
     margin: 0px;
     padding: 0px;
 }
@@ -396,6 +397,7 @@
     padding-right: 15px;
     background: none;
     color: blue;
+    cursor: pointer;
 }
 
 
@@ -435,6 +437,7 @@
     align-items: center;
     padding: 10px 0px;
     color: blue;
+    cursor: pointer;
 }
 
 /* ----------------------------------------------------------- */
@@ -460,29 +463,68 @@
 .task_sec1{
     display: flex;
     justify-content: space-between;
-    background-color: antiquewhite;
+    border-radius: 12px 12px 0px 0px;
+    background-color: whitesmoke;
+    padding: 10px 10px;
 }
 
 .task_sec1 h4{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px;
-    padding: 10px 10px;
-    background-color: rgb(110, 79, 40);
+    margin: 0px;
+    padding: 0px 0px;
 }
 
 .task_sec1 h5{
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(96, 83, 68);
+    color: blue;
+    cursor: pointer;
+    margin: 0px;
+    padding: 0px 0px;
 }
 
 .task_sec2{
-    background-color: rgb(214, 129, 18);
+    background-color:whitesmoke;
 }
 
+.task_sec_child{
+    display: flex;
+    flex-direction: row;
+    margin: 0px;
+    padding: 6px 8px 15px 12px;
+}
+
+.task_sec_child h5:nth-child(1){
+    color: gray;
+    margin: 0px;
+    padding: 0px 15px 0px 0px;
+}
+
+.task_sec_child h5:nth-child(2){
+    margin: 0px;
+    padding: 0px 0px;
+}
+
+
+
+
 .add_task{
-    background-color: rgb(131, 113, 89);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 8px;
+    border-top: 1px solid gray;
+    border-radius: 0px 0px 12px 12px;
+    background-color: white;
+}
+
+.add_task div:nth-child(1){
+    color: gray;   
+}
+
+.add_task div:nth-child(2){
+    color: blue;   
 }

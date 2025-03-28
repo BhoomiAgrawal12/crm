@@ -1,15 +1,17 @@
-import './App.css';
-import SideNav from './components/SideNav';
-import Dashboard from './components/Dashboard';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from './components/LoginPage';
+import Home from './components/Home';
+
 
 function App() {
   return (
-    <div className="container">
-      <div className="container-1">
-        <SideNav />
-      </div>
-      <div className="container-2"><Dashboard /></div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+      </Routes>
+    </Router>
   );
 }
 
