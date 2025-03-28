@@ -1,21 +1,48 @@
-# crm
-Create virtual environment using  
-```python -m venv venv```  
+# **CRM Project Setup Guide**  
 
-To Start vitual environment  
-```venv/Scripts/activate```
+## **1. Create and Activate Virtual Environment**  
+Run the following command to create a virtual environment:  
+```bash
+python -m venv venv
+```  
 
-Download Required Libraries  
-1. For Python:  
-```pip install -r requirements.txt```
+To activate the virtual environment:  
+- **Windows:**  
+  ```bash
+  venv\Scripts\activate
+  ```  
+- **Linux/Mac:**  
+  ```bash
+  source venv/bin/activate
+  ```  
 
-2. For React: ```cd frontend```
-   ```npm install```
+---
 
-Create a .env file inside crm_backend with contents  
-```MONGODB_USERNAME = ```  
-```MONGODB_PASSWORD = ```  
-```MONGODB_CLUSTER = ```  
-```MONGODB_DATABASE = ```  
+## **2. Backend Setup (Django)**  
+Navigate to the `crm_backend` directory and install dependencies:  
+```bash
+pip install -r requirements.txt
+```  
 
-Add ```client_secret.json``` file in crm_backend
+To start the Django server:  
+```bash
+python manage.py runserver
+```  
+
+---
+
+## **3. Frontend Setup (React) (In a different terminal)**  
+Navigate to the `frontend` directory:  
+```bash
+cd frontend
+```  
+Install dependencies:  
+```bash
+npm install
+```  
+To run the React development server:  
+```bash
+npm start
+```  
+
+
