@@ -1,19 +1,20 @@
-# crm_backend/crm_api/serializers.py
-from .models import User
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
+from .models import User, Account, Contact  # Removed Admin
 
-class UserSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
-    username = serializers.CharField(max_length=50)
-    email = serializers.EmailField()
+
+# User Serializer
+class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
-    is_admin = serializers.BooleanField(default=False)
-    is_active = serializers.BooleanField(default=True)
-    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'is_active', 'is_staff', 'created_at', 'password']
 
     def create(self, validated_data):
-        return User(**validated_data).save()
+        if 'password' in validated_data:
+            validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
@@ -24,8 +25,36 @@ class UserSerializer(serializers.Serializer):
         instance.save()
         return instance
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        if self.context.get('request') and self.context['request'].user.is_admin:
-            representation['password'] = instance.password
-        return representation
+
+# User Registration Serializer
+class UserRegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password']
+
+    def create(self, validated_data):
+        user = User(
+            username=validated_data['username'],
+            email=validated_data['email']
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+
+# Account Serializer
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = '__all__'
+
+
+# Contact Serializer
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = '__all__'
+
+

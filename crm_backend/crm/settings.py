@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-h+@6g1%-xkdmb+gt%-^8^*c_@plisga3ip^iu@ytf-(5asafxj'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,27 +55,35 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crm.wsgi.application'
 
-MONGODB_USERNAME = os.getenv("MONGODB_USERNAME")
-MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
-MONGODB_CLUSTER = os.getenv("MONGODB_CLUSTER")
-MONGODB_DATABASE = os.getenv("MONGODB_DATABASE")
-MONGODB_HOST = f"mongodb+srv://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_CLUSTER}/{MONGODB_DATABASE}?retryWrites=true&w=majority&appName=Cluster0"
+# PostgreSQL Database Configuration
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('POSTGRES_DB'),  # Database name
+#         'USER': os.getenv('POSTGRES_USER'),  # Database user
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Database password
+#         'HOST': os.getenv('POSTGRES_HOST'),  # PostgreSQL host
+#         'PORT': 5432,  # Default PostgreSQL port
+#     }
+# }
 
-from mongoengine import connect
-try:
-    connect(host=MONGODB_HOST)
-    print("Successfully connected to MongoDB!")
-except Exception as e:
-    print(f"Error connecting to MongoDB: {e}")
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',  # SQLite database file
+    }
+}
 
-# No AUTH_USER_MODEL since we're not using Django ORM for users
+# Use the custom User model
+AUTH_USER_MODEL = 'crm_api.User'
+
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Keep for admin if needed, but won't affect our API
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'crm_api.authentication.MongoJWTAuthentication',  # Custom MongoDB JWT auth
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Use JWT for authentication
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -86,11 +94,15 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
-    'USER_ID_FIELD': 'id',  # MongoDB ObjectID
-    'USER_ID_CLAIM': 'user_id',  # Matches JWT payload
+    'USER_ID_FIELD': 'id',  # Use the `id` field from the custom User model
+    'USER_ID_CLAIM': 'user_id',
 }
 
 CORS_ALLOW_ALL_ORIGINS = True  # For development only
 
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Enable timezone support
+USE_TZ = True
+TIME_ZONE = 'Asia/Kolkata'

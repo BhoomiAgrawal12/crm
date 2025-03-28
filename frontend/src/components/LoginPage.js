@@ -1,19 +1,39 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import axios for API calls
+import './LoginPage.css';
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // State to handle errors
   const navigate = useNavigate(); // Hook for navigation
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
-    // Dummy authentication check
-    if (username === "admin" && password === "1234") {
-      navigate("/home"); // Redirect to Home page
-    } else {
-      alert("Invalid Credentials");
+    setError(""); // Clear previous errors
+
+    try {
+      const response = await axios.post("http://localhost:8000/api/login/", {
+        username,
+        password,
+      });
+
+      // Save tokens to localStorage or cookies
+      localStorage.setItem("access_token", response.data.access);
+      localStorage.setItem("refresh_token", response.data.refresh);
+
+      // Redirect based on user role
+      if (response.data.is_admin) {
+        navigate("/home");
+      }
+    } catch (err) {
+      // Handle error response
+      if (err.response && err.response.status === 401) {
+        setError("Invalid credentials. Please try again.");
+      } else {
+        setError("An error occurred. Please try again later.");
+      }
     }
   };
 
@@ -41,6 +61,7 @@ function Login() {
           />
         </div>
         <br />
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <button type="submit">Login</button>
       </form>
     </div>

@@ -1,8 +1,9 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from .models import User
 
-class MongoJWTAuthentication(JWTAuthentication):
+
+class PostgresJWTAuthentication(JWTAuthentication):
     def get_user(self, validated_token):
         try:
             user_id = validated_token['user_id']
