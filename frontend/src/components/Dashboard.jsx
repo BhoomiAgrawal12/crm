@@ -7,6 +7,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ControlCameraIcon from '@mui/icons-material/ControlCamera';
+import axios from 'axios'; // Import axios
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -25,12 +26,35 @@ const Dashboard = () => {
       <div className='dash-1'>
         <h1>Dashboard
         <button 
-            onClick={() => {
-              // Clear tokens from localStorage
-              localStorage.removeItem('access_token');
-              localStorage.removeItem('refresh_token');
-              // Redirect to login page
-              navigate('/');
+            onClick={async () => {
+              try {
+                const accessToken = localStorage.getItem('access_token');
+                if (!accessToken) {
+                  navigate('/'); // Redirect to login if no token is found
+                  return;
+                }
+
+                // Send POST request to /logout
+                await axios.post(
+                  'http://localhost:8000/api/logout/',
+                  {}, // Empty body
+                  {
+                    headers: {
+                      Authorization: `Bearer ${accessToken}`,
+                    },
+                  }
+                );
+
+                // Clear tokens from localStorage
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+
+                // Redirect to login page
+                navigate('/');
+              } catch (err) {
+                console.error('Logout failed:', err.response?.data || err.message);
+                // Optionally, handle logout failure (e.g., show an error message)
+              }
             }}>
             Logout
         </button>
