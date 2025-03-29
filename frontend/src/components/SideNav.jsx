@@ -19,7 +19,7 @@ const SideNav = () => {
         <div className='nav_icons'>
             <div 
               className='nav_icon' 
-              onClick={() => navigate('/create-account')} // Navigate to CreateAccount
+              onClick={() => navigate('/accounts')} // Navigate to CreateAccount
             >
               <WindowIcon />
             </div>
