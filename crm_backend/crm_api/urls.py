@@ -14,7 +14,7 @@ from .views import (
 urlpatterns = [
     path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
-    path('create-users/', user_create_list, name='user-create-list'),
+    path('create-user/', user_create_list, name='user-create-list'),
     path('users/', user_list, name='user-list'),
     path('users/<str:username>/', user_detail, name='user-detail'),
     path('accounts/', account_list_create, name='account-list-create'),

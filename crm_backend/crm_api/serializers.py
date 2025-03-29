@@ -46,15 +46,62 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 # Account Serializer
 class AccountSerializer(serializers.ModelSerializer):
+    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
+
     class Meta:
         model = Account
-        fields = '__all__'
+        fields = [
+            'id',
+            'name',
+            'assigned_to',
+            'assigned_to_username',  # Include the username
+            'website',
+            'office_phone',
+            'email_address',
+            'billing_street',
+            'billing_postal_code',
+            'billing_city',
+            'billing_state',
+            'billing_country',
+            'shipping_street',
+            'shipping_postal_code',
+            'shipping_city',
+            'shipping_state',
+            'shipping_country',
+        ]
 
 
 # Contact Serializer
 class ContactSerializer(serializers.ModelSerializer):
+    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
+    account_name = serializers.CharField(source='account.name', read_only=True)
     class Meta:
         model = Contact
-        fields = '__all__'
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'office_phone',
+            'mobile',
+            'email_address',
+            'job_title',
+            'account',
+            'account_name',  # Include the account name
+            'assigned_to',
+            'assigned_to_username',  # Include the username of the assigned user
+            'department',
+            'primary_address_street',
+            'primary_address_postal_code',
+            'primary_address_city',
+            'primary_address_state',
+            'primary_address_country',
+            'alternate_address_street',
+            'alternate_address_postal_code',
+            'alternate_address_city',
+            'alternate_address_state',
+            'alternate_address_country',
+            'description',
+            'created_at',
+        ]
 
 

@@ -48,32 +48,22 @@ const AccountsPage = () => {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Assigned To</th>
-              <th>Website</th>
-              <th>Office Phone</th>
+              <th>City</th>
+              <th>Billing Country</th>
+              <th>Phone</th>
+              <th>User</th>
               <th>Email Address</th>
-              <th>Billing Address</th>
-              <th>Shipping Address</th>
             </tr>
           </thead>
           <tbody>
             {accounts.map((account) => (
               <tr key={account.id}>
                 <td>{account.name}</td>
-                <td>{account.assigned_to}</td>
-                <td>{account.website}</td>
+                <td>{account.billing_city}</td>
+                <td>{account.billing_country}</td>
                 <td>{account.office_phone}</td>
+                <td>{account.assigned_to_username}</td> {/* Display the username */}
                 <td>{account.email_address}</td>
-                <td>
-                  {account.billing_street}, {account.billing_city},{" "}
-                  {account.billing_state}, {account.billing_country},{" "}
-                  {account.billing_postal_code}
-                </td>
-                <td>
-                  {account.shipping_street}, {account.shipping_city},{" "}
-                  {account.shipping_state}, {account.shipping_country},{" "}
-                  {account.shipping_postal_code}
-                </td>
               </tr>
             ))}
           </tbody>

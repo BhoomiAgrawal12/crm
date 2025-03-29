@@ -43,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Account(models.Model):
     name = models.CharField(max_length=255, null=False)
-    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="accounts")
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)
     website = models.URLField(blank=True, null=True)
     office_phone = models.CharField(max_length=20)
     email_address = models.EmailField()
@@ -72,6 +72,7 @@ class Contact(models.Model):
     email_address = models.EmailField()
     job_title = models.CharField(max_length=100)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)
     department = models.CharField(max_length=100)
     primary_address_street = models.CharField(max_length=255, null=False)
     primary_address_postal_code = models.CharField(max_length=20, null=False)
