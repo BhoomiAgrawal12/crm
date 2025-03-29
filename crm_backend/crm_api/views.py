@@ -43,6 +43,14 @@ def logout_user(request):
     return Response({'message': 'Logged out successfully. Discard your token on the client.'})
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_list(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated, IsAdmin])
 def user_create_list(request):
@@ -86,6 +94,8 @@ def user_detail(request, username):
     elif request.method == "DELETE":
         user.delete()
         return Response({"message": "User deleted"}, status=status.HTTP_200_OK)
+
+
 
 
 # @api_view(["POST"])

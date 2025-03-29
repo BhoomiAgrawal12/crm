@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -22,9 +22,36 @@ const CreateAccount = () => {
     description: "",
   });
 
+  const [users, setUsers] = useState([]); // State to store users
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+
+  // Fetch users from the backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const accessToken = localStorage.getItem("access_token");
+        if (!accessToken) {
+          navigate("/login");
+          return;
+        }
+
+        const response = await axios.get("http://localhost:8000/api/users/", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        setUsers(response.data); // Set the fetched users to state
+      } catch (err) {
+        console.error("Error fetching users:", err.response?.data || err.message);
+        setError("Failed to fetch users. Please try again later.");
+      }
+    };
+
+    fetchUsers();
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -54,6 +81,7 @@ const CreateAccount = () => {
           },
         }
       );
+
       console.log(response.data); // Log the response data for debugging
 
       setSuccess("Account created successfully!");
@@ -99,14 +127,20 @@ const CreateAccount = () => {
           />
         </div>
         <div>
-          <label>Assigned To (User ID):</label>
-          <input
-            type="number"
+          <label>Assigned To:</label>
+          <select
             name="assigned_to"
             value={formData.assigned_to}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">Select a user</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label>Website:</label>
@@ -240,7 +274,8 @@ const CreateAccount = () => {
             onChange={handleChange}
           ></textarea>
         </div>
-        <button type="submit">Create Account</button>
+        <button type="submit">Save</button>
+        <button onClick={() => navigate("/home")}>Cancel</button>
       </form>
     </div>
   );

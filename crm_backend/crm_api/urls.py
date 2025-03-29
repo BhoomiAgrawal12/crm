@@ -4,6 +4,7 @@ from .views import (
     logout_user,
     user_create_list,
     user_detail,
+    user_list,
     account_list_create,
     account_detail,
     contact_detail,
@@ -13,7 +14,8 @@ from .views import (
 urlpatterns = [
     path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
-    path('users/', user_create_list, name='users-list'),
+    path('create-users/', user_create_list, name='user-create-list'),
+    path('users/', user_list, name='user-list'),
     path('users/<str:username>/', user_detail, name='user-detail'),
     path('accounts/', account_list_create, name='account-list-create'),
     path('accounts/<int:account_id>/', account_detail, name='account-detail'),
