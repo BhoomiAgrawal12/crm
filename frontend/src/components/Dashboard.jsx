@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import './Dashboard.css';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter'; // Correct import
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import CircleIcon from '@mui/icons-material/Circle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -26,11 +26,11 @@ const Dashboard = () => {
         <h1>Dashboard
         <button 
             onClick={() => {
-            // Clear tokens from localStorage
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            // Redirect to login page
-            navigate('/');
+              // Clear tokens from localStorage
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('refresh_token');
+              // Redirect to login page
+              navigate('/');
             }}>
             Logout
         </button>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import './SideNav.css';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import WindowIcon from '@mui/icons-material/Window';
@@ -10,11 +11,18 @@ import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined
 import SettingsIcon from '@mui/icons-material/Settings';
 
 const SideNav = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
   return (
     <div className='side_nav'>
         <div className='nav_logo'><AcUnitIcon /></div>
         <div className='nav_icons'>
-            <div className='nav_icon'><WindowIcon /></div>
+            <div 
+              className='nav_icon' 
+              onClick={() => navigate('/create-account')} // Navigate to CreateAccount
+            >
+              <WindowIcon />
+            </div>
             <div className='nav_icon'><BusinessCenterIcon /></div>
             <div className='nav_icon'><PeopleAltIcon /></div>
             <div className='nav_icon'><DensityMediumOutlinedIcon /></div>
