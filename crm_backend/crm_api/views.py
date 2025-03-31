@@ -31,7 +31,8 @@ def login_user(request):
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
-            'is_admin': user.is_superuser
+            'is_admin': user.is_superuser,
+            'is_active': user.is_active
         })
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -96,6 +97,16 @@ def user_detail(request, username):
         return Response({"message": "User deleted"}, status=status.HTTP_200_OK)
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def current_user(request):
+    user = request.user
+    return Response({
+        "username": user.username,
+        "email": user.email,
+        "is_staff": user.is_staff,
+        "is_active": user.is_active,
+    })
 
 
 # @api_view(["POST"])

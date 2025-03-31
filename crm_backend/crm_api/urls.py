@@ -9,6 +9,7 @@ from .views import (
     account_detail,
     contact_detail,
     contact_list_create,
+    current_user,
 )
 
 urlpatterns = [
@@ -21,4 +22,5 @@ urlpatterns = [
     path('accounts/<int:account_id>/', account_detail, name='account-detail'),
     path('contacts/', contact_list_create, name='contact-list-create'),
     path('contacts/<int:contact_id>/', contact_detail, name='contact-detail'),
+    path('current-user/', current_user, name='current-user'),
 ]
