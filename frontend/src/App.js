@@ -6,18 +6,21 @@ import CreateAccount from './components/CreateAccount';
 import AccountsPage from './components/AccountsPage';
 import CreateContact from './components/CreateContact';
 import ContactsPage from './components/ContactsPage';
+import AccountDetails from './components/AccountDetails';
+import UserDetails from './components/UserDetails';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/create-account" element={<CreateAccount />} />
         <Route path="/accounts" element={<AccountsPage />} />
         <Route path="/contacts" element={<ContactsPage />} />
         <Route path="/create-contact" element={<CreateContact />} />
-
+        <Route path="/account-details/:id" element={<AccountDetails />} />
+        <Route path="/user-details/:username" element={<UserDetails />} />
       </Routes>
     </Router>
   );

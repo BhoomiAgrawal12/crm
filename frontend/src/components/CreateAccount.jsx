@@ -275,7 +275,7 @@ const CreateAccount = () => {
           ></textarea>
         </div>
         <button type="submit">Save</button>
-        <button onClick={() => navigate("/home")}>Cancel</button>
+        <button onClick={() => navigate("/accounts")}>Cancel</button>
       </form>
     </div>
   );

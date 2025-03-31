@@ -17,7 +17,7 @@ const Dashboard = () => {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
       // Redirect to login page if not authenticated
-      navigate('/');
+      navigate('/login');
     }
   }, [navigate]);
 
@@ -30,7 +30,7 @@ const Dashboard = () => {
               try {
                 const accessToken = localStorage.getItem('access_token');
                 if (!accessToken) {
-                  navigate('/'); // Redirect to login if no token is found
+                  navigate('/login'); // Redirect to login if no token is found
                   return;
                 }
 
@@ -50,7 +50,7 @@ const Dashboard = () => {
                 localStorage.removeItem('refresh_token');
 
                 // Redirect to login page
-                navigate('/');
+                navigate('/login');
               } catch (err) {
                 console.error('Logout failed:', err.response?.data || err.message);
                 // Optionally, handle logout failure (e.g., show an error message)

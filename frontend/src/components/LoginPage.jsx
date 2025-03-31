@@ -19,12 +19,17 @@ function Login() {
         password,
       });
 
+      if(!response.data.is_active){
+        setError("Account is inactive. Please contact the administrator.");
+        return;
+      }
+
       // Save tokens to localStorage or cookies
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
 
-      // Redirect to /home for all authenticated users
-      navigate("/home");
+      // Redirect to home for all authenticated users
+      navigate("/");
     } catch (err) {
       // Handle error response
       if (err.response && err.response.status === 401) {

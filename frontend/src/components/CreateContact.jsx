@@ -319,7 +319,7 @@ const CreateContact = () => {
           ></textarea>
         </div>
         <button type="submit">Save</button>
-        <button type="button" onClick={() => navigate("/home")}>
+        <button type="button" onClick={() => navigate("/contacts")}>
           Cancel
         </button>
       </form>

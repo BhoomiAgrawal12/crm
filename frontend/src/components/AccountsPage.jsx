@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const AccountsPage = () => {
   const navigate = useNavigate();
@@ -37,11 +37,7 @@ const AccountsPage = () => {
   return (
     <div style={{ padding: "20px" }}>
       <h1>Accounts</h1>
-      <button
-        onClick={() => navigate('/create-account')}
-      >
-        Create Account
-      </button>
+      <button onClick={() => navigate("/create-account")}>Create Account</button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {accounts.length > 0 ? (
         <table border="1" style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -58,11 +54,37 @@ const AccountsPage = () => {
           <tbody>
             {accounts.map((account) => (
               <tr key={account.id}>
-                <td>{account.name}</td>
+                <td>
+                  <button
+                    onClick={() => navigate(`/account-details/${account.id}`)}
+                    style={{
+                      color: "blue",
+                      textDecoration: "underline",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {account.name}
+                  </button>
+                </td>
                 <td>{account.billing_city}</td>
                 <td>{account.billing_country}</td>
                 <td>{account.office_phone}</td>
-                <td>{account.assigned_to_username}</td> {/* Display the username */}
+                <button
+                    onClick={() => navigate(`/user-details/${account.assigned_to_username}`)}
+                    style={{
+                      color: "blue",
+                      textDecoration: "underline",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {account.assigned_to_username}
+                  </button>
                 <td>{account.email_address}</td>
               </tr>
             ))}
