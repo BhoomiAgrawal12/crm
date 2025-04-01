@@ -11,11 +11,11 @@ from .permissions import IsAdmin
 from .serializers import UserSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer
 
 # Google Mail
-from email.message import EmailMessage
-import google.auth
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from google_auth_oauthlib.flow import InstalledAppFlow
+# from email.message import EmailMessage
+# import google.auth
+# from googleapiclient.discovery import build
+# from googleapiclient.errors import HttpError
+# from google_auth_oauthlib.flow import InstalledAppFlow
 
 
 @api_view(['POST'])
