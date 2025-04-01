@@ -59,12 +59,40 @@ const ContactsPage = () => {
           <tbody>
             {contacts.map((contact) => (
               <tr key={contact.id}>
-                <td>{contact.first_name} {contact.last_name}</td>
+                <td>
+                <button
+                    onClick={() => navigate(`/contact-details/${contact.id}`)}
+                    style={{
+                      color: "blue",
+                      textDecoration: "underline",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {contact.first_name} {contact.last_name}
+                  </button>
+                </td>
                 <td>{contact.job_title}</td>
                 <td>{contact.account_name}</td>
                 <td>{contact.email_address}</td>
                 <td>{contact.office_phone}</td>
-                <td>{contact.assigned_to_username}</td>
+                <td>
+                <button
+                    onClick={() => navigate(`/user-details/${contact.assigned_to_username}`)}
+                    style={{
+                      color: "blue",
+                      textDecoration: "underline",
+                      background: "none",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {contact.assigned_to_username}
+                  </button>
+                </td>
                 <td>{contact.created_at}</td>
               </tr>
             ))}

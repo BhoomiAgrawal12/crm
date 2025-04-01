@@ -176,7 +176,7 @@ const UserDetails = () => {
           <p><strong>Is Staff:</strong> {user.is_staff ? "Yes" : "No"}</p>
           <p><strong>Created At:</strong> {new Date(user.created_at).toLocaleString()}</p>
           <button onClick={() => setIsEditing(true)}>Edit</button>
-          <button onClick={() => navigate("/accounts")}>Back to Accounts</button>
+          {/* <button onClick={() => navigate("/")}>Back</button> */}
         </div>
       )}
     </div>

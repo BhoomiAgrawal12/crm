@@ -8,6 +8,7 @@ import CreateContact from './components/CreateContact';
 import ContactsPage from './components/ContactsPage';
 import AccountDetails from './components/AccountDetails';
 import UserDetails from './components/UserDetails';
+import ContactDetails from './components/ContactDetails';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/create-contact" element={<CreateContact />} />
         <Route path="/account-details/:id" element={<AccountDetails />} />
         <Route path="/user-details/:username" element={<UserDetails />} />
+        <Route path="/contact-details/:id" element={<ContactDetails />} />
       </Routes>
     </Router>
   );

@@ -223,6 +223,10 @@ const AccountDetails = () => {
           {account.shipping_country}
           <br />
           {account.shipping_postal_code}</p>
+          <p>
+            <strong>Created At: </strong>
+            {account.created_at}
+          </p>
           <button onClick={() => setIsEditing(true)}>Edit</button>
           <button onClick={() => navigate("/accounts")}>Back to Accounts</button>
         </div>
