@@ -10,6 +10,8 @@ from .views import (
     contact_detail,
     contact_list_create,
     current_user,
+    opportunity_list_create,
+    opportunity_detail,
 )
 
 urlpatterns = [
@@ -23,4 +25,6 @@ urlpatterns = [
     path('contacts/', contact_list_create, name='contact-list-create'),
     path('contacts/<int:contact_id>/', contact_detail, name='contact-detail'),
     path('current-user/', current_user, name='current-user'),
+    path('opportunity/', opportunity_list_create, name='opportunity-list-create'),
+    path('opportunity/<int:opportunity_id>/', opportunity_detail, name='opportunity-detail')
 ]

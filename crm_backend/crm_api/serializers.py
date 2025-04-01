@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import User, Account, Contact  # Removed Admin
+from .models import User, Account, Contact, Opportunity, Lead
 
 
 # User Serializer
@@ -68,6 +68,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'shipping_city',
             'shipping_state',
             'shipping_country',
+            'created_at',
         ]
 
 
@@ -104,4 +105,68 @@ class ContactSerializer(serializers.ModelSerializer):
             'created_at',
         ]
 
+
+class OpportunitySerializer(serializers.ModelSerializer):
+    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
+    account_name = serializers.CharField(source='account.name', read_only=True)
+
+    class Meta:
+        model = Opportunity
+        fields = [
+            'id',
+            'opportunity_name',
+            'currency',
+            'opportunity_amount',
+            'sales_stage',
+            'probability',
+            'next_step',
+            'account',
+            'account_name',  # Include the account name
+            'expected_close_date',
+            'business_type',
+            'lead_source',
+            'description',
+            'assigned_to',
+            'assigned_to_username',  # Include the username of the assigned user
+            'created_at',
+        ]
+
+class LeadSerializer(serializers.ModelSerializer):
+    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
+
+    class Meta:
+        model = Lead
+        fields = [
+            'id',
+            'title',
+            'first_name',
+            'last_name',
+            'email_address',
+            'mobile',
+            'office_phone',
+            'job_title',
+            'department',
+            'account_name',
+            'website',
+            'assigned_to',
+            'assigned_to_username',  # Include the username of the assigned user
+            'status',
+            'status_description',
+            'lead_source',
+            'lead_source_description',
+            'opportunity_amount',
+            'referred_by',
+            'primary_address_street',
+            'primary_address_postal_code',
+            'primary_address_city',
+            'primary_address_state',
+            'primary_address_country',
+            'alternate_address_street',
+            'alternate_address_postal_code',
+            'alternate_address_city',
+            'alternate_address_state',
+            'alternate_address_country',
+            'description',
+            'created_at',
+        ]
 
