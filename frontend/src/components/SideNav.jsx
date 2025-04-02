@@ -28,8 +28,13 @@ const SideNav = () => {
               onClick={() => navigate('/contacts')}
             >
               <BusinessCenterIcon /></div>
-            <div className='nav_icon'><PeopleAltIcon /></div>
-            <div className='nav_icon'><DensityMediumOutlinedIcon /></div>
+            <div 
+              className='nav_icon'
+              onClick={() => navigate('/opportunities')}
+              ><PeopleAltIcon /></div>
+            <div className='nav_icon'
+              onClick={() => navigate('/leads')}
+            ><DensityMediumOutlinedIcon /></div>
             <div className='nav_icon'><CalendarMonthOutlinedIcon /></div>
             <div className='nav_icon'><NotificationsOutlinedIcon /></div>
             <div className='nav_icon'><SettingsIcon /></div>
