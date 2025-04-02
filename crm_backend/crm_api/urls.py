@@ -12,6 +12,10 @@ from .views import (
     current_user,
     opportunity_list_create,
     opportunity_detail,
+    opportunity_choices,
+    lead_list_create,
+    lead_detail,
+    lead_choices
 )
 
 urlpatterns = [
@@ -25,6 +29,10 @@ urlpatterns = [
     path('contacts/', contact_list_create, name='contact-list-create'),
     path('contacts/<int:contact_id>/', contact_detail, name='contact-detail'),
     path('current-user/', current_user, name='current-user'),
-    path('opportunity/', opportunity_list_create, name='opportunity-list-create'),
-    path('opportunity/<int:opportunity_id>/', opportunity_detail, name='opportunity-detail')
+    path('opportunities/', opportunity_list_create, name='opportunity-list-create'),
+    path('opportunity/<int:opportunity_id>/', opportunity_detail, name='opportunity-detail'),
+    path("opportunity-choices/", opportunity_choices, name="opportunity-choices"),
+    path('leads/', lead_list_create, name='lead-list-create'),
+    path('lead/<int:lead_id>/', lead_detail, name='lead-detail'),
+    path("lead-choices/", lead_choices, name="lead-choices"),
 ]

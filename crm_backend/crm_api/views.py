@@ -298,3 +298,67 @@ def opportunity_detail(request, opportunity_id):
         # Delete the contact
         opportunity.delete()
         return Response({"message": "Opportunity deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def opportunity_choices(request):
+    choices = {
+        "sales_stage": Opportunity.sale_stage_choices,
+        "business_type": Opportunity.business_type_choices,
+        "lead_source": Opportunity.lead_source_choices,
+        "currency": Opportunity.currency_choices,
+    }
+    return Response(choices)
+
+@api_view(["GET","POST"])
+@permission_classes([IsAuthenticated])
+def lead_list_create(request):
+    if request.method == "GET":
+        leads = Lead.objects.all()
+        serializer = LeadSerializer(leads, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    elif request.method == "POST":
+        serializer = LeadSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def lead_choices(request):
+    choices = {
+        "title": Lead.title_choices,
+        "status": Lead.status_choices,
+        "lead_source": Lead.lead_source_choices,
+    }
+    return Response(choices)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
+def lead_detail(request, lead_id):
+    try:
+        lead = Lead.objects.get(id=lead_id)
+    except Lead.DoesNotExist:
+        return Response({"error": "Lead not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        # Retrieve contact details
+        serializer = LeadSerializer(lead)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "PUT":
+        # Update contact details
+        serializer = LeadSerializer(lead, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        # Delete the contact
+        lead.delete()
+        return Response({"message": "Lead deleted successfully"}, status=status.HTTP_200_OK)
