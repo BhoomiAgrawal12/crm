@@ -1,0 +1,18 @@
+.UserDetails_container{
+    display: grid;
+    min-height: 100vh;
+    grid-template-columns: 1fr 12fr;
+    gap: 1px;
+    margin: 0px;
+    padding: 0px;
+  }
+  
+  .UserDetails_container1{
+      background-color:   whitesmoke;
+  }
+  
+  .UserDetails_container2{
+      padding: 10px;
+      border-left: 0.2px solid gray;
+      background-color:   whitesmoke;
+  }

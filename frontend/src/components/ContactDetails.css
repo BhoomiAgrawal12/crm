@@ -1,0 +1,19 @@
+.ContactDetails_container{
+    display: grid;
+    min-height: 100vh;
+    grid-template-columns: 1fr 12fr;
+    gap: 1px;
+    margin: 0px;
+    padding: 0px;
+  }
+  
+  .ContactDetails_container1{
+      background-color:   whitesmoke;
+  }
+  
+  .ContactDetails_container2{
+      padding: 10px;
+      border-left: 0.2px solid gray;
+      background-color:   whitesmoke;
+  }
+  

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import SideNav from "./SideNav";
+import './ContactsPage.css'; // Importing CSS for styling
 
 const ContactsPage = () => {
   const [contacts, setContacts] = useState([]); // State to store contacts
@@ -35,7 +37,12 @@ const ContactsPage = () => {
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="ContactsPage_container">
+      <div className="ContactsPage_container1">
+        <SideNav />
+      </div>
+      <div className="ContactsPage_container2">
+      <div style={{ padding: "20px" }}>
       <h1>Contacts</h1>
       <button
         onClick={() => navigate('/create-contact')}
@@ -101,6 +108,8 @@ const ContactsPage = () => {
       ) : (
         <p>No contacts found.</p>
       )}
+    </div>
+      </div>
     </div>
   );
 };

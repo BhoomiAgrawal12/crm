@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import SideNav from "./SideNav";
+import './UserDetails.css'; // Import CSS for styling
 
 const UserDetails = () => {
   const { username } = useParams(); // Get username from URL
@@ -110,7 +112,12 @@ const UserDetails = () => {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="UserDetails_container">
+      <div className="UserDetails_container1">
+        <SideNav />
+      </div>
+      <div className="UserDetails_container2">
+      <div style={{ padding: "20px" }}>
       <h1>User Details</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {isEditing ? (
@@ -179,6 +186,8 @@ const UserDetails = () => {
           {/* <button onClick={() => navigate("/")}>Back</button> */}
         </div>
       )}
+    </div>
+      </div>
     </div>
   );
 };

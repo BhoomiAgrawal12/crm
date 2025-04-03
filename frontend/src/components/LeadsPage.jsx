@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import SideNav from "./SideNav";
+import './LeadsPage.css'; // Importing CSS for styling
 
 const LeadsPage = () => {
   const navigate = useNavigate();
@@ -24,7 +26,10 @@ const LeadsPage = () => {
         });
         setLeads(response.data); // Set the fetched leads to state
       } catch (err) {
-        console.error("Error fetching leads:", err.response?.data || err.message);
+        console.error(
+          "Error fetching leads:",
+          err.response?.data || err.message
+        );
         setError("Failed to fetch leads. Please try again later.");
       }
     };
@@ -33,52 +38,62 @@ const LeadsPage = () => {
   }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Leads</h1>
-      <button onClick={() => navigate("/create-lead")}>Create Lead</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {leads.length > 0 ? (
-        <table border="1" style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Status</th>
-              <th>Account Name</th>
-              <th>Office Phone</th>
-              <th>Email</th>
-              <th>User</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leads.map((lead) => (
-              <tr key={lead.id}>
-                <td>
-                  <button
-                    onClick={() => navigate(`/lead-details/${lead.id}`)}
-                    style={{
-                      color: "blue",
-                      textDecoration: "underline",
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {`${lead.title} ${lead.first_name} ${lead.last_name}`}
-                  </button>
-                </td>
-                <td>{lead.status}</td>
-                <td>{lead.account_name}</td>
-                <td>{lead.office_phone}</td>
-                <td>{lead.email_address}</td>
-                <td>{lead.assigned_to_username}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No leads found.</p>
-      )}
+    <div className="LeadsPage_container">
+      <div className="LeadsPage_container1">
+        <SideNav />
+      </div>
+      <div className="LeadsPage_container2">
+        <div style={{ padding: "20px" }}>
+          <h1>Leads</h1>
+          <button onClick={() => navigate("/create-lead")}>Create Lead</button>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {leads.length > 0 ? (
+            <table
+              border="1"
+              style={{ width: "100%", borderCollapse: "collapse" }}
+            >
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Account Name</th>
+                  <th>Office Phone</th>
+                  <th>Email</th>
+                  <th>User</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leads.map((lead) => (
+                  <tr key={lead.id}>
+                    <td>
+                      <button
+                        onClick={() => navigate(`/lead-details/${lead.id}`)}
+                        style={{
+                          color: "blue",
+                          textDecoration: "underline",
+                          background: "none",
+                          border: "none",
+                          padding: 0,
+                          cursor: "pointer",
+                        }}
+                      >
+                        {`${lead.title} ${lead.first_name} ${lead.last_name}`}
+                      </button>
+                    </td>
+                    <td>{lead.status}</td>
+                    <td>{lead.account_name}</td>
+                    <td>{lead.office_phone}</td>
+                    <td>{lead.email_address}</td>
+                    <td>{lead.assigned_to_username}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No leads found.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
