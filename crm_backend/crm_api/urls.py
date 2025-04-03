@@ -7,6 +7,7 @@ from .views import (
     user_list,
     account_list_create,
     account_detail,
+    account_choices,  # Import the new account choices view
     contact_detail,
     contact_list_create,
     current_user,
@@ -15,7 +16,7 @@ from .views import (
     opportunity_choices,
     lead_list_create,
     lead_detail,
-    lead_choices
+    lead_choices,
 )
 
 urlpatterns = [
@@ -26,6 +27,7 @@ urlpatterns = [
     path('users/<str:username>/', user_detail, name='user-detail'),
     path('accounts/', account_list_create, name='account-list-create'),
     path('accounts/<int:account_id>/', account_detail, name='account-detail'),
+    path('account/choices/', account_choices, name='account-choices'),  # New endpoint for account choices
     path('contacts/', contact_list_create, name='contact-list-create'),
     path('contacts/<int:contact_id>/', contact_detail, name='contact-detail'),
     path('current-user/', current_user, name='current-user'),

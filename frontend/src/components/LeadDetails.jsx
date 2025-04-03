@@ -16,6 +16,7 @@ const LeadDetails = () => {
     lead_source: [],
   }); // State for dropdown options
   const [users, setUsers] = useState([]); // State for users
+  const [leads, setLeads] = useState([]); // State for leads for "reports_to"
   const [error, setError] = useState("");
 
   // Fetch lead details and dropdown options
@@ -61,6 +62,17 @@ const LeadDetails = () => {
           }
         );
         setUsers(usersResponse.data);
+
+        // Fetch leads for "reports_to"
+        const leadsResponse = await axios.get(
+          "http://localhost:8000/api/leads/",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setLeads(leadsResponse.data);
       } catch (err) {
         console.error(
           "Error fetching data:",
@@ -165,6 +177,9 @@ const LeadDetails = () => {
                 <strong>Referred By:</strong> {lead.referred_by}
               </p>
               <p>
+                <strong>Reports To:</strong> {lead.reports_to_name || "None"}
+              </p>
+              <p>
                 <strong>Primary Address:</strong>{" "}
                 {`${lead.primary_address_street}, ${lead.primary_address_city}, ${lead.primary_address_state}, ${lead.primary_address_postal_code}, ${lead.primary_address_country}`}
               </p>
@@ -177,6 +192,12 @@ const LeadDetails = () => {
               </p>
               <p>
                 <strong>Assigned To:</strong> {lead.assigned_to_username}
+              </p>
+              <p>
+                <strong>Created By:</strong> {lead.created_by_username}
+              </p>
+              <p>
+                <strong>Modified By:</strong> {lead.modified_by_username}
               </p>
               <button onClick={() => setIsEditing(true)}>Edit Lead</button>
               <button
@@ -344,6 +365,21 @@ const LeadDetails = () => {
                   value={formData.referred_by}
                   onChange={handleChange}
                 />
+              </div>
+              <div>
+                <label>Reports To:</label>
+                <select
+                  name="reports_to"
+                  value={formData.reports_to}
+                  onChange={handleChange}
+                >
+                  <option value="">Select a Lead</option>
+                  {leads.map((lead) => (
+                    <option key={lead.id} value={lead.id}>
+                      {lead.first_name} {lead.last_name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label>Primary Address:</label>

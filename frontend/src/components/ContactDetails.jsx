@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
-import './ContactDetails.css'; // Import CSS for styling
+import "./ContactDetails.css"; // Import CSS for styling
 
 const ContactDetails = () => {
   const { id } = useParams(); // Get contact ID from URL
@@ -11,6 +11,9 @@ const ContactDetails = () => {
   const [error, setError] = useState(""); // State to store errors
   const [isEditing, setIsEditing] = useState(false); // State to toggle edit mode
   const [formData, setFormData] = useState({}); // State for form data
+  const [accounts, setAccounts] = useState([]); // State for accounts dropdown
+  const [contacts, setContacts] = useState([]); // State for reports_to dropdown
+  const [leadSources, setLeadSources] = useState([]); // State for lead source dropdown
 
   // Fetch contact details
   const fetchContactDetails = useCallback(async () => {
@@ -21,6 +24,7 @@ const ContactDetails = () => {
         return;
       }
 
+      // Fetch contact details
       const response = await axios.get(
         `http://localhost:8000/api/contacts/${id}/`,
         {
@@ -32,6 +36,39 @@ const ContactDetails = () => {
 
       setContact(response.data);
       setFormData(response.data); // Initialize form data with contact details
+
+      // Fetch accounts for the account dropdown
+      const accountsResponse = await axios.get(
+        "http://localhost:8000/api/accounts/",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setAccounts(accountsResponse.data);
+
+      // Fetch contacts for the reports_to dropdown
+      const contactsResponse = await axios.get(
+        "http://localhost:8000/api/contacts/",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setContacts(contactsResponse.data);
+
+      // Fetch lead source choices
+      const leadSourceResponse = await axios.get(
+        "http://localhost:8000/api/lead-choices/",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setLeadSources(leadSourceResponse.data.lead_source);
     } catch (err) {
       console.error(
         "Error fetching contact details:",
@@ -95,6 +132,20 @@ const ContactDetails = () => {
           {isEditing ? (
             <form onSubmit={handleSubmit}>
               <div>
+                <label>Title:</label>
+                <select
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                >
+                  <option value="">Select a title</option>
+                  <option value="Mr.">Mr.</option>
+                  <option value="Ms.">Ms.</option>
+                  <option value="Mrs.">Mrs.</option>
+                  <option value="Dr.">Dr.</option>
+                </select>
+              </div>
+              <div>
                 <label>First Name:</label>
                 <input
                   type="text"
@@ -125,13 +176,18 @@ const ContactDetails = () => {
               </div>
               <div>
                 <label>Account:</label>
-                <input
-                  type="text"
-                  name="account_name"
-                  value={formData.account_name}
+                <select
+                  name="account"
+                  value={formData.account}
                   onChange={handleChange}
-                  disabled
-                />
+                >
+                  <option value="">Select an account</option>
+                  {accounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label>Email:</label>
@@ -171,70 +227,42 @@ const ContactDetails = () => {
                 />
               </div>
               <div>
-                <label>Primary Address:</label>
-                <input
-                  type="text"
-                  name="primary_address_street"
-                  value={formData.primary_address_street}
+                <label>Lead Source:</label>
+                <select
+                  name="lead_source"
+                  value={formData.lead_source}
                   onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="primary_address_city"
-                  value={formData.primary_address_city}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="primary_address_state"
-                  value={formData.primary_address_state}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="primary_address_country"
-                  value={formData.primary_address_country}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="primary_address_postal_code"
-                  value={formData.primary_address_postal_code}
-                  onChange={handleChange}
-                />
+                >
+                  <option value="">Select a lead source</option>
+                  {leadSources.map((source) => (
+                    <option key={source[0]} value={source[0]}>
+                      {source[1]}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
-                <label>Alternate Address:</label>
-                <input
-                  type="text"
-                  name="alternate_address_street"
-                  value={formData.alternate_address_street}
+                <label>Reports To:</label>
+                <select
+                  name="reports_to"
+                  value={formData.reports_to}
                   onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="alternate_address_city"
-                  value={formData.alternate_address_city}
+                >
+                  <option value="">Select a contact</option>
+                  {contacts.map((contact) => (
+                    <option key={contact.id} value={contact.id}>
+                      {contact.first_name} {contact.last_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label>Description:</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
                   onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="alternate_address_state"
-                  value={formData.alternate_address_state}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="alternate_address_country"
-                  value={formData.alternate_address_country}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="alternate_address_postal_code"
-                  value={formData.alternate_address_postal_code}
-                  onChange={handleChange}
-                />
+                ></textarea>
               </div>
               <button type="submit">Save</button>
               <button type="button" onClick={() => setIsEditing(false)}>
@@ -243,6 +271,9 @@ const ContactDetails = () => {
             </form>
           ) : (
             <div>
+              <p>
+                <strong>Title:</strong> {contact.title}
+              </p>
               <p>
                 <strong>First Name:</strong> {contact.first_name}
               </p>
@@ -268,34 +299,20 @@ const ContactDetails = () => {
                 <strong>Department:</strong> {contact.department}
               </p>
               <p>
-                <strong>Primary Address:</strong>{" "}
-                {contact.primary_address_street}
-                <br />
-                {contact.primary_address_city}
-                <br />
-                {contact.primary_address_state}
-                <br />
-                {contact.primary_address_country}
-                <br />
-                {contact.primary_address_postal_code}
+                <strong>Lead Source:</strong> {contact.lead_source}
               </p>
               <p>
-                <strong>Alternate Address:</strong>{" "}
-                {contact.alternate_address_street}
-                <br />
-                {contact.alternate_address_city}
-                <br />
-                {contact.alternate_address_state}
-                <br />
-                {contact.alternate_address_country}
-                <br />
-                {contact.alternate_address_postal_code}
+                <strong>Reports To:</strong>{" "}
+                {contact.reports_to ? `${contact.reports_to.first_name} ${contact.reports_to.last_name}` : "None"}
               </p>
               <p>
                 <strong>Description:</strong> {contact.description}
               </p>
               <p>
-                <strong>Created At:</strong> {contact.created_at}
+                <strong>Created By:</strong> {contact.created_by}
+              </p>
+              <p>
+                <strong>Modified By:</strong> {contact.modified_by}
               </p>
               <button onClick={() => setIsEditing(true)}>Edit</button>
               <button onClick={() => navigate("/contacts")}>

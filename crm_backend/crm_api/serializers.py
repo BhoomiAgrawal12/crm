@@ -6,10 +6,42 @@ from .models import User, Account, Contact, Opportunity, Lead
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
+    modified_by_username = serializers.CharField(source='modified_by.username', read_only=True)
+    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'is_active', 'is_staff', 'created_at', 'password']
+        fields = [
+            'id',
+            'username',
+            'email',
+            'is_active',
+            'is_staff',
+            'created_at',
+            'modified_at',
+            'password',
+            'title',
+            'full_name',
+            'notify_on_assignment',
+            'description',
+            'department',
+            'home_phone',
+            'mobile',
+            'work_phone',
+            'address_street',
+            'address_city',
+            'address_state',
+            'address_country',
+            'address_postal_code',
+            'user_type',
+            'modified_by',
+            'modified_by_username',  # Include the username of the user who modified
+            'assigned_to',
+            'assigned_to_username',  # Include the username of the assigned user
+            'created_by',
+            'created_by_username',  # Include the username of the user who created
+        ]
 
     def create(self, validated_data):
         if 'password' in validated_data:
@@ -54,7 +86,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'assigned_to',
-            'assigned_to_username',  # Include the username
+            'assigned_to_username',  # Include the username of the assigned user
             'website',
             'office_phone',
             'email_address',
@@ -68,18 +100,34 @@ class AccountSerializer(serializers.ModelSerializer):
             'shipping_city',
             'shipping_state',
             'shipping_country',
-            'created_at',
+            'description',
+            'account_type',
+            'industry',
+            'annual_revenue',
+            'employees',
+            'modified_by',  # Include modified_by in the serializer
         ]
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
+        return super().update(instance, validated_data)
 
 
 # Contact Serializer
 class ContactSerializer(serializers.ModelSerializer):
-    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
-    account_name = serializers.CharField(source='account.name', read_only=True)
     class Meta:
         model = Contact
         fields = [
             'id',
+            'title',
             'first_name',
             'last_name',
             'office_phone',
@@ -87,9 +135,6 @@ class ContactSerializer(serializers.ModelSerializer):
             'email_address',
             'job_title',
             'account',
-            'account_name',  # Include the account name
-            'assigned_to',
-            'assigned_to_username',  # Include the username of the assigned user
             'department',
             'primary_address_street',
             'primary_address_postal_code',
@@ -102,14 +147,29 @@ class ContactSerializer(serializers.ModelSerializer):
             'alternate_address_state',
             'alternate_address_country',
             'description',
-            'created_at',
+            'lead_source',
+            'reports_to',
+            'assigned_to',
+            'created_by',
+            'modified_by',
         ]
+        read_only_fields = ['created_by', 'modified_by']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user
+            validated_data['modified_by'] = request.user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
+        return super().update(instance, validated_data)
 
 
 class OpportunitySerializer(serializers.ModelSerializer):
-    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
-    account_name = serializers.CharField(source='account.name', read_only=True)
-
     class Meta:
         model = Opportunity
         fields = [
@@ -121,19 +181,31 @@ class OpportunitySerializer(serializers.ModelSerializer):
             'probability',
             'next_step',
             'account',
-            'account_name',  # Include the account name
             'expected_close_date',
             'business_type',
             'lead_source',
             'description',
             'assigned_to',
-            'assigned_to_username',  # Include the username of the assigned user
-            'created_at',
+            'created_by',
+            'modified_by',
         ]
+        read_only_fields = ['created_by', 'modified_by']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user
+            validated_data['modified_by'] = request.user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
+        return super().update(instance, validated_data)
+
 
 class LeadSerializer(serializers.ModelSerializer):
-    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
-
     class Meta:
         model = Lead
         fields = [
@@ -147,15 +219,13 @@ class LeadSerializer(serializers.ModelSerializer):
             'job_title',
             'department',
             'account_name',
-            'website',
-            'assigned_to',
-            'assigned_to_username',  # Include the username of the assigned user
             'status',
             'status_description',
             'lead_source',
             'lead_source_description',
             'opportunity_amount',
             'referred_by',
+            'reports_to',
             'primary_address_street',
             'primary_address_postal_code',
             'primary_address_city',
@@ -167,6 +237,22 @@ class LeadSerializer(serializers.ModelSerializer):
             'alternate_address_state',
             'alternate_address_country',
             'description',
-            'created_at',
+            'assigned_to',
+            'created_by',
+            'modified_by',
         ]
+        read_only_fields = ['created_by', 'modified_by']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user
+            validated_data['modified_by'] = request.user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
+        return super().update(instance, validated_data)
 

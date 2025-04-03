@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password, make_password
 from .models import User, Account, Contact, Opportunity, Lead
 from .permissions import IsAdmin
-from .serializers import UserSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer
 
 # Google Mail
 # from email.message import EmailMessage
@@ -169,16 +169,16 @@ def current_user(request):
 #         return Response({'error': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET","POST"])
+@api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def account_list_create(request):
     if request.method == "GET":
         accounts = Account.objects.all()
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     elif request.method == "POST":
-        serializer = AccountSerializer(data = request.data)
+        serializer = AccountSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -200,7 +200,7 @@ def account_detail(request, account_id):
 
     elif request.method == "PUT":
         # Update account details
-        serializer = AccountSerializer(account, data=request.data, partial=True)
+        serializer = AccountSerializer(account, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -212,16 +212,26 @@ def account_detail(request, account_id):
         return Response({"message": "Account deleted successfully"}, status=status.HTTP_200_OK)
 
 
-@api_view(["GET","POST"])
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def account_choices(request):
+    choices = {
+        "account_type": Account.account_type_choices,
+        "industry": Account.industry_choices,
+    }
+    return Response(choices)
+
+
+@api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def contact_list_create(request):
     if request.method == "GET":
         contacts = Contact.objects.all()
         serializer = ContactSerializer(contacts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     elif request.method == "POST":
-        serializer = ContactSerializer(data = request.data)
+        serializer = ContactSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -255,22 +265,20 @@ def contact_detail(request, contact_id):
         return Response({"message": "Contact deleted successfully"}, status=status.HTTP_200_OK)
 
 
-
-@api_view(["GET","POST"])
+@api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def opportunity_list_create(request):
     if request.method == "GET":
-        oppotunities = Opportunity.objects.all()
-        serializer = OpportunitySerializer(oppotunities, many=True)
+        opportunities = Opportunity.objects.all()
+        serializer = OpportunitySerializer(opportunities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     elif request.method == "POST":
-        serializer = OpportunitySerializer(data = request.data)
+        serializer = OpportunitySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 
 @api_view(["GET", "PUT", "DELETE"])
@@ -279,7 +287,7 @@ def opportunity_detail(request, opportunity_id):
     try:
         opportunity = Opportunity.objects.get(id=opportunity_id)
     except Opportunity.DoesNotExist:
-        return Response({"error": "Opportuntity not found"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Opportunity not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
         # Retrieve contact details
@@ -311,20 +319,22 @@ def opportunity_choices(request):
     }
     return Response(choices)
 
-@api_view(["GET","POST"])
+
+@api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def lead_list_create(request):
     if request.method == "GET":
         leads = Lead.objects.all()
         serializer = LeadSerializer(leads, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     elif request.method == "POST":
-        serializer = LeadSerializer(data = request.data)
+        serializer = LeadSerializer(data=request.data,  context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])

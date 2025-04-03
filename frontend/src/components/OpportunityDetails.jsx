@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
-import './OpportunityDetails.css'; // Importing CSS for styling
+import "./OpportunityDetails.css"; // Importing CSS for styling
 
 const OpportunityDetails = () => {
   const { id } = useParams(); // Get the opportunity ID from the URL
@@ -175,6 +175,12 @@ const OpportunityDetails = () => {
               </p>
               <p>
                 <strong>Assigned To:</strong> {opportunity.assigned_to_username}
+              </p>
+              <p>
+                <strong>Created By:</strong> {opportunity.created_by_username}
+              </p>
+              <p>
+                <strong>Modified By:</strong> {opportunity.modified_by_username}
               </p>
               <button onClick={() => setIsEditing(true)}>
                 Edit Opportunity

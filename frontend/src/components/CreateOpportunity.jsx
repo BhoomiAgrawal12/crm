@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
-import './CreateOpportunity.css'; // Import the CSS file for styling
+import "./CreateOpportunity.css"; // Import the CSS file for styling
 
 const CreateOpportunity = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const CreateOpportunity = () => {
     business_type: "",
     lead_source: "",
     description: "",
-    assigned_to: "", // New field for assigned user
+    assigned_to: "",
   });
   const [choices, setChoices] = useState({
     sales_stage: [],
@@ -29,6 +29,7 @@ const CreateOpportunity = () => {
   const [accounts, setAccounts] = useState([]); // State to store accounts
   const [users, setUsers] = useState([]); // State to store users
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Fetch choices, accounts, and users from the backend
   useEffect(() => {
@@ -90,6 +91,9 @@ const CreateOpportunity = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
+
     try {
       const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
@@ -108,6 +112,7 @@ const CreateOpportunity = () => {
       );
 
       if (response.status === 201) {
+        setSuccess("Opportunity created successfully!");
         navigate("/opportunities"); // Redirect to the opportunities page
       }
     } catch (err) {
@@ -128,6 +133,7 @@ const CreateOpportunity = () => {
         <div style={{ padding: "20px" }}>
           <h1>Create Opportunity</h1>
           {error && <p style={{ color: "red" }}>{error}</p>}
+          {success && <p style={{ color: "green" }}>{success}</p>}
           <form onSubmit={handleSubmit}>
             <div>
               <label>Opportunity Name:</label>

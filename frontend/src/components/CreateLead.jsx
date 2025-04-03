@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
-import './CreateLead.css'; // Import the CSS file for styling
+import "./CreateLead.css"; // Import the CSS file for styling
 
 const CreateLead = () => {
   const navigate = useNavigate();
@@ -15,13 +15,14 @@ const CreateLead = () => {
     office_phone: "",
     job_title: "",
     department: "",
-    account: "",
+    account_name: "",
     status: "",
     status_description: "",
     lead_source: "",
     lead_source_description: "",
     opportunity_amount: "",
     referred_by: "",
+    reports_to: "",
     primary_address_street: "",
     primary_address_postal_code: "",
     primary_address_city: "",
@@ -40,13 +41,13 @@ const CreateLead = () => {
     status: [],
     lead_source: [],
   });
-
   const [users, setUsers] = useState([]); // State to store users
+  const [leads, setLeads] = useState([]); // State to store leads for "reports_to"
   const [error, setError] = useState("");
 
-  // Fetch dropdown options, accounts, and users
+  // Fetch dropdown options, users, and leads
   useEffect(() => {
-    const fetchChoicesAndAccounts = async () => {
+    const fetchChoicesAndUsers = async () => {
       try {
         const accessToken = localStorage.getItem("access_token");
         if (!accessToken) {
@@ -75,6 +76,17 @@ const CreateLead = () => {
           }
         );
         setUsers(usersResponse.data);
+
+        // Fetch leads for "reports_to"
+        const leadsResponse = await axios.get(
+          "http://localhost:8000/api/leads/",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setLeads(leadsResponse.data);
       } catch (err) {
         console.error(
           "Error fetching data:",
@@ -84,7 +96,7 @@ const CreateLead = () => {
       }
     };
 
-    fetchChoicesAndAccounts();
+    fetchChoicesAndUsers();
   }, []);
 
   // Handle form input changes
@@ -96,6 +108,14 @@ const CreateLead = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email_address)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
     try {
       const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
@@ -215,7 +235,7 @@ const CreateLead = () => {
               />
             </div>
             <div>
-              <label>Account:</label>
+              <label>Account Name:</label>
               <input
                 type="text"
                 name="account_name"
@@ -288,6 +308,21 @@ const CreateLead = () => {
                 value={formData.referred_by}
                 onChange={handleChange}
               />
+            </div>
+            <div>
+              <label>Reports To:</label>
+              <select
+                name="reports_to"
+                value={formData.reports_to}
+                onChange={handleChange}
+              >
+                <option value="">Select a Lead</option>
+                {leads.map((lead) => (
+                  <option key={lead.id} value={lead.id}>
+                    {lead.first_name} {lead.last_name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label>Primary Address:</label>

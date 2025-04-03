@@ -22,16 +22,22 @@ const CreateAccount = () => {
     shipping_state: "",
     shipping_country: "",
     description: "",
+    account_type: "",
+    industry: "",
+    annual_revenue: "",
+    employees: "",
   });
 
   const [users, setUsers] = useState([]); // State to store users
+  const [accountTypes, setAccountTypes] = useState([]); // State to store account type choices
+  const [industries, setIndustries] = useState([]); // State to store industry choices
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  // Fetch users from the backend
+  // Fetch users, accounts, and choices from the backend
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
         const accessToken = localStorage.getItem("access_token");
         if (!accessToken) {
@@ -39,23 +45,29 @@ const CreateAccount = () => {
           return;
         }
 
-        const response = await axios.get("http://localhost:8000/api/users/", {
+        // Fetch users
+        const usersResponse = await axios.get("http://localhost:8000/api/users/", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
+        setUsers(usersResponse.data);
 
-        setUsers(response.data); // Set the fetched users to state
+        // Fetch account choices
+        const choicesResponse = await axios.get("http://localhost:8000/api/account/choices/", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setAccountTypes(choicesResponse.data.account_type);
+        setIndustries(choicesResponse.data.industry);
       } catch (err) {
-        console.error(
-          "Error fetching users:",
-          err.response?.data || err.message
-        );
-        setError("Failed to fetch users. Please try again later.");
+        console.error("Error fetching data:", err.response?.data || err.message);
+        setError("Failed to fetch data. Please try again later.");
       }
     };
 
-    fetchUsers();
+    fetchData();
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -107,6 +119,10 @@ const CreateAccount = () => {
         shipping_state: "",
         shipping_country: "",
         description: "",
+        account_type: "",
+        industry: "",
+        annual_revenue: "",
+        employees: "",
       });
     } catch (err) {
       setError(
@@ -154,6 +170,36 @@ const CreateAccount = () => {
                     ))}
                   </select>
                 </div>
+                <div className="input-field">
+                  <label>Account Type:</label>
+                  <select
+                    name="account_type"
+                    value={formData.account_type}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select an account type</option>
+                    {accountTypes.map((type) => (
+                      <option key={type[0]} value={type[0]}>
+                        {type[1]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="input-field">
+                  <label>Industry:</label>
+                  <select
+                    name="industry"
+                    value={formData.industry}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select an industry</option>
+                    {industries.map((industry) => (
+                      <option key={industry[0]} value={industry[0]}>
+                        {industry[1]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div className="wrapper_box1_part2">
                 <div className="input-field">
@@ -183,6 +229,24 @@ const CreateAccount = () => {
                     value={formData.email_address}
                     onChange={handleChange}
                     required
+                  />
+                </div>
+                <div className="input-field">
+                  <label>Annual Revenue:</label>
+                  <input
+                    type="number"
+                    name="annual_revenue"
+                    value={formData.annual_revenue}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="input-field">
+                  <label>Employees:</label>
+                  <input
+                    type="number"
+                    name="employees"
+                    value={formData.employees}
+                    onChange={handleChange}
                   />
                 </div>
               </div>

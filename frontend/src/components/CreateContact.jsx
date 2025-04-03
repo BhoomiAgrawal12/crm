@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
-import './CreateContact.css'; // Import the CSS file for styling
+import "./CreateContact.css"; // Import the CSS file for styling
 
 const CreateContact = () => {
   const [formData, setFormData] = useState({
+    title: "",
     first_name: "",
     last_name: "",
     office_phone: "",
@@ -25,17 +26,21 @@ const CreateContact = () => {
     alternate_address_state: "",
     alternate_address_country: "",
     description: "",
+    lead_source: "",
+    reports_to: "",
+    assigned_to: "", // Added assigned_to field
   });
 
   const [accounts, setAccounts] = useState([]); // State to store accounts
+  const [users, setUsers] = useState([]); // State to store users
+  const [leadSources, setLeadSources] = useState([]); // State to store lead source choices
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
 
-  // Fetch accounts and users for the dropdown
+  // Fetch accounts, users, and lead source choices for the dropdowns
   useEffect(() => {
-    const fetchAccountsAndUsers = async () => {
+    const fetchData = async () => {
       try {
         const accessToken = localStorage.getItem("access_token");
         if (!accessToken) {
@@ -52,7 +57,7 @@ const CreateContact = () => {
             },
           }
         );
-        setAccounts(accountsResponse.data); // Set the fetched accounts to state
+        setAccounts(accountsResponse.data);
 
         // Fetch users
         const usersResponse = await axios.get(
@@ -63,17 +68,28 @@ const CreateContact = () => {
             },
           }
         );
-        setUsers(usersResponse.data); // Set the fetched users to state
+        setUsers(usersResponse.data);
+
+        // Fetch lead source choices
+        const leadSourceResponse = await axios.get(
+          "http://localhost:8000/api/lead-choices/",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setLeadSources(leadSourceResponse.data.lead_source);
       } catch (err) {
         console.error(
-          "Error fetching accounts or users:",
+          "Error fetching data:",
           err.response?.data || err.message
         );
-        setError("Failed to fetch accounts or users. Please try again later.");
+        setError("Failed to fetch data. Please try again later.");
       }
     };
 
-    fetchAccountsAndUsers();
+    fetchData();
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -95,7 +111,7 @@ const CreateContact = () => {
         return;
       }
 
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8000/api/contacts/",
         formData,
         {
@@ -104,10 +120,10 @@ const CreateContact = () => {
           },
         }
       );
-      console.log(response);
 
       setSuccess("Contact created successfully!");
       setFormData({
+        title: "",
         first_name: "",
         last_name: "",
         office_phone: "",
@@ -127,6 +143,9 @@ const CreateContact = () => {
         alternate_address_state: "",
         alternate_address_country: "",
         description: "",
+        lead_source: "",
+        reports_to: "",
+        assigned_to: "", // Reset assigned_to field
       });
     } catch (err) {
       setError(
@@ -146,6 +165,20 @@ const CreateContact = () => {
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
           <form onSubmit={handleSubmit}>
+            <div>
+              <label>Title:</label>
+              <select
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+              >
+                <option value="">Select a title</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Ms.">Ms.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Dr.">Dr.</option>
+              </select>
+            </div>
             <div>
               <label>First Name:</label>
               <input
@@ -228,6 +261,36 @@ const CreateContact = () => {
                 value={formData.department}
                 onChange={handleChange}
               />
+            </div>
+            <div>
+              <label>Lead Source:</label>
+              <select
+                name="lead_source"
+                value={formData.lead_source}
+                onChange={handleChange}
+              >
+                <option value="">Select a lead source</option>
+                {leadSources.map((source) => (
+                  <option key={source[0]} value={source[0]}>
+                    {source[1]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Reports To:</label>
+              <select
+                name="reports_to"
+                value={formData.reports_to}
+                onChange={handleChange}
+              >
+                <option value="">Select a user</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.username}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label>Assigned To:</label>
@@ -324,6 +387,16 @@ const CreateContact = () => {
                 value={formData.alternate_address_country}
                 onChange={handleChange}
                 placeholder="Country"
+              />
+            </div>
+            <div>
+              <label>Alternate Address Street:</label>
+              <input
+                type="text"
+                name="alternate_address_street"
+                value={formData.alternate_address_street}
+                onChange={handleChange}
+                required
               />
             </div>
             <div>

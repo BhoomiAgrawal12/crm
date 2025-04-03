@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
-import './AccountDetails.css'; // Import CSS for styling
+import "./AccountDetails.css"; // Import CSS for styling
 
 const AccountDetails = () => {
   const { id } = useParams(); // Get account ID from URL
@@ -11,6 +11,9 @@ const AccountDetails = () => {
   const [error, setError] = useState(""); // State to store errors
   const [isEditing, setIsEditing] = useState(false); // State to toggle edit mode
   const [formData, setFormData] = useState({}); // State for form data
+  const [accountTypes, setAccountTypes] = useState([]); // State for account type choices
+  const [industries, setIndustries] = useState([]); // State for industry choices
+  const [accounts, setAccounts] = useState([]); // State for parent accounts
 
   // Fetch account details
   const fetchAccountDetails = useCallback(async () => {
@@ -21,6 +24,7 @@ const AccountDetails = () => {
         return;
       }
 
+      // Fetch account details
       const response = await axios.get(
         `http://localhost:8000/api/accounts/${id}/`,
         {
@@ -32,6 +36,29 @@ const AccountDetails = () => {
 
       setAccount(response.data);
       setFormData(response.data); // Initialize form data with account details
+
+      // Fetch account choices (account_type and industry)
+      const choicesResponse = await axios.get(
+        "http://localhost:8000/api/account/choices/",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setAccountTypes(choicesResponse.data.account_type);
+      setIndustries(choicesResponse.data.industry);
+
+      // Fetch all accounts for the "member_of" dropdown
+      const accountsResponse = await axios.get(
+        "http://localhost:8000/api/accounts/",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setAccounts(accountsResponse.data);
     } catch (err) {
       console.error(
         "Error fetching account details:",
@@ -109,8 +136,7 @@ const AccountDetails = () => {
                 <input
                   type="text"
                   name="assigned_to_username"
-                  value={formData.assigned_to_username}
-                  onChange={handleChange}
+                  value={formData.assigned_to_username || "Unassigned"}
                   disabled
                 />
               </div>
@@ -142,6 +168,69 @@ const AccountDetails = () => {
                   onChange={handleChange}
                   required
                 />
+              </div>
+              <div>
+                <label>Account Type:</label>
+                <select
+                  name="account_type"
+                  value={formData.account_type}
+                  onChange={handleChange}
+                >
+                  <option value="">Select an account type</option>
+                  {accountTypes.map((type) => (
+                    <option key={type[0]} value={type[0]}>
+                      {type[1]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label>Industry:</label>
+                <select
+                  name="industry"
+                  value={formData.industry}
+                  onChange={handleChange}
+                >
+                  <option value="">Select an industry</option>
+                  {industries.map((industry) => (
+                    <option key={industry[0]} value={industry[0]}>
+                      {industry[1]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label>Annual Revenue:</label>
+                <input
+                  type="number"
+                  name="annual_revenue"
+                  value={formData.annual_revenue}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Employees:</label>
+                <input
+                  type="number"
+                  name="employees"
+                  value={formData.employees}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Parent Account:</label>
+                <select
+                  name="member_of"
+                  value={formData.member_of || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select a parent account</option>
+                  {accounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label>Billing Address:</label>
@@ -209,6 +298,14 @@ const AccountDetails = () => {
                   onChange={handleChange}
                 />
               </div>
+              <div>
+                <label>Description:</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                ></textarea>
+              </div>
               <button type="submit">Save</button>
               <button type="button" onClick={() => setIsEditing(false)}>
                 Cancel
@@ -220,7 +317,8 @@ const AccountDetails = () => {
                 <strong>Name:</strong> {account.name}
               </p>
               <p>
-                <strong>Assigned To:</strong> {account.assigned_to_username}
+                <strong>Assigned To:</strong>{" "}
+                {account.assigned_to_username || "Unassigned"}
               </p>
               <p>
                 <strong>Website:</strong> {account.website}
@@ -230,6 +328,22 @@ const AccountDetails = () => {
               </p>
               <p>
                 <strong>Email:</strong> {account.email_address}
+              </p>
+              <p>
+                <strong>Account Type:</strong> {account.account_type}
+              </p>
+              <p>
+                <strong>Industry:</strong> {account.industry}
+              </p>
+              <p>
+                <strong>Annual Revenue:</strong> {account.annual_revenue}
+              </p>
+              <p>
+                <strong>Employees:</strong> {account.employees}
+              </p>
+              <p>
+                <strong>Parent Account:</strong>{" "}
+                {account.member_of ? account.member_of.name : "None"}
               </p>
               <p>
                 <strong>Billing Address:</strong> {account.billing_street}
@@ -254,8 +368,7 @@ const AccountDetails = () => {
                 {account.shipping_postal_code}
               </p>
               <p>
-                <strong>Created At: </strong>
-                {account.created_at}
+                <strong>Description:</strong> {account.description}
               </p>
               <button onClick={() => setIsEditing(true)}>Edit</button>
               <button onClick={() => navigate("/accounts")}>
