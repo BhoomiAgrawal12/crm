@@ -1,4 +1,4 @@
-.side_nav{
+/* .side_nav{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,6 +25,65 @@
     flex-direction: column;
     margin: 5px;
     padding: 10px;
+}
+
+.nav_icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border: 0.5px solid gray;
+    color: gray;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    margin: 5px;
+    padding: 0px;
+
+}
+.nav_icon:hover{
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+} */
+
+
+
+
+/* ------------------------ updated navbar to horizontal  --------------------------------- */
+
+
+
+
+
+
+.side_nav{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color:whitesmoke;
+}
+
+.nav_logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color:green;
+    color: white;
+    margin: 5px;
+    padding: 0px;
+    height: 50px;
+    width: 60px;
+    border: 0.5px solid black;
+    border-radius: 8px;
+}
+
+.nav_icons{
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+    padding: 10px;
+    background-color:whitesmoke;
 }
 
 .nav_icon{
