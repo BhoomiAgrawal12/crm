@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import User, Account, Contact, Opportunity, Lead
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog
 
 
 # User Serializer
@@ -255,4 +255,11 @@ class LeadSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             validated_data['modified_by'] = request.user
         return super().update(instance, validated_data)
+
+
+class ActivityLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivityLog
+        fields = ['id', 'user', 'action', 'method', 'endpoint', 'timestamp']
+        read_only_fields = ['user', 'timestamp']
 

@@ -15,7 +15,9 @@ const SideNav = () => {
 
   return (
     <div className='side_nav'>
-        <div className='nav_logo'><AcUnitIcon /></div>
+        <div className='nav_logo'
+          onClick={() => navigate('/')}
+        ><AcUnitIcon /></div>
         <div className='nav_icons'>
             <div 
               className='nav_icon' 

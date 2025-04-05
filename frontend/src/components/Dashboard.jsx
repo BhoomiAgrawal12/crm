@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import './Dashboard.css';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
@@ -11,6 +11,8 @@ import axios from 'axios'; // Import axios
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -19,6 +21,32 @@ const Dashboard = () => {
       // Redirect to login page if not authenticated
       navigate('/login');
     }
+  }, [navigate]);
+
+  useEffect(() => {
+    // Fetch activity logs
+    const fetchActivities = async () => {
+      try {
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+          navigate('/login'); // Redirect to login if no token is found
+          return;
+        }
+
+        const response = await axios.get('http://localhost:8000/api/activity-logs/', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setActivities(response.data);
+      } catch (error) {
+        console.error('Error fetching activity logs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
   }, [navigate]);
 
   return (
@@ -246,42 +274,21 @@ const Dashboard = () => {
           </div>
         </div>
         <div className='dash-2_3'>
-          <div>1</div>
-          <div className='task'>
-            <div className='task_sec1'>
-              <h4>Tasks To Do</h4>
-              <h5>View All</h5>
-            </div>
-            <div className='task_sec2'>
-              <div className='task_sec_child'>
-                <h5>30 Nov 2021</h5>
-                <h5>Meeting with partners</h5>
-              </div>
-              <div className='task_sec_child'>
-                <h5>30 Nov 2021</h5>
-                <h5>Meeting with partners</h5>
-              </div>
-              <div className='task_sec_child'>
-                <h5>30 Nov 2021</h5>
-                <h5>Meeting with partners</h5>
-              </div>
-              <div className='task_sec_child'>
-                <h5>30 Nov 2021</h5>
-                <h5>Meeting with partners</h5>
-              </div>
-              <div className='task_sec_child'>
-                <h5>30 Nov 2021</h5>
-                <h5>Meeting with partners</h5>
-              </div>
-              <div className='task_sec_child'>
-                <h5>30 Nov 2021</h5>
-                <h5>Meeting with partners</h5>
-              </div>
-            </div>
-            <div className='add_task'>
-              <div>Add new task</div>
-              <div><ArrowForwardIcon /></div>
-            </div>
+          <div>
+            <h2>Activity Log</h2>
+            {loading ? (
+              <p>Loading...</p>
+            ) : activities.length === 0 ? (
+              <p>No activities to display.</p>
+            ) : (
+              <ul>
+                {activities.map((activity, index) => (
+                  <li key={index}>
+                    {activity.action} at {activity.timestamp}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>

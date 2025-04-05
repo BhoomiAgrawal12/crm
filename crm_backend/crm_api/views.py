@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password, make_password
-from .models import User, Account, Contact, Opportunity, Lead
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog
 from .permissions import IsAdmin
-from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer
 
 # Google Mail
 # from email.message import EmailMessage
@@ -372,3 +372,12 @@ def lead_detail(request, lead_id):
         # Delete the contact
         lead.delete()
         return Response({"message": "Lead deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_activity_logs(request):
+    limit = int(request.query_params.get("limit", 10))  # Default limit is 10
+    activities = ActivityLog.objects.filter(user=request.user).order_by("-timestamp")[:limit]
+    serializer = ActivityLogSerializer(activities, many=True)
+    return Response(serializer.data, status=200)

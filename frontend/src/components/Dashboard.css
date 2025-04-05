@@ -447,7 +447,57 @@
 .dash-2_3{
     display: flex;
     flex-direction: column;
-    background-color:cornflowerblue;
+    background-color: rgb(240, 248, 255); /* Light blue background */
+    border: 1px solid rgb(173, 216, 230); /* Light blue border */
+    border-radius: 12px;
+    margin: 10px 0px;
+    padding: 15px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.05) 0px 1px 3px;
+}
+
+/* Header styling for Activity Log */
+.dash-2_3 h2 {
+    margin: 0px 0px 10px 0px;
+    padding: 0px;
+    font-size: 1.5rem;
+    color: rgb(70, 130, 180); /* Steel blue color */
+    border-bottom: 2px solid rgb(173, 216, 230); /* Light blue underline */
+    padding-bottom: 5px;
+}
+
+/* Styling for the activity log list */
+.dash-2_3 ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    max-height: 300px; /* Limit height for scrollable content */
+    overflow-y: auto; /* Add vertical scrolling if content overflows */
+}
+
+/* Styling for individual activity log items */
+.dash-2_3 ul li {
+    background-color: rgb(255, 255, 255); /* White background */
+    border: 1px solid rgb(230, 230, 230); /* Light gray border */
+    border-radius: 8px;
+    margin: 5px 0px;
+    padding: 10px;
+    font-size: 0.9rem;
+    color: rgb(60, 60, 60); /* Dark gray text */
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px;
+}
+
+/* Add hover effect for activity log items */
+.dash-2_3 ul li:hover {
+    background-color: rgb(245, 245, 245); /* Light gray background on hover */
+    cursor: pointer;
+}
+
+/* Loading and no activity messages */
+.dash-2_3 p {
+    font-size: 1rem;
+    color: rgb(100, 100, 100); /* Medium gray text */
+    text-align: center;
+    margin: 10px 0px;
 }
 
 .task{

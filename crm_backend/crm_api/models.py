@@ -354,6 +354,17 @@ class Opportunity(models.Model):
         return self.opportunity_name
 
 
+class ActivityLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="activity_logs")
+    action = models.CharField(max_length=255)  # Description of the activity
+    method = models.CharField(max_length=10)  # HTTP method (GET, POST, etc.)
+    endpoint = models.CharField(max_length=255)  # API endpoint or page
+    timestamp = models.DateTimeField(auto_now_add=True)  # When the activity occurred
+
+    def __str__(self):
+        return f"{self.user.username} - {self.action} at {self.timestamp}"
+
+
 
 
 

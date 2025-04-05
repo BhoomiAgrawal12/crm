@@ -17,6 +17,7 @@ from .views import (
     lead_list_create,
     lead_detail,
     lead_choices,
+    user_activity_logs,  # Import the new user activity logs view
 )
 
 urlpatterns = [
@@ -37,4 +38,5 @@ urlpatterns = [
     path('leads/', lead_list_create, name='lead-list-create'),
     path('lead/<int:lead_id>/', lead_detail, name='lead-detail'),
     path("lead-choices/", lead_choices, name="lead-choices"),
+    path("activity-logs/", user_activity_logs, name="user-activity-logs"),  # New endpoint for user activity logs
 ]
