@@ -44,5 +44,12 @@ To run the React development server:
 ```bash
 npm start
 ```  
+# **NOTE:**  
+Create a ```.gitignore``` file and add the following list into it:  
+.gitignore  
+venv/  
+.env  
+__pycache__/  
+*.pyc  
 
 
