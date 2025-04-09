@@ -35,6 +35,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+MIDDLEWARE += [
+    'crm_api.middleware.ActivityLoggerMiddleware',  # Add this line
+]
+
 ROOT_URLCONF = 'crm.urls'
 
 TEMPLATES = [

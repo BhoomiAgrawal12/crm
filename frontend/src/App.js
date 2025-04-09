@@ -15,6 +15,9 @@ import OpportunityDetails from './components/OpportunityDetails';
 import LeadsPage from './components/LeadsPage';
 import CreateLead from './components/CreateLead';
 import LeadDetails from './components/LeadDetails';
+import TaskPage from './components/TaskPage';
+import CreateTask from './components/CreateTask';
+import TaskDetails from './components/TaskDetails';
 
 function App() {
   return (
@@ -34,7 +37,10 @@ function App() {
         <Route path="/opportunity-details/:id" element={<OpportunityDetails />} />
         <Route path="/leads" element={<LeadsPage />} />
         <Route path="/lead-details/:id" element={<LeadDetails />} />
-        <Route path="/create-lead" element={<CreateLead />} />
+        <Route path="/create-lead" element={<CreateLead />} />  
+        <Route path="/tasks" element={<TaskPage />} />
+        <Route path="/create-task" element={<CreateTask />} />
+        <Route path="/task-details/:id" element={<TaskDetails />} />      
       </Routes>
     </Router>
   );

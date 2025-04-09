@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password, make_password
-from .models import User, Account, Contact, Opportunity, Lead, ActivityLog
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task
 from .permissions import IsAdmin
-from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer
 
 # Google Mail
 # from email.message import EmailMessage
@@ -381,3 +381,49 @@ def user_activity_logs(request):
     activities = ActivityLog.objects.filter(user=request.user).order_by("-timestamp")[:limit]
     serializer = ActivityLogSerializer(activities, many=True)
     return Response(serializer.data, status=200)
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def task_list_create(request):
+    if request.method == "GET":
+        # Retrieve all tasks
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "POST":
+        # Create a new task
+        serializer = TaskSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
+def task_detail(request, task_id):
+    try:
+        # Retrieve the task by ID
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        # Retrieve task details
+        serializer = TaskSerializer(task)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "PUT":
+        # Update task details
+        serializer = TaskSerializer(task, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        # Delete the task
+        task.delete()
+        return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)

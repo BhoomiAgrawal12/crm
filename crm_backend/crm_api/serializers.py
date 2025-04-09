@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import User, Account, Contact, Opportunity, Lead, ActivityLog
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task
 
 
 # User Serializer
@@ -263,3 +263,46 @@ class ActivityLogSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'action', 'method', 'endpoint', 'timestamp']
         read_only_fields = ['user', 'timestamp']
 
+
+class TaskSerializer(serializers.ModelSerializer):
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+    modified_by_username = serializers.CharField(source='modified_by.username', read_only=True)
+    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
+    contact_name_full = serializers.CharField(source='contact_name.first_name', read_only=True)
+
+    class Meta:
+        model = Task
+        fields = [
+            'id',
+            'subject',
+            'created_at',
+            'created_by',
+            'created_by_username',  # Include the username of the creator
+            'modified_at',
+            'modified_by',
+            'modified_by_username',  # Include the username of the last modifier
+            'assigned_to',
+            'assigned_to_username',  # Include the username of the assigned user
+            'status',
+            'start_date',
+            'due_date',
+            'priority',
+            'contact_name',
+            'contact_name_full',  # Include the full name of the contact
+            'parent_type',
+            'description',
+        ]
+        read_only_fields = ['created_by', 'modified_by', 'created_at', 'modified_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user
+            validated_data['modified_by'] = request.user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
+        return super().update(instance, validated_data)

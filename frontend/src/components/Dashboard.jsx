@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useNavigate, Link } from 'react-router-dom'; // Import Link for navigation
 import './Dashboard.css';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter'; // Correct import
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import CircleIcon from '@mui/icons-material/Circle';
+import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ControlCameraIcon from '@mui/icons-material/ControlCamera';
 import axios from 'axios'; // Import axios
+import { colors } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activities, setActivities] = useState([]);
+  const [tasks, setTasks] = useState([]); // State to store tasks
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
-    // Fetch activity logs
-    const fetchActivities = async () => {
+    // Fetch activity logs and tasks
+    const fetchData = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
         if (!accessToken) {
@@ -33,20 +33,29 @@ const Dashboard = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:8000/api/activity-logs/', {
+        // Fetch activity logs
+        const activityResponse = await axios.get('http://localhost:8000/api/activity-logs/', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        setActivities(response.data);
+        setActivities(activityResponse.data);
+
+        // Fetch tasks
+        const tasksResponse = await axios.get('http://localhost:8000/api/tasks/', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setTasks(tasksResponse.data);
       } catch (error) {
-        console.error('Error fetching activity logs:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchActivities();
+    fetchData();
   }, [navigate]);
 
   return (
@@ -90,41 +99,36 @@ const Dashboard = () => {
       </div>
       <div className='dash-2'>
         <div className='dash-2_1'>
-          <div className='Appointment'>
-            <div>
-              <h3>Next Appointment</h3>
-              <span><FiberManualRecordIcon /></span>
-            </div>
-            <div>
-              <span><CircleIcon /></span>
-              <div>
-                <h5>319 Haul Road</h5>
-                <p>Glenrock, WY 12345</p>
-              </div>
-            </div>
-            <div>
-              <p>Appointment Date</p>
-              <h5>Nov 18 2021, 17:00</h5>
-            </div>
-            <div>
-              <div>
-                <p>Room Area</p>
-                <h5>100 M2</h5>
-              </div>
-              <div>
-                <p>People</p>
-                <h5>10</h5>
-              </div>
-            </div>
-            <div>
-              <div>
-                <p>Price</p>
-                <h5>$ 5750</h5>
-              </div>
-              <div>
-                <button>See Details</button>
-              </div>
-            </div>
+          <div className='task_tab'>
+            <h3>Tasks</h3>
+            {loading ? (
+              <p>Loading tasks...</p>
+            ) : tasks.length === 0 ? (
+              <p>No tasks available.</p>
+            ) : (
+              <table className='task_table'>
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Due Date</th>
+                    <th>Priority</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tasks.map((task) => (
+                    <tr key={task.id}>
+                      <td>
+                        <Link to={`/task-details/${task.id}`} className='task_link'>
+                          {task.subject}
+                        </Link>
+                      </td>
+                      <td>{task.due_date}</td>
+                      <td>{task.priority}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
           <div className='customers'>
             <div>
