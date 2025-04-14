@@ -1,6 +1,6 @@
 .OpportunityDetails_container{
     display: grid;
-    grid-template-rows: 80px 7fr;
+    grid-template-rows: 50px 7fr;
     height: 100vh;
     gap: 1px;
     margin: 0px;
