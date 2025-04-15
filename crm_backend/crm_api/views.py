@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password, make_password
+from rest_framework.pagination import PageNumberPagination
 from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task
 from .permissions import IsAdmin
 from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer
@@ -377,10 +378,12 @@ def lead_detail(request, lead_id):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def user_activity_logs(request):
-    limit = int(request.query_params.get("limit", 10))  # Default limit is 10
-    activities = ActivityLog.objects.filter(user=request.user).order_by("-timestamp")[:limit]
-    serializer = ActivityLogSerializer(activities, many=True)
-    return Response(serializer.data, status=200)
+    activities = ActivityLog.objects.filter(user=request.user).order_by("-timestamp")
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.query_params.get("page_size", 10))  # Default page size is 10
+    paginated_activities = paginator.paginate_queryset(activities, request)
+    serializer = ActivityLogSerializer(paginated_activities, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
 @api_view(["GET", "POST"])

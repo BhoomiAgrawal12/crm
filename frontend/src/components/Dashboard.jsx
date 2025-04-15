@@ -1,30 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link for navigation
+import { useNavigate, Link } from 'react-router-dom';
 import './Dashboard.css';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ControlCameraIcon from '@mui/icons-material/ControlCamera';
 import axios from 'axios'; // Import axios
-import { colors } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [activities, setActivities] = useState([]);
+  const [activities, setActivities] = useState([]); // State to store activity logs
   const [tasks, setTasks] = useState([]); // State to store tasks
   const [loading, setLoading] = useState(true);
-
+  const [nextPage, setNextPage] = useState(null); // State to track the next page URL
+  const [previousPage, setPreviousPage] = useState(null); // State to track the previous page URL
+ 
   useEffect(() => {
     // Check if the user is authenticated
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
-      // Redirect to login page if not authenticated
-      navigate('/login');
+      navigate('/login'); // Redirect to login page if not authenticated
     }
   }, [navigate]);
 
   useEffect(() => {
-    // Fetch activity logs and tasks
+    // Fetch initial activity logs
+    const fetchActivities = async (url = 'http://localhost:8000/api/activity-logs/') => {
+      try {
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+          navigate('/login');
+          return;
+        }
+
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        // Update activities and pagination URLs
+        setActivities(response.data.results || response.data); // Use `results` if paginated
+        setNextPage(response.data.next); // Set the next page URL
+        setPreviousPage(response.data.previous); // Set the previous page URL
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+        setActivities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, [navigate]);
+
+  useEffect(() => {
+    // Fetch tasks
     const fetchData = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
@@ -33,15 +64,6 @@ const Dashboard = () => {
           return;
         }
 
-        // Fetch activity logs
-        const activityResponse = await axios.get('http://localhost:8000/api/activity-logs/', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setActivities(activityResponse.data);
-
-        // Fetch tasks
         const tasksResponse = await axios.get('http://localhost:8000/api/tasks/', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -57,6 +79,28 @@ const Dashboard = () => {
 
     fetchData();
   }, [navigate]);
+
+  const handlePageChange = async (url) => {
+    if (!url) return; // If no URL, do nothing
+    setLoading(true);
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Update activities and pagination URLs
+      setActivities(response.data.results || response.data);
+      setNextPage(response.data.next);
+      setPreviousPage(response.data.previous);
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className='dash_container'>
@@ -293,6 +337,20 @@ const Dashboard = () => {
                 ))}
               </ul>
             )}
+            <div className="pagination-buttons">
+              <button
+                onClick={() => handlePageChange(previousPage)}
+                disabled={!previousPage || loading}
+              >
+                &lt; Previous
+              </button>
+              <button
+                onClick={() => handlePageChange(nextPage)}
+                disabled={!nextPage || loading}
+              >
+                Next &gt;
+              </button>
+            </div>
           </div>
         </div>
       </div>

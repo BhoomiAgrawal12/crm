@@ -587,3 +587,21 @@
 .task_link:hover {
   text-decoration: underline; /* Optional: Add underline on hover */
 }
+
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.pagination-buttons button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pagination-buttons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
