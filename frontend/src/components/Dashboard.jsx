@@ -5,26 +5,38 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ControlCameraIcon from '@mui/icons-material/ControlCamera';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [activities, setActivities] = useState([]); // State to store activity logs
-  const [tasks, setTasks] = useState([]); // State to store tasks
+  const [activities, setActivities] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [nextPage, setNextPage] = useState(null); // State to track the next page URL
-  const [previousPage, setPreviousPage] = useState(null); // State to track the previous page URL
- 
+  const [nextPage, setNextPage] = useState(null);
+  const [previousPage, setPreviousPage] = useState(null);
+
+  // Add Axios interceptor to handle token expiration
   useEffect(() => {
-    // Check if the user is authenticated
-    const accessToken = localStorage.getItem('access_token');
-    if (!accessToken) {
-      navigate('/login'); // Redirect to login page if not authenticated
-    }
+    const interceptor = axios.interceptors.response.use(
+      (response) => response, // Pass through successful responses
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          // Token expired or unauthorized
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          navigate('/login'); // Redirect to login page
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    // Cleanup interceptor on component unmount
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, [navigate]);
 
   useEffect(() => {
-    // Fetch initial activity logs
     const fetchActivities = async (url = 'http://localhost:8000/api/activity-logs/') => {
       try {
         const accessToken = localStorage.getItem('access_token');
@@ -39,10 +51,9 @@ const Dashboard = () => {
           },
         });
 
-        // Update activities and pagination URLs
-        setActivities(response.data.results || response.data); // Use `results` if paginated
-        setNextPage(response.data.next); // Set the next page URL
-        setPreviousPage(response.data.previous); // Set the previous page URL
+        setActivities(response.data.results || response.data);
+        setNextPage(response.data.next);
+        setPreviousPage(response.data.previous);
       } catch (error) {
         console.error('Error fetching activities:', error);
         setActivities([]);
@@ -81,7 +92,7 @@ const Dashboard = () => {
   }, [navigate]);
 
   const handlePageChange = async (url) => {
-    if (!url) return; // If no URL, do nothing
+    if (!url) return;
     setLoading(true);
     try {
       const accessToken = localStorage.getItem('access_token');
@@ -91,7 +102,6 @@ const Dashboard = () => {
         },
       });
 
-      // Update activities and pagination URLs
       setActivities(response.data.results || response.data);
       setNextPage(response.data.next);
       setPreviousPage(response.data.previous);
