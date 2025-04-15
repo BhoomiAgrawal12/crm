@@ -60,23 +60,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'crm.wsgi.application'
 
 # PostgreSQL Database Configuration
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRES_DB'),  # Database name
-#         'USER': os.getenv('POSTGRES_USER'),  # Database user
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Database password
-#         'HOST': os.getenv('POSTGRES_HOST'),  # PostgreSQL host
-#         'PORT': 5432,  # Default PostgreSQL port
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # SQLite database file
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),  # Database name
+        'USER': os.getenv('POSTGRES_USER'),  # Database user
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Database password
+        'HOST': os.getenv('POSTGRES_HOST'),  # PostgreSQL host
+        'PORT': 5432,  # Default PostgreSQL port
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',  # SQLite database file
+#     }
+# }
 
 # Use the custom User model
 AUTH_USER_MODEL = 'crm_api.User'
