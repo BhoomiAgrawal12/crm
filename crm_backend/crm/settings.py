@@ -35,6 +35,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+MIDDLEWARE += [
+    'crm_api.middleware.ActivityLoggerMiddleware',  # Add this line
+]
+
 ROOT_URLCONF = 'crm.urls'
 
 TEMPLATES = [
@@ -56,23 +60,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'crm.wsgi.application'
 
 # PostgreSQL Database Configuration
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRES_DB'),  # Database name
-#         'USER': os.getenv('POSTGRES_USER'),  # Database user
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Database password
-#         'HOST': os.getenv('POSTGRES_HOST'),  # PostgreSQL host
-#         'PORT': 5432,  # Default PostgreSQL port
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # SQLite database file
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),  # Database name
+        'USER': os.getenv('POSTGRES_USER'),  # Database user
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Database password
+        'HOST': os.getenv('POSTGRES_HOST'),  # PostgreSQL host
+        'PORT': 5432,  # Default PostgreSQL port
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',  # SQLite database file
+#     }
+# }
 
 # Use the custom User model
 AUTH_USER_MODEL = 'crm_api.User'
@@ -88,6 +92,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,  # Number of items per page
 }
 
 SIMPLE_JWT = {

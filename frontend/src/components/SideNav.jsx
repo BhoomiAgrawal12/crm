@@ -29,7 +29,7 @@ const SideNav = () => {
           className="nav_icon"
           onMouseEnter={() => setShowWindowDropdown(true)} // Show dropdown on hover
           onMouseLeave={() => setShowWindowDropdown(false)} // Hide dropdown when hover ends
-          onClick={() => navigate("/Accounts")} // Navigate to "Accounts" page on click
+          onClick={() => navigate("/accounts")} // Navigate to "Accounts" page on click
         >
           <WindowIcon />
           {showWindowDropdown && (
@@ -47,7 +47,7 @@ const SideNav = () => {
                 className="dropdown_item"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent parent click event
-                  navigate("/Accounts");
+                  navigate("/accounts");
                 }}
               >
                 View Accounts

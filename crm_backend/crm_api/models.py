@@ -365,8 +365,44 @@ class ActivityLog(models.Model):
         return f"{self.user.username} - {self.action} at {self.timestamp}"
 
 
+class Task(models.Model):
+    status_choices = [
+        ('Not Started', 'Not Started'),
+        ('In Progress', 'In Progress'),
+        ('Completed', 'Completed'),
+        ('Pending Input', 'Pending Input'),
+        ('Deferred', 'Deferred')
+    ]
+    parent_type_choices = [
+        ('Account', 'Account'),
+        ('Contact', 'Contact'),
+        ('Task', 'Task'),
+        ('Opportunity', 'Opportunity'),
+        ('Bug', 'Bug'),
+        ('Case', 'Case'),
+        ('Lead', 'Lead'),
+        ('Project', 'Project'),
+        ('Project Task', 'Project Task'),
+        ('Target', 'Target'),
+        ('Contract', 'Contract'),
+        ('Invoice', 'Invoice'),
+        ('Quote', 'Quote'),
+        ('Product', 'Product')
+    ]
+    subject = models.CharField(max_length=255)
+    created_at = models.DateTimeField(default=timezone_now)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_tasks")
+    modified_at = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="modified_tasks")
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_tasks")
+    status = models.CharField(max_length=100, choices=status_choices)
+    start_date = models.DateField()
+    due_date = models.DateField()
+    priority = models.CharField(max_length=100, choices=[('High', 'High'),('Medium', 'Medium'), ('Low', 'Low')])
+    contact_name = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name="contact_tasks")
+    parent_type = models.CharField(max_length=100, choices=parent_type_choices)
+    description = models.TextField(blank=True, null=True)
 
-
-
-
+    def __str__(self):
+        return self.subject
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .LeadDetails_container {
   display: grid;
   grid-template-rows: 80px 1fr;
@@ -187,6 +188,15 @@ textarea.form-control {
   .lead-details-grid,
   .edit-form {
     grid-template-columns: 1fr;
+=======
+.OpportunityDetails_container{
+    display: grid;
+    grid-template-rows: 50px 7fr;
+    height: 100vh;
+    gap: 1px;
+    margin: 0px;
+    padding: 0px;
+>>>>>>> fd452d9d7583fd7467f49c7d58afd1cbb96a820f
   }
   
   .address-group {

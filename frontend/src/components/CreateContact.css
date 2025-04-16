@@ -1,8 +1,16 @@
 .CreateContact_container {
   display: grid;
+<<<<<<< HEAD
   grid-template-rows: auto 1fr;
   height: 100vh;
   background-color: #f8f9fa;
+=======
+    grid-template-rows: 50px 7fr;
+    height: 100vh;
+    gap: 1px;
+    margin: 0px;
+    padding: 0px;
+>>>>>>> fd452d9d7583fd7467f49c7d58afd1cbb96a820f
 }
 
 .CreateContact_container1 {
