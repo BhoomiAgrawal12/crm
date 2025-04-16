@@ -1,11 +1,8 @@
 /* Base Styles */
 .contacts-container {
   display: grid;
-<<<<<<< HEAD
   grid-template-rows: 80px 1fr;
-=======
   grid-template-rows: 50px 7fr;
->>>>>>> fd452d9d7583fd7467f49c7d58afd1cbb96a820f
   height: 100vh;
   background-color: #f8fafc;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
