@@ -7,9 +7,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework.pagination import PageNumberPagination
-from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task, Quote
 from .permissions import IsAdmin
-from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer, QuoteSerializer
 
 # Google Mail
 # from email.message import EmailMessage
@@ -430,3 +430,62 @@ def task_detail(request, task_id):
         # Delete the task
         task.delete()
         return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def quote_list_create(request):
+    if request.method == "GET":
+        # Retrieve all quotes
+        quotes = Quote.objects.all()
+        serializer = QuoteSerializer(quotes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "POST":
+        # Create a new quote
+        serializer = QuoteSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
+def quote_detail(request, quote_id):
+    try:
+        # Retrieve the quote by ID
+        quote = Quote.objects.get(id=quote_id)
+    except Quote.DoesNotExist:
+        return Response({"error": "Quote not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        # Retrieve quote details
+        serializer = QuoteSerializer(quote)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "PUT":
+        # Update quote details
+        serializer = QuoteSerializer(quote, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        # Delete the quote
+        quote.delete()
+        return Response({"message": "Quote deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def quote_choices(request):
+    choices = {
+        "approval_status": Quote.approval_status_choices,
+        "quote_stage": Quote.quote_stage_choices,
+        "invoice_status": Quote.invoice_status_choices,
+        "payment_terms": Quote.payment_terms_choices,
+        "currency": Quote.currency_choices,
+    }
+    return Response(choices)

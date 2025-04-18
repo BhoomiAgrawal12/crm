@@ -20,6 +20,9 @@ from .views import (
     user_activity_logs,
     task_list_create,
     task_detail,
+    quote_list_create,
+    quote_detail,
+    quote_choices
 )
 
 urlpatterns = [
@@ -43,4 +46,7 @@ urlpatterns = [
     path("activity-logs/", user_activity_logs, name="user-activity-logs"),  # New endpoint for user activity logs
     path("tasks/", task_list_create, name="task-list-create"),
     path("task/<int:task_id>/", task_detail, name="task-detail"),
+    path('quotes/', quote_list_create, name='quote-list-create'),
+    path('quotes/<int:quote_id>/', quote_detail, name='quote-detail'),
+    path('quote-choices/', quote_choices, name='quote-choices'),
 ]
