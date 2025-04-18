@@ -1,71 +1,262 @@
+.create-account-container {
+  padding: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 .CreateAccount_container {
   display: grid;
-  grid-template-rows: 80px 7fr;
+  grid-template-rows: 50px 7fr;
   height: 100vh;
   gap: 1px;
   margin: 0px;
   padding: 0px;
 }
 
-.CreateAccount_container1 {
-  background-color: whitesmoke;
+h2 {
+  margin-bottom: 25px;
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 600;
 }
 
-.CreateAccount_container2 {
-  padding: 10px;
-  border-top: 0.2px solid gray;
-  background-color: whitesmoke;
-}
-
-.wrapper_box1 {
+.section-tabs {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  background-color: rgb(25, 163, 25);
+  margin-bottom: 25px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.wrapper_box1_part1 {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 5px;
-  border-radius: 5px;
-  background-color: rgb(184, 240, 184);
-}
-
-.wrapper_box1_part2 {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 5px;
-  border-radius: 5px;
-  background-color: rgb(184, 240, 184);
-}
-
-.wrapper_box2 {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-
-.input-field {
-  margin: 5px;
-  padding: 5px;
-  border-radius: 5px;
-  border: 0.3px solid gray;
-}
-
-.input-field input {
-  margin: 0px;
-  padding: 0px;
+.section-tabs button {
+  padding: 12px 24px;
+  border: none;
   background: transparent;
-  text-decoration: none;
-  border-bottom: 0.3px solid rgb(28, 26, 26);
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.billing {
-  background-color: rgb(158, 129, 185);
+.section-tabs button:hover {
+  color: #3498db;
 }
-.shipping {
-  background-color: blueviolet;
+
+.section-tabs .active-tab {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.section-tabs .active-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #3498db;
+  border-radius: 3px 3px 0 0;
+}
+
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.form-group {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+  font-size: 14px;
+}
+
+.required {
+  color: #e74c3c;
+  margin-left: 4px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+.select-input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+.select-input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.error-input {
+  border-color: #e74c3c !important;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.email-group {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.address-section {
+  display: flex;
+  gap: 30px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.address-column {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+}
+
+.address-column h3 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copy-address-btn {
+  padding: 6px 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #555;
+  transition: all 0.2s ease;
+}
+
+.copy-address-btn:hover {
+  background-color: #e9ecef;
+  border-color: #ccc;
+}
+
+.address-column input {
+  margin-bottom: 12px;
+}
+
+.description-group {
+  flex: 1 1 100%;
+  margin-top: 15px;
+}
+
+.description-group label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.save-btn,
+.cancel-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.save-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #2980b9;
+}
+
+.save-btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background-color: #f8f9fa;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.cancel-btn:hover {
+  background-color: #e9ecef;
+  border-color: #ccc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .create-account-container {
+    padding: 15px;
+  }
+  
+  .form-group,
+  .address-column {
+    flex: 1 1 100%;
+  }
+  
+  .section-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .section-tabs button {
+    margin-bottom: 5px;
+  }
+  
+  .form-buttons {
+    justify-content: center;
+  }
+}
 }

@@ -20,7 +20,7 @@ from .views import (
     user_activity_logs,
     task_list_create,
     task_detail,
-    dashboard_metrics,  # Import the new dashboard metrics view
+    dashboard_metrics,  # Import the dashboard metrics view
 )
 
 urlpatterns = [

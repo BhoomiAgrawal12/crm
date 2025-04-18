@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task, Quote
 
 
 # User Serializer
@@ -291,6 +291,77 @@ class TaskSerializer(serializers.ModelSerializer):
             'contact_name_full',  # Include the full name of the contact
             'parent_type',
             'description',
+        ]
+        read_only_fields = ['created_by', 'modified_by', 'created_at', 'modified_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user
+            validated_data['modified_by'] = request.user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
+        return super().update(instance, validated_data)
+
+
+class QuoteSerializer(serializers.ModelSerializer):
+    assigned_to_username = serializers.CharField(source='assigned_to.username', read_only=True)
+    opportunity_name = serializers.CharField(source='opportunity.opportunity_name', read_only=True)
+    account_name = serializers.CharField(source='account.name', read_only=True)
+    contact_name = serializers.CharField(source='contact.first_name', read_only=True)
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+    modified_by_username = serializers.CharField(source='modified_by.username', read_only=True)
+
+    class Meta:
+        model = Quote
+        fields = [
+            'id',
+            'quote_title',
+            'quote_number',
+            'valid_until',
+            'assigned_to',
+            'assigned_to_username',  # Include the username of the assigned user
+            'approval_status',
+            'opportunity',
+            'opportunity_name',  # Include the name of the related opportunity
+            'quote_stage',
+            'invoice_status',
+            'payment_terms',
+            'payment_terms_other',
+            'approval_issues',
+            'account',
+            'account_name',  # Include the name of the related account
+            'contact',
+            'contact_name',  # Include the name of the related contact
+            'billing_address_street',
+            'billing_address_city',
+            'billing_address_state',
+            'billing_address_postalcode',
+            'billing_address_country',
+            'shipping_address_street',
+            'shipping_address_city',
+            'shipping_address_state',
+            'shipping_address_postalcode',
+            'shipping_address_country',
+            'description',
+            'currency',
+            'total',
+            'discount',
+            'sub_total',
+            'shipping',
+            'shipping_tax',
+            'tax',
+            'grand_total',
+            'created_at',
+            'created_by',
+            'created_by_username',
+            'modified_at',
+            'modified_by',
+            'modified_by_username',
         ]
         read_only_fields = ['created_by', 'modified_by', 'created_at', 'modified_at']
 

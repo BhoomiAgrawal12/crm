@@ -429,6 +429,7 @@ def task_detail(request, task_id):
         return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
 
 
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def dashboard_metrics(request):
@@ -438,42 +439,51 @@ def dashboard_metrics(request):
     # Count all opportunities (deals)
     deal_count = Opportunity.objects.all().count()
     
-    # Get 6 most recent opportunities/deals with some details
-    recent_deals = Opportunity.objects.all().order_by('-created_at')[:6]
-    recent_deals_data = []
+    # Get recent leads (only for admins)
+    recent_leads_data = []
+    if request.user.is_superuser:
+        recent_leads = Lead.objects.all().order_by('-created_at')[:6]
+        
+        for lead in recent_leads:
+            lead_data = {
+                'id': lead.id,
+                'first_name': lead.first_name,
+                'last_name': lead.last_name,
+                'status': lead.status,
+                'email': lead.email_address,
+                'phone': lead.mobile,
+                'created_at': lead.created_at,
+                'lead_source': lead.lead_source,
+            }
+            recent_leads_data.append(lead_data)
     
-    for deal in recent_deals:
-        # Get the account associated with this opportunity
-        account = deal.account
-        deal_data = {
-            'id': deal.id,
-            'name': deal.opportunity_name,
-            'amount': deal.opportunity_amount,
-            'currency': deal.currency,
-            'timestamp': deal.created_at,
-            'account_name': account.name,
-            'account_city': account.billing_city,
-        }
-        recent_deals_data.append(deal_data)
+    # Get task statistics grouped by status
+    from django.db.models import Count
+    task_stats = Task.objects.values('status').annotate(count=Count('status'))
     
-    # Get in-progress tasks
-    in_progress_tasks = Task.objects.filter(status='In Progress').order_by('-modified_at')[:2]
-    in_progress_data = []
-    
-    for task in in_progress_tasks:
-        contact = task.contact_name
-        task_data = {
-            'id': task.id,
-            'subject': task.subject,
-            'date': task.modified_at,
-            'contact_name': f"{contact.first_name} {contact.last_name}" if contact else "N/A",
-            'contact_city': contact.address_city if contact else "N/A",
-        }
-        in_progress_data.append(task_data)
+    # Get recent tasks with details for the task section
+    tasks_by_status = {}
+    for status_choice, _ in Task.status_choices:
+        tasks_data = []
+        tasks = Task.objects.filter(status=status_choice).order_by('-modified_at')[:3]
+        
+        for task in tasks:
+            task_data = {
+                'id': task.id,
+                'subject': task.subject,
+                'date': task.modified_at,
+                'due_date': task.due_date,
+                'priority': task.priority,
+                'assigned_to': task.assigned_to.username if task.assigned_to else None,
+            }
+            tasks_data.append(task_data)
+        
+        tasks_by_status[status_choice] = tasks_data
     
     return Response({
         'customer_count': customer_count,
         'deal_count': deal_count,
-        'recent_deals': recent_deals_data,
-        'in_progress': in_progress_data,
+        'recent_leads': recent_leads_data,
+        'task_stats': task_stats,
+        'tasks_by_status': tasks_by_status,
     }, status=status.HTTP_200_OK)

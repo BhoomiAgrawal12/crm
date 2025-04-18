@@ -406,3 +406,78 @@ class Task(models.Model):
     def __str__(self):
         return self.subject
 
+
+class Quote(models.Model):
+    approval_status_choices = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+    
+    quote_stage_choices = [
+        ('Draft', 'Draft'),
+        ('Negotiation', 'Negotiation'),
+        ('Delivered', 'Delivered'),
+        ('On Hold', 'On Hold'),
+        ('Confirmed', 'Confirmed'),
+        ('Closed Accepted', 'Closed Accepted'),
+        ('Closed Lost', 'Closed Lost'),
+        ('Closed Dead', 'Closed Dead')
+    ]
+    
+    invoice_status_choices = [
+        ('Not Invoiced', 'Not Invoiced'),
+        ('Invoiced', 'Invoiced'),
+    ]
+    
+    payment_terms_choices = [
+        ('Nett 15', 'Nett 15'),
+        ('Nett 30', 'Nett 30'),
+        ('Other', 'Other')
+    ]
+    
+    currency_choices = [
+        ('USD', 'USD'),
+        ('INR', 'INR'),
+    ]
+    quote_title = models.CharField(max_length=255, null=False)
+    quote_number = models.IntegerField(unique=True, null=False)
+    valid_until = models.DateField(null=False)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='assigned_quotes')
+    approval_status = models.CharField(max_length=50, null=False, choices=approval_status_choices)
+    opportunity = models.ForeignKey(Opportunity, on_delete=models.CASCADE, null=True, related_name='opportunity_quotes')
+    quote_stage = models.CharField(max_length=50, null=False, choices= quote_stage_choices)
+    invoice_status = models.CharField(max_length=50, null=False, choices=invoice_status_choices)
+    payment_terms = models.CharField(max_length=50, null=False, choices=payment_terms_choices)
+    payment_terms_other =  models.CharField(max_length=50)
+    approval_issues = models.TextField(null=True, blank=True)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, null=True, related_name='account_quotes')
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE, null=True, related_name='contact_quotes')
+    billing_address_street = models.CharField(max_length=255, null=True)
+    billing_address_city = models.CharField(max_length=100, null=True)
+    billing_address_state = models.CharField(max_length=100, null=True)
+    billing_address_postalcode = models.CharField(max_length=20, null=True)
+    billing_address_country = models.CharField(max_length=100, null=True)
+    shipping_address_street = models.CharField(max_length=255, null=True)
+    shipping_address_city = models.CharField(max_length=100, null=True)
+    shipping_address_state = models.CharField(max_length=100, null=True)
+    shipping_address_postalcode = models.CharField(max_length=20, null=True)
+    shipping_address_country = models.CharField(max_length=100, null=True)
+    description = models.TextField(null=True, blank=True)
+    #line_items = models.JSONField(null=True, blank=True)
+    currency = models.CharField(max_length=50, choices=currency_choices)
+    total = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    discount = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    sub_total = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    shipping = models.DecimalField(max_digits=15, decimal_places=2, null=True)  
+    shipping_tax = models.DecimalField(max_digits=15, decimal_places=2, null=True) 
+    tax = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    grand_total = models.DecimalField(max_digits=15, decimal_places=2, null=True) 
+    created_at = models.DateTimeField(default=timezone_now)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='created_quotes')
+    modified_at = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='modified_quotes')
+    
+    
+    def __str__(self):
+        return self.quote_title

@@ -62,6 +62,9 @@
     flex-direction: row;
     align-items: center;
     background-color:whitesmoke;
+    /* background-color: turquoise; */
+    margin: 0px;
+    padding: 0px;
 }
 
 .nav_logo{
@@ -72,17 +75,17 @@
     color: white;
     margin: 5px;
     padding: 0px;
-    height: 50px;
-    width: 60px;
+    height: 40px;
+    width: 40px;
     border: 0.5px solid black;
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 .nav_icons{
     display: flex;
     flex-direction: row;
-    margin: 5px;
-    padding: 10px;
+    margin: 0px;
+    padding-left: 10px;
     background-color:whitesmoke;
 }
 
@@ -90,25 +93,26 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
-    border: 0.5px solid gray;
+    background-color: transparent;
+    /* background-color: white; */
+    /* border: 0.5px solid gray; */
     color: gray;
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     border-radius: 50%;
     margin: 5px;
     padding: 0px;
 
 }
 .nav_icon:hover{
-    background-color: blue;
-    color: white;
+    background-color: rgb(212, 212, 231);
+    color: rgb(51, 48, 48);
     cursor: pointer;
 }
 
 .dropdown_menu {
     position: absolute;
-    top: 11%; /* Position the dropdown below the button */
+    top: 6.5%; /* Position the dropdown below the button */
     background-color: transparent;
     border-radius: 5px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -129,6 +133,7 @@
 }
 
 .dropdown_item:hover {
-    background-color: blue;
+    background-color: rgb(54, 54, 240);
     color: white;
-}
+} 
+

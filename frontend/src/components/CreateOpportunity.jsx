@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
-import "./CreateOpportunity.css"; // Import the CSS file for styling
+import "./CreateOpportunity.css";
 
 const CreateOpportunity = () => {
   const navigate = useNavigate();
@@ -20,107 +20,89 @@ const CreateOpportunity = () => {
     description: "",
     assigned_to: "",
   });
+
   const [choices, setChoices] = useState({
     sales_stage: [],
     business_type: [],
     lead_source: [],
     currency: [],
   });
-  const [accounts, setAccounts] = useState([]); // State to store accounts
-  const [users, setUsers] = useState([]); // State to store users
+
+  const [accounts, setAccounts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch choices, accounts, and users from the backend
   useEffect(() => {
-    const fetchChoicesAndAccounts = async () => {
+    const fetchData = async () => {
       try {
+        setIsLoading(true);
         const accessToken = localStorage.getItem("access_token");
         if (!accessToken) {
-          setError("You are not authenticated. Please log in.");
+          navigate("/login");
           return;
         }
 
-        // Fetch choices
-        const choicesResponse = await axios.get(
-          "http://localhost:8000/api/opportunity-choices/",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const [choicesResponse, accountsResponse, usersResponse] = await Promise.all([
+          axios.get("http://localhost:8000/api/opportunity-choices/", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }),
+          axios.get("http://localhost:8000/api/accounts/", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }),
+          axios.get("http://localhost:8000/api/users/", {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }),
+        ]);
+
         setChoices(choicesResponse.data);
-
-        // Fetch accounts
-        const accountsResponse = await axios.get(
-          "http://localhost:8000/api/accounts/",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
         setAccounts(accountsResponse.data);
-
-        // Fetch users
-        const usersResponse = await axios.get(
-          "http://localhost:8000/api/users/",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
         setUsers(usersResponse.data);
       } catch (err) {
-        console.error(
-          "Error fetching data:",
-          err.response?.data || err.message
-        );
-        setError("Failed to fetch data. Please try again.");
+        console.error("Error fetching data:", err.response?.data || err.message);
+        setError("Failed to fetch required data. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchChoicesAndAccounts();
-  }, []);
+
+    fetchData();
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setIsLoading(true);
 
     try {
       const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
-        setError("You are not authenticated. Please log in.");
+        navigate("/login");
         return;
       }
 
       const response = await axios.post(
         "http://localhost:8000/api/opportunities/",
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
       if (response.status === 201) {
-        setSuccess("Opportunity created successfully!");
-        navigate("/opportunities"); // Redirect to the opportunities page
+        setSuccess("Opportunity created successfully! Redirecting...");
+        setTimeout(() => navigate("/opportunities"), 1500);
       }
     } catch (err) {
-      console.error(
-        "Error creating opportunity:",
-        err.response?.data || err.message
-      );
-      setError("Failed to create opportunity. Please try again.");
+      console.error("Error creating opportunity:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Failed to create opportunity. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -130,162 +112,206 @@ const CreateOpportunity = () => {
         <SideNav />
       </div>
       <div className="CreateOpportunity_container2">
-        <div style={{ padding: "20px" }}>
+        <div className="opportunity-form">
           <h1>Create Opportunity</h1>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && <p style={{ color: "green" }}>{success}</p>}
+          
+          {error && <div className="error-message">{error}</div>}
+          {success && <div className="success-message">{success}</div>}
+
           <form onSubmit={handleSubmit}>
-            <div>
-              <label>Opportunity Name:</label>
-              <input
-                type="text"
-                name="opportunity_name"
-                value={formData.opportunity_name}
-                onChange={handleChange}
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Opportunity Name *</label>
+                <input
+                  type="text"
+                  name="opportunity_name"
+                  value={formData.opportunity_name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Currency *</label>
+                <select
+                  name="currency"
+                  value={formData.currency}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Currency</option>
+                  {choices.currency?.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div>
-              <label>Currency:</label>
-              <select
-                name="currency"
-                value={formData.currency}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Currency</option>
-                {choices.currency.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Opportunity Amount *</label>
+                <input
+                  type="number"
+                  name="opportunity_amount"
+                  value={formData.opportunity_amount}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Sales Stage *</label>
+                <select
+                  name="sales_stage"
+                  value={formData.sales_stage}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Sales Stage</option>
+                  {choices.sales_stage?.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div>
-              <label>Opportunity Amount:</label>
-              <input
-                type="number"
-                name="opportunity_amount"
-                value={formData.opportunity_amount}
-                onChange={handleChange}
-                required
-              />
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Probability (%)</label>
+                <input
+                  type="number"
+                  name="probability"
+                  value={formData.probability}
+                  onChange={handleChange}
+                  min="0"
+                  max="100"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Next Step</label>
+                <input
+                  type="text"
+                  name="next_step"
+                  value={formData.next_step}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
-            <div>
-              <label>Sales Stage:</label>
-              <select
-                name="sales_stage"
-                value={formData.sales_stage}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Sales Stage</option>
-                {choices.sales_stage.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Account *</label>
+                <select
+                  name="account"
+                  value={formData.account}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select an account</option>
+                  {accounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Assigned To *</label>
+                <select
+                  name="assigned_to"
+                  value={formData.assigned_to}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select a user</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.username}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div>
-              <label>Probability:</label>
-              <input
-                type="number"
-                name="probability"
-                value={formData.probability}
-                onChange={handleChange}
-              />
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Expected Close Date *</label>
+                <input
+                  type="date"
+                  name="expected_close_date"
+                  value={formData.expected_close_date}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Business Type</label>
+                <select
+                  name="business_type"
+                  value={formData.business_type}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Business Type</option>
+                  {choices.business_type?.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div>
-              <label>Next Step:</label>
-              <input
-                type="text"
-                name="next_step"
-                value={formData.next_step}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label>Account:</label>
-              <select
-                name="account"
-                value={formData.account}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select an account</option>
-                {accounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Assigned To:</label>
-              <select
-                name="assigned_to"
-                value={formData.assigned_to}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select a user</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.username}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Expected Close Date:</label>
-              <input
-                type="date"
-                name="expected_close_date"
-                value={formData.expected_close_date}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Business Type:</label>
-              <select
-                name="business_type"
-                value={formData.business_type}
-                onChange={handleChange}
-              >
-                <option value="">Select Business Type</option>
-                {choices.business_type.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Lead Source:</label>
+
+            <div className="form-group">
+              <label>Lead Source</label>
               <select
                 name="lead_source"
                 value={formData.lead_source}
                 onChange={handleChange}
               >
                 <option value="">Select Lead Source</option>
-                {choices.lead_source.map(([value, label]) => (
+                {choices.lead_source?.map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
                   </option>
                 ))}
               </select>
             </div>
-            <div>
-              <label>Description:</label>
+
+            <div className="form-group">
+              <label>Description</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                placeholder="Enter opportunity details..."
               />
             </div>
-            <button type="submit">Create Opportunity</button>
+
+            <div className="form-buttons">
+              <button 
+                type="submit" 
+                className="btn btn-primary"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating..." : "Create Opportunity"}
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-secondary"
+                onClick={() => navigate("/opportunities")}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         </div>
       </div>

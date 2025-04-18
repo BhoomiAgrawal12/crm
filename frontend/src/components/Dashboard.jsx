@@ -13,11 +13,13 @@ const Dashboard = () => {
   const [activities, setActivities] = useState([]);
   const [tasks, setTasks] = useState([]); // State to store tasks
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [metrics, setMetrics] = useState({
     customer_count: 0,
     deal_count: 0,
-    recent_deals: [],
-    in_progress: []
+    recent_leads: [],
+    task_stats: [],
+    tasks_by_status: {}
   });
 
   useEffect(() => {
@@ -27,10 +29,13 @@ const Dashboard = () => {
       // Redirect to login page if not authenticated
       navigate('/login');
     }
+    // Check if user is admin
+    const isAdminUser = localStorage.getItem('is_admin') === 'true';
+    setIsAdmin(isAdminUser);
   }, [navigate]);
 
   useEffect(() => {
-    // Fetch activity logs and tasks
+    // Fetch activity logs, tasks and dashboard metrics
     const fetchData = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
@@ -74,6 +79,14 @@ const Dashboard = () => {
 
   // Helper function to format date
   const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Helper function to format timestamp
+  const formatTimestamp = (dateString) => {
+    if (!dateString) return '';
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
@@ -105,6 +118,7 @@ const Dashboard = () => {
                 // Clear tokens from localStorage
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
+                localStorage.removeItem('is_admin');
 
                 // Redirect to login page
                 navigate('/login');
@@ -135,7 +149,7 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {tasks.map((task) => (
+                  {tasks.slice(0, 5).map((task) => (
                     <tr key={task.id}>
                       <td>
                         <Link to={`/task-details/${task.id}`} className='task_link'>
@@ -166,79 +180,76 @@ const Dashboard = () => {
           </div>
         </div>
         <div className='dash-2_2'>
-          <div className='recent_deal_block'>
-            <div className='recent_block1'>
-              <h3>Recent Deals</h3>
-              <Link to="/opportunities">
+          {/* Only show leads section to admin users */}
+          {isAdmin && (
+            <div className='recent_deal_block'>
+              <div className='recent_block1'>
+                <h3>Recent Leads</h3>
+                <Link to="/leads">
+                  <p>View All</p>
+                </Link>
+              </div>
+              <div className='recent_block2'>
+                {loading ? (
+                  <p>Loading recent leads...</p>
+                ) : metrics.recent_leads.length === 0 ? (
+                  <p>No leads available.</p>
+                ) : (
+                  metrics.recent_leads.map((lead) => (
+                    <div className='recent_deals_items' key={lead.id}>
+                      <div className='re_de_item_1'>
+                        <div>
+                          <span className="lead-icon">L</span>
+                        </div>
+                        <div>
+                          <h5>{`${lead.first_name} ${lead.last_name}`}</h5>
+                          <p>{lead.email}</p>
+                        </div>
+                      </div>
+                      <div className='re_de_item_2'>
+                        <div>
+                          <h5>{lead.status}</h5>
+                          <p>{formatTimestamp(lead.created_at)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className='task_status_block'>
+            <div className='task_status_header'>
+              <h3>Tasks by Status</h3>
+              <Link to="/tasks">
                 <p>View All</p>
               </Link>
             </div>
-            <div className='recent_block2'>
+            <div className='task_status_content'>
               {loading ? (
-                <p>Loading recent deals...</p>
-              ) : metrics.recent_deals.length === 0 ? (
-                <p>No deals available.</p>
+                <p>Loading tasks...</p>
               ) : (
-                metrics.recent_deals.map((deal, index) => (
-                  <div className='recent_deals_items' key={deal.id}>
-                    <div className='re_de_item_1'>
-                      <div>logo</div>
-                      <div>
-                        <h5>{deal.name}</h5>
-                        <p>{deal.account_city}</p>
+                <div className='task_status_grid'>
+                  {Object.entries(metrics.tasks_by_status || {}).map(([status, statusTasks]) => (
+                    statusTasks.length > 0 && (
+                      <div key={status} className='task_status_section'>
+                        <h4>{status}</h4>
+                        {statusTasks.map(task => (
+                          <div key={task.id} className='task_item'>
+                            <Link to={`/task-details/${task.id}`}>
+                              <p className='task_title'>{task.subject}</p>
+                              <div className='task_details'>
+                                <span className={`priority ${task.priority.toLowerCase()}`}>{task.priority}</span>
+                                <span>Due: {formatDate(task.due_date)}</span>
+                              </div>
+                            </Link>
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                    <div className='re_de_item_2'>
-                      <div>
-                        <h5>{deal.currency} {deal.amount}</h5>
-                        <p>{formatDate(deal.timestamp)}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-          <div className='progress_block'>
-            <div className='prog_block1'>
-              {loading || !metrics.in_progress || metrics.in_progress.length === 0 ? (
-                <p>No tasks in progress</p>
-              ) : (
-                <>
-                  <div>
-                    <div>img</div>
-                    <div>
-                      <h5>{metrics.in_progress[0].contact_name}</h5>
-                      <p>{metrics.in_progress[0].contact_city}</p>
-                    </div>
-                  </div>
-                  <div className='progArrosec'>
-                    <h6>IN PROGRESS</h6>
-                    <Link to={`/task-details/${metrics.in_progress[0].id}`}>
-                      <button><ArrowForwardIcon /></button>
-                    </Link>
-                  </div>
-                </>
-              )}
-            </div>
-            <div className='prog_block2'>
-              {loading ? (
-                <p>Loading in-progress tasks...</p>
-              ) : metrics.in_progress && metrics.in_progress.length > 0 ? (
-                <>
-                  {metrics.in_progress.map((task) => (
-                    <div className='prog_sec' key={task.id}>
-                      <div><ControlCameraIcon /></div>
-                      <div>
-                        <h5>{formatDate(task.date)}</h5>
-                        <h4>{task.subject}</h4>
-                      </div>
-                    </div>
+                    )
                   ))}
-                  <div className='load'><Link to="/tasks">Load More</Link></div>
-                </>
-              ) : (
-                <p>No in-progress tasks found.</p>
+                </div>
               )}
             </div>
           </div>
@@ -254,7 +265,7 @@ const Dashboard = () => {
               <ul>
                 {activities.map((activity, index) => (
                   <li key={index}>
-                    {activity.action} at {activity.timestamp}
+                    {activity.action} at {formatTimestamp(activity.timestamp)}
                   </li>
                 ))}
               </ul>

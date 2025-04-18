@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./AccountPage.css"; // Importing the CSS file for styling
-import SideNav from "./SideNav"; // Importing the SideNav component
+import SideNav from "./SideNav";
+import "./AccountPage.css";
 
 const AccountsPage = () => {
   const navigate = useNavigate();
-  const [accounts, setAccounts] = useState([]); // State to store accounts
-  const [error, setError] = useState(""); // State to store errors
+  const [accounts, setAccounts] = useState([]);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Function to fetch accounts
   const fetchAccounts = async () => {
     try {
+      setIsLoading(true);
       const accessToken = localStorage.getItem("access_token");
+      
       if (!accessToken) {
         setError("You are not authenticated. Please log in.");
+        setIsLoading(false);
         return;
       }
 
@@ -24,97 +28,131 @@ const AccountsPage = () => {
         },
       });
 
-      setAccounts(response.data); // Set the fetched accounts to state
+      setAccounts(response.data);
+      setError("");
     } catch (err) {
-      console.error(
-        "Error fetching accounts:",
-        err.response?.data || err.message
-      );
-      setError("Failed to fetch accounts. Please try again later.");
+      console.error("Error fetching accounts:", err.response?.data || err.message);
+      setError(err.response?.data?.message || "Failed to fetch accounts. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Fetch accounts on component mount
   useEffect(() => {
     fetchAccounts();
   }, []);
 
+  const filteredAccounts = accounts.filter(account => 
+    account.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    account.billing_city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    account.billing_country?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    account.office_phone?.includes(searchTerm) ||
+    account.email_address?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="acc_container">
-      <div className="account_cont1">
+    <div className="account-container">
+      <div className="account-header">
         <SideNav />
       </div>
-      <div className="account_cont2">
-        <h1>Accounts</h1>
-        <button onClick={() => navigate("/create-account")}>
-          Create Account
-        </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {accounts.length > 0 ? (
-          <table
-            border="1"
-            style={{ width: "100%", borderCollapse: "collapse" }}
-          >
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>City</th>
-                <th>Billing Country</th>
-                <th>Phone</th>
-                <th>User</th>
-                <th>Email Address</th>
-              </tr>
-            </thead>
-            <tbody>
-              {accounts.map((account) => (
-                <tr key={account.id}>
-                  <td>
-                    <button
-                      onClick={() => navigate(`/account-details/${account.id}`)}
-                      style={{
-                        color: "blue",
-                        textDecoration: "none",
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        cursor: "pointer",
-                        fontSize: "16px",
-                      }}
-                    >
-                      {account.name}
-                    </button>
-                  </td>
-                  <td>{account.billing_city}</td>
-                  <td>{account.billing_country}</td>
-                  <td>{account.office_phone}</td>
-                  <td>
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/user-details/${account.assigned_to_username}`
-                        )
-                      }
-                      style={{
-                        color: "blue",
-                        textDecoration: "none",
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        cursor: "pointer",
-                        fontSize: "16px",
-                      }}
-                    >
-                      {account.assigned_to_username}
-                    </button>
-                  </td>
-                  <td>{account.email_address}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No accounts found.</p>
-        )}
+      <div className="account-content">
+        <div className="account-card">
+          <div className="page-header">
+            <h1 className="page-title">Accounts</h1>
+            <div className="button-group">
+              <button 
+                className="button button-success"
+                onClick={() => navigate("/create-account")}
+                aria-label="Create new account"
+              >
+                <span>+</span> Create Account
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <div className="status-message error-message">
+              {error}
+            </div>
+          )}
+
+          <div className="search-container" style={{ marginBottom: '20px' }}>
+            <input
+              type="text"
+              placeholder="Search accounts..."
+              className="form-control"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: '100%', maxWidth: '400px' }}
+            />
+          </div>
+
+          {isLoading ? (
+            <div className="loading-state">
+              <div className="spinner"></div>
+              <span>Loading accounts...</span>
+            </div>
+          ) : filteredAccounts.length > 0 ? (
+            <div className="table-responsive">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>City</th>
+                    <th>Country</th>
+                    <th>Phone</th>
+                    <th>Assigned To</th>
+                    <th>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredAccounts.map((account) => (
+                    <tr key={account.id}>
+                      <td>
+                        <button
+                          onClick={() => navigate(`/account-details/${account.id}`)}
+                          className="table-link"
+                          aria-label={`View details for ${account.name}`}
+                        >
+                          {account.name || '-'}
+                        </button>
+                      </td>
+                      <td>{account.billing_city || '-'}</td>
+                      <td>{account.billing_country || '-'}</td>
+                      <td>{account.office_phone || '-'}</td>
+                      <td>
+                        {account.assigned_to_username ? (
+                          <button
+                            onClick={() => navigate(`/user-details/${account.assigned_to_username}`)}
+                            className="table-link"
+                            aria-label={`View user ${account.assigned_to_username}`}
+                          >
+                            {account.assigned_to_username}
+                          </button>
+                        ) : '-'}
+                      </td>
+                      <td>
+                        {account.email_address ? (
+                          <a href={`mailto:${account.email_address}`} className="table-link">
+                            {account.email_address}
+                          </a>
+                        ) : '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="empty-state">
+              {searchTerm ? (
+                <p>No accounts match your search criteria.</p>
+              ) : (
+                <p>No accounts found. Create your first account to get started.</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
