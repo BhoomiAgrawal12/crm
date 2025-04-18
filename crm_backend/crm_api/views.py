@@ -71,7 +71,7 @@ def user_create_list(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-@permission_classes([IsAuthenticated, IsAdmin])
+@permission_classes([IsAuthenticated])
 def user_detail(request, username):
     user = User.objects.filter(username=username).first()
     if not user:
@@ -79,7 +79,18 @@ def user_detail(request, username):
 
     if request.method == "GET":
         serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        is_self = request.user.username == username
+        is_admin = request.user.is_staff
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'is_active': user.is_active,
+            'is_staff': user.is_staff,
+            'created_at': user.created_at,
+            'is_self': is_self,
+            'is_admin': is_admin,
+        })
 
     elif request.method == "PUT":
         data = request.data
