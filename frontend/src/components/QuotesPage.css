@@ -1,0 +1,34 @@
+.quotes-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.quotes-table th,
+.quotes-table td {
+  border: 1px solid #ddd; /* Add borders to table cells */
+  padding: 8px; /* Add padding for better readability */
+  text-align: left; /* Align text to the left */
+}
+
+.quotes-table th {
+  background-color: #f4f4f4; /* Light background for table headers */
+  font-weight: bold; /* Bold text for headers */
+}
+
+.quotes-table tr:nth-child(even) {
+  background-color: #f9f9f9; /* Alternate row colors for better readability */
+}
+
+.quotes-table tr:hover {
+  background-color: #f1f1f1; /* Highlight row on hover */
+}
+
+.view-link {
+  color: #007bff; /* Link color */
+  text-decoration: none; /* Remove underline */
+}
+
+.view-link:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
