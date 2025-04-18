@@ -20,6 +20,7 @@ from .views import (
     user_activity_logs,
     task_list_create,
     task_detail,
+    dashboard_metrics,  # Import the new dashboard metrics view
 )
 
 urlpatterns = [
@@ -43,4 +44,5 @@ urlpatterns = [
     path("activity-logs/", user_activity_logs, name="user-activity-logs"),  # New endpoint for user activity logs
     path("tasks/", task_list_create, name="task-list-create"),
     path("task/<int:task_id>/", task_detail, name="task-detail"),
+    path("dashboard-metrics/", dashboard_metrics, name="dashboard-metrics"),  # New endpoint for dashboard metrics
 ]

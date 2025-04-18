@@ -13,6 +13,12 @@ const Dashboard = () => {
   const [activities, setActivities] = useState([]);
   const [tasks, setTasks] = useState([]); // State to store tasks
   const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState({
+    customer_count: 0,
+    deal_count: 0,
+    recent_deals: [],
+    in_progress: []
+  });
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -48,6 +54,14 @@ const Dashboard = () => {
           },
         });
         setTasks(tasksResponse.data);
+
+        // Fetch dashboard metrics
+        const metricsResponse = await axios.get('http://localhost:8000/api/dashboard-metrics/', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setMetrics(metricsResponse.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -57,6 +71,12 @@ const Dashboard = () => {
 
     fetchData();
   }, [navigate]);
+
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   return (
     <div className='dash_container'>
@@ -133,14 +153,14 @@ const Dashboard = () => {
           <div className='customers'>
             <div>
               <h4>Customers</h4>
-              <h1>78</h1>
+              <h1>{loading ? 'Loading...' : metrics.customer_count}</h1>
             </div>
             <div><span><PeopleAltIcon /></span></div>
           </div>
           <div className='deals'>
             <div>
               <h4>Deals</h4>
-              <h1>136</h1>
+              <h1>{loading ? 'Loading...' : metrics.deal_count}</h1>
             </div>
             <div><span><BusinessCenterIcon /></span></div>
           </div>
@@ -149,131 +169,77 @@ const Dashboard = () => {
           <div className='recent_deal_block'>
             <div className='recent_block1'>
               <h3>Recent Deals</h3>
-              <p>View All</p>
+              <Link to="/opportunities">
+                <p>View All</p>
+              </Link>
             </div>
             <div className='recent_block2'>
-              <div className='recent_deals_items'>
-                <div className='re_de_item_1'>
-                  <div>logo</div>
-                  <div>
-                    <h5>319 Haul Road</h5>
-                    <p>Glenrock, WY</p>
+              {loading ? (
+                <p>Loading recent deals...</p>
+              ) : metrics.recent_deals.length === 0 ? (
+                <p>No deals available.</p>
+              ) : (
+                metrics.recent_deals.map((deal, index) => (
+                  <div className='recent_deals_items' key={deal.id}>
+                    <div className='re_de_item_1'>
+                      <div>logo</div>
+                      <div>
+                        <h5>{deal.name}</h5>
+                        <p>{deal.account_city}</p>
+                      </div>
+                    </div>
+                    <div className='re_de_item_2'>
+                      <div>
+                        <h5>{deal.currency} {deal.amount}</h5>
+                        <p>{formatDate(deal.timestamp)}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className='re_de_item_2'>
-                  <div>
-                    <h5>$5750</h5>
-                    <p>Nov 14, 07:00 AM</p>
-                  </div>
-                </div>
-              </div>
-              <div className='recent_deals_items'>
-                <div className='re_de_item_1'>
-                  <div>logo</div>
-                  <div>
-                    <h5>319 Haul Road</h5>
-                    <p>Glenrock, WY</p>
-                  </div>
-                </div>
-                <div className='re_de_item_2'>
-                  <div>
-                    <h5>$5750</h5>
-                    <p>Nov 14, 07:00 AM</p>
-                  </div>
-                </div>
-              </div>
-              <div className='recent_deals_items'>
-                <div className='re_de_item_1'>
-                  <div>logo</div>
-                  <div>
-                    <h5>319 Haul Road</h5>
-                    <p>Glenrock, WY</p>
-                  </div>
-                </div>
-                <div className='re_de_item_2'>
-                  <div>
-                    <h5>$5750</h5>
-                    <p>Nov 14, 07:00 AM</p>
-                  </div>
-                </div>
-              </div>
-              <div className='recent_deals_items'>
-                <div className='re_de_item_1'>
-                  <div>logo</div>
-                  <div>
-                    <h5>319 Haul Road</h5>
-                    <p>Glenrock, WY</p>
-                  </div>
-                </div>
-                <div className='re_de_item_2'>
-                  <div>
-                    <h5>$5750</h5>
-                    <p>Nov 14, 07:00 AM</p>
-                  </div>
-                </div>
-              </div>
-              <div className='recent_deals_items'>
-                <div className='re_de_item_1'>
-                  <div>logo</div>
-                  <div>
-                    <h5>319 Haul Road</h5>
-                    <p>Glenrock, WY</p>
-                  </div>
-                </div>
-                <div className='re_de_item_2'>
-                  <div>
-                    <h5>$5750</h5>
-                    <p>Nov 14, 07:00 AM</p>
-                  </div>
-                </div>
-              </div>
-              <div className='recent_deals_items'>
-                <div className='re_de_item_1'>
-                  <div>logo</div>
-                  <div>
-                    <h5>319 Haul Road</h5>
-                    <p>Glenrock, WY</p>
-                  </div>
-                </div>
-                <div className='re_de_item_2'>
-                  <div>
-                    <h5>$5750</h5>
-                    <p>Nov 14, 07:00 AM</p>
-                  </div>
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </div>
           <div className='progress_block'>
             <div className='prog_block1'>
-              <div>
-                <div>img</div>
-                <div>
-                  <h5>1824 Turkey Pen Road</h5>
-                  <p>Cleveland, OH 12345</p>
-                </div>
-              </div>
-              <div className='progArrosec'>
-                <h6>IN PROGRESS</h6>
-                <button><ArrowForwardIcon /></button>
-              </div>
+              {loading || !metrics.in_progress || metrics.in_progress.length === 0 ? (
+                <p>No tasks in progress</p>
+              ) : (
+                <>
+                  <div>
+                    <div>img</div>
+                    <div>
+                      <h5>{metrics.in_progress[0].contact_name}</h5>
+                      <p>{metrics.in_progress[0].contact_city}</p>
+                    </div>
+                  </div>
+                  <div className='progArrosec'>
+                    <h6>IN PROGRESS</h6>
+                    <Link to={`/task-details/${metrics.in_progress[0].id}`}>
+                      <button><ArrowForwardIcon /></button>
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
             <div className='prog_block2'>
-              <div className='prog_sec'>
-                <div><ControlCameraIcon /></div>
-                <div>
-                  <h5>17 Nov, 2021</h5>
-                  <h4>Installation of new air conditioning system</h4>
-                </div>
-              </div>
-              <div className='prog_sec'>
-                <div><ControlCameraIcon /></div>
-                <div>
-                  <h5>17 Nov, 2021</h5>
-                  <h4>Installation of new air conditioning system</h4>
-                </div>
-              </div>
-              <div className='load'>Load More</div>
+              {loading ? (
+                <p>Loading in-progress tasks...</p>
+              ) : metrics.in_progress && metrics.in_progress.length > 0 ? (
+                <>
+                  {metrics.in_progress.map((task) => (
+                    <div className='prog_sec' key={task.id}>
+                      <div><ControlCameraIcon /></div>
+                      <div>
+                        <h5>{formatDate(task.date)}</h5>
+                        <h4>{task.subject}</h4>
+                      </div>
+                    </div>
+                  ))}
+                  <div className='load'><Link to="/tasks">Load More</Link></div>
+                </>
+              ) : (
+                <p>No in-progress tasks found.</p>
+              )}
             </div>
           </div>
         </div>

@@ -427,3 +427,53 @@ def task_detail(request, task_id):
         # Delete the task
         task.delete()
         return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def dashboard_metrics(request):
+    # Count customers (accounts with account_type='Customer')
+    customer_count = Account.objects.filter(account_type='Customer').count()
+    
+    # Count all opportunities (deals)
+    deal_count = Opportunity.objects.all().count()
+    
+    # Get 6 most recent opportunities/deals with some details
+    recent_deals = Opportunity.objects.all().order_by('-created_at')[:6]
+    recent_deals_data = []
+    
+    for deal in recent_deals:
+        # Get the account associated with this opportunity
+        account = deal.account
+        deal_data = {
+            'id': deal.id,
+            'name': deal.opportunity_name,
+            'amount': deal.opportunity_amount,
+            'currency': deal.currency,
+            'timestamp': deal.created_at,
+            'account_name': account.name,
+            'account_city': account.billing_city,
+        }
+        recent_deals_data.append(deal_data)
+    
+    # Get in-progress tasks
+    in_progress_tasks = Task.objects.filter(status='In Progress').order_by('-modified_at')[:2]
+    in_progress_data = []
+    
+    for task in in_progress_tasks:
+        contact = task.contact_name
+        task_data = {
+            'id': task.id,
+            'subject': task.subject,
+            'date': task.modified_at,
+            'contact_name': f"{contact.first_name} {contact.last_name}" if contact else "N/A",
+            'contact_city': contact.address_city if contact else "N/A",
+        }
+        in_progress_data.append(task_data)
+    
+    return Response({
+        'customer_count': customer_count,
+        'deal_count': deal_count,
+        'recent_deals': recent_deals_data,
+        'in_progress': in_progress_data,
+    }, status=status.HTTP_200_OK)
