@@ -18,6 +18,9 @@ import LeadDetails from './components/LeadDetails';
 import TaskPage from './components/TaskPage';
 import CreateTask from './components/CreateTask';
 import TaskDetails from './components/TaskDetails';
+import QuotesPage from './components/QuotesPage';
+import QuoteDetails from './components/QuoteDetails';
+import CreateQuote from './components/CreateQuote';
 
 function App() {
   return (
@@ -40,7 +43,10 @@ function App() {
         <Route path="/create-lead" element={<CreateLead />} />  
         <Route path="/tasks" element={<TaskPage />} />
         <Route path="/create-task" element={<CreateTask />} />
-        <Route path="/task-details/:id" element={<TaskDetails />} />      
+        <Route path="/task-details/:id" element={<TaskDetails />} />
+        <Route path="/quotes" element={<QuotesPage />} />
+        <Route path="/create-quote" element={<CreateQuote />} />
+        <Route path="/quote-details/:id" element={<QuoteDetails />} />      
       </Routes>
     </Router>
   );

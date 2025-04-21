@@ -9,35 +9,10 @@ const UserDetails = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null); // State to store user details
   const [error, setError] = useState(""); // State to store errors
+  const [isSelf, setIsSelf] = useState(false); // State to check if the user is viewing their own details
   const [isAdmin, setIsAdmin] = useState(false); // State to check if the user is admin
   const [isEditing, setIsEditing] = useState(false); // State to toggle edit mode
   const [formData, setFormData] = useState({}); // State for form data
-
-  // Fetch current user role to check if admin
-  const checkAdmin = useCallback(async () => {
-    try {
-      const accessToken = localStorage.getItem("access_token");
-      if (!accessToken) {
-        navigate("/login");
-        return;
-      }
-
-      const response = await axios.get("http://localhost:8000/api/current-user/", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      if (response.data.is_staff) {
-        setIsAdmin(true); // User is admin
-      } else {
-        setIsAdmin(false); // User is not admin
-      }
-    } catch (err) {
-      console.error("Error checking admin status:", err.response?.data || err.message);
-      setError("Failed to verify user role. Please try again later.");
-    }
-  }, [navigate]);
 
   // Fetch user details
   const fetchUserDetails = useCallback(async () => {
@@ -54,8 +29,12 @@ const UserDetails = () => {
         },
       });
 
-      setUser(response.data);
-      setFormData(response.data); // Initialize form data with user details
+      const { is_self, is_admin, ...userData } = response.data;
+
+      setUser(userData);
+      setFormData(userData); // Initialize form data with user details
+      setIsSelf(is_self);
+      setIsAdmin(is_admin);
     } catch (err) {
       console.error("Error fetching user details:", err.response?.data || err.message);
       setError("Failed to fetch user details. Please try again later.");
@@ -94,16 +73,10 @@ const UserDetails = () => {
   };
 
   useEffect(() => {
-    checkAdmin(); // Check if the user is admin
-  }, [checkAdmin]);
+    fetchUserDetails(); // Fetch user details on component mount
+  }, [fetchUserDetails]);
 
-  useEffect(() => {
-    if (isAdmin) {
-      fetchUserDetails(); // Fetch user details only if admin
-    }
-  }, [isAdmin, fetchUserDetails]);
-
-  if (!isAdmin) {
+  if (!isSelf && !isAdmin) {
     return <p style={{ color: "red", textAlign: "center" }}>Unauthorized: You do not have permission to view this page.</p>;
   }
 
@@ -117,76 +90,177 @@ const UserDetails = () => {
         <SideNav />
       </div>
       <div className="UserDetails_container2">
-      <div style={{ padding: "20px" }}>
-      <h1>User Details</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {isEditing ? (
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Username:</label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Password:</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password || ""}
-              onChange={handleChange}
-              placeholder="Leave blank to keep current password"
-            />
-          </div>
-          <div>
-            <label>Is Active:</label>
-            <input
-              type="checkbox"
-              name="is_active"
-              checked={formData.is_active}
-              onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-            />
-          </div>
-          <div>
-            <label>Is Staff:</label>
-            <input
-              type="checkbox"
-              name="is_staff"
-              checked={formData.is_staff}
-              onChange={(e) => setFormData({ ...formData, is_staff: e.target.checked })}
-            />
-          </div>
-          <button type="submit">Save</button>
-          <button type="button" onClick={() => setIsEditing(false)}>
-            Cancel
-          </button>
-        </form>
-      ) : (
-        <div>
-          <p><strong>Username:</strong> {user.username}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Is Active:</strong> {user.is_active ? "Yes" : "No"}</p>
-          <p><strong>Is Staff:</strong> {user.is_staff ? "Yes" : "No"}</p>
-          <p><strong>Created At:</strong> {new Date(user.created_at).toLocaleString()}</p>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
-          {/* <button onClick={() => navigate("/")}>Back</button> */}
+        <div style={{ padding: "20px" }}>
+          <h1>User Details - {user.username}</h1>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {isEditing && isAdmin ? ( // Only allow editing if the user is an admin
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label>Title:</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Full Name:</label>
+                <input
+                  type="text"
+                  name="full_name"
+                  value={formData.full_name || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email || ""}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Notify on Assignment:</label>
+                <input
+                  type="checkbox"
+                  name="notify_on_assignment"
+                  checked={formData.notify_on_assignment || false}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notify_on_assignment: e.target.checked })
+                  }
+                />
+              </div>
+              <div>
+                <label>Description:</label>
+                <textarea
+                  name="description"
+                  value={formData.description || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Department:</label>
+                <input
+                  type="text"
+                  name="department"
+                  value={formData.department || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Home Phone:</label>
+                <input
+                  type="text"
+                  name="home_phone"
+                  value={formData.home_phone || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Mobile:</label>
+                <input
+                  type="text"
+                  name="mobile"
+                  value={formData.mobile || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Work Phone:</label>
+                <input
+                  type="text"
+                  name="work_phone"
+                  value={formData.work_phone || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Address Street:</label>
+                <input
+                  type="text"
+                  name="address_street"
+                  value={formData.address_street || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Address City:</label>
+                <input
+                  type="text"
+                  name="address_city"
+                  value={formData.address_city || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Address State:</label>
+                <input
+                  type="text"
+                  name="address_state"
+                  value={formData.address_state || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Address Country:</label>
+                <input
+                  type="text"
+                  name="address_country"
+                  value={formData.address_country || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>Address Postal Code:</label>
+                <input
+                  type="text"
+                  name="address_postal_code"
+                  value={formData.address_postal_code || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label>User Type:</label>
+                <input
+                  type="text"
+                  name="user_type"
+                  value={formData.user_type || ""}
+                  onChange={handleChange}
+                />
+              </div>
+              <button type="submit">Save</button>
+              <button type="button" onClick={() => setIsEditing(false)}>
+                Cancel
+              </button>
+            </form>
+          ) : (
+            <div>
+              <p><strong>Title:</strong> {user.title || "N/A"}</p>
+              <p><strong>Full Name:</strong> {user.full_name || "N/A"}</p>
+              <p><strong>Email:</strong> {user.email}</p>
+              <p><strong>Notify on Assignment:</strong> {user.notify_on_assignment ? "Yes" : "No"}</p>
+              <p><strong>Description:</strong> {user.description || "N/A"}</p>
+              <p><strong>Department:</strong> {user.department || "N/A"}</p>
+              <p><strong>Home Phone:</strong> {user.home_phone || "N/A"}</p>
+              <p><strong>Mobile:</strong> {user.mobile || "N/A"}</p>
+              <p><strong>Work Phone:</strong> {user.work_phone || "N/A"}</p>
+              <p><strong>Address Street:</strong> {user.address_street || "N/A"}</p>
+              <p><strong>Address City:</strong> {user.address_city || "N/A"}</p>
+              <p><strong>Address State:</strong> {user.address_state || "N/A"}</p>
+              <p><strong>Address Country:</strong> {user.address_country || "N/A"}</p>
+              <p><strong>Address Postal Code:</strong> {user.address_postal_code || "N/A"}</p>
+              <p><strong>User Type:</strong> {user.user_type || "N/A"}</p>
+              {!isAdmin && (
+                <p>Something is wrong? Contact Admin for updating your details.</p>
+              )}
+              {isAdmin && <button onClick={() => setIsEditing(true)}>Edit</button>}
+            </div>
+          )}
         </div>
-      )}
-    </div>
       </div>
     </div>
   );

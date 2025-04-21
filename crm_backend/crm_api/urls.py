@@ -20,6 +20,9 @@ from .views import (
     user_activity_logs,
     task_list_create,
     task_detail,
+    quote_list_create,
+    quote_detail,
+    quote_choices
 )
 
 urlpatterns = [
@@ -30,7 +33,7 @@ urlpatterns = [
     path('users/<str:username>/', user_detail, name='user-detail'),
     path('accounts/', account_list_create, name='account-list-create'),
     path('accounts/<int:account_id>/', account_detail, name='account-detail'),
-    path('account/choices/', account_choices, name='account-choices'),  # New endpoint for account choices
+    path('account/choices/', account_choices, name='account-choices'),  
     path('contacts/', contact_list_create, name='contact-list-create'),
     path('contacts/<int:contact_id>/', contact_detail, name='contact-detail'),
     path('current-user/', current_user, name='current-user'),
@@ -40,7 +43,10 @@ urlpatterns = [
     path('leads/', lead_list_create, name='lead-list-create'),
     path('lead/<int:lead_id>/', lead_detail, name='lead-detail'),
     path("lead-choices/", lead_choices, name="lead-choices"),
-    path("activity-logs/", user_activity_logs, name="user-activity-logs"),  # New endpoint for user activity logs
+    path("activity-logs/", user_activity_logs, name="user-activity-logs"),
     path("tasks/", task_list_create, name="task-list-create"),
     path("task/<int:task_id>/", task_detail, name="task-detail"),
+    path('quotes/', quote_list_create, name='quote-list-create'),
+    path('quotes/<int:quote_id>/', quote_detail, name='quote-detail'),
+    path('quote-choices/', quote_choices, name='quote-choices'),
 ]

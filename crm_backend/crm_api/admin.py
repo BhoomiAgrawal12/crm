@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Contact, User, Opportunity, Lead, ActivityLog, Task
+from .models import Account, Contact, User, Opportunity, Lead, ActivityLog, Task, Quote
 
 # Register your models here.
 admin.site.register(Account)
@@ -9,3 +9,4 @@ admin.site.register(Opportunity)
 admin.site.register(Lead)
 admin.site.register(ActivityLog)
 admin.site.register(Task)
+admin.site.register(Quote)
