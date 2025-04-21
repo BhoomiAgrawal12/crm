@@ -114,6 +114,7 @@ def user_detail(request, username):
 def current_user(request):
     user = request.user
     return Response({
+        "id": user.id,
         "username": user.username,
         "email": user.email,
         "is_staff": user.is_staff,
@@ -229,7 +230,7 @@ def account_detail(request, account_id):
 def account_choices(request):
     choices = {
         "account_type": Account.account_type_choices,
-        "industry": Account.industry_choices,
+        "industry_type": Account.industry_type_choices,
     }
     return Response(choices)
 
