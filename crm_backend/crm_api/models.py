@@ -86,7 +86,7 @@ class Account(models.Model):
         ('Reseller', 'Reseller'),
         ('Other', 'Other')
     ]
-    industry_choices = [
+    industry_type_choices = [
         ('Apparel', 'Apparel'),
         ('Banking', 'Banking'),
         ('Biotechnology', 'Biotechnology'),
@@ -132,7 +132,7 @@ class Account(models.Model):
     shipping_state = models.CharField(max_length=100)
     shipping_country = models.CharField(max_length=100)
     account_type = models.CharField(max_length=100, choices=account_type_choices)
-    industry = models.CharField(max_length=100, choices=industry_choices)
+    industry_type = models.CharField(max_length=100, choices=industry_type_choices)
     annual_revenue = models.IntegerField()
     employees = models.CharField(max_length=255)
     #member_of = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)

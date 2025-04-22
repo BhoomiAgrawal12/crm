@@ -254,7 +254,9 @@ const UserDetails = () => {
               <p><strong>Address Country:</strong> {user.address_country || "N/A"}</p>
               <p><strong>Address Postal Code:</strong> {user.address_postal_code || "N/A"}</p>
               <p><strong>User Type:</strong> {user.user_type || "N/A"}</p>
-              {!isAdmin} Something is wrong? Contact Admin for updating your details.
+              {!isAdmin && (
+                <p>Something is wrong? Contact Admin for updating your details.</p>
+              )}
               {isAdmin && <button onClick={() => setIsEditing(true)}>Edit</button>}
             </div>
           )}

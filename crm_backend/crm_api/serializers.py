@@ -102,7 +102,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'shipping_country',
             'description',
             'account_type',
-            'industry',
+            'industry_type',
             'annual_revenue',
             'employees',
             'modified_by',  # Include modified_by in the serializer

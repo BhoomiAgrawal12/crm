@@ -2,18 +2,20 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
+import { FiPlus, FiAlertCircle, FiLoader } from "react-icons/fi";
+import "./TaskPage.css";
 
 const TaskPage = () => {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState([]); // State to store tasks
-  const [error, setError] = useState(""); // State to store errors
+  const [tasks, setTasks] = useState([]);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Function to fetch tasks
   const fetchTasks = useCallback(async () => {
     try {
+      setIsLoading(true);
       const accessToken = localStorage.getItem("access_token");
       if (!accessToken) {
-        setError("You are not authenticated. Please log in.");
         navigate("/login");
         return;
       }
@@ -24,70 +26,136 @@ const TaskPage = () => {
         },
       });
 
-      setTasks(response.data); // Set the fetched tasks to state
+      setTasks(response.data);
     } catch (err) {
       console.error("Error fetching tasks:", err.response?.data || err.message);
       setError("Failed to fetch tasks. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
-  }, [navigate]); // Include `navigate` as a dependency
+  }, [navigate]);
 
-  // Fetch tasks on component mount
   useEffect(() => {
     fetchTasks();
-  }, [fetchTasks]); // Include `fetchTasks` in the dependency array
+  }, [fetchTasks]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const getStatusBadge = (status) => {
+    if (!status) return null;
+    
+    const statusClass = {
+      "Not Started": "status-not-started",
+      "In Progress": "status-in-progress",
+      "Completed": "status-completed",
+      "Pending Input": "status-pending-input",
+      "Deferred": "status-deferred",
+    }[status] || "status-not-started";
+
+    return (
+      <span className={`status-badge ${statusClass}`}>
+        {status}
+      </span>
+    );
+  };
+
+  const getPriorityClass = (priority) => {
+    if (!priority) return "";
+    
+    return {
+      "High": "priority-high",
+      "Medium": "priority-medium",
+      "Low": "priority-low",
+    }[priority] || "";
+  };
 
   return (
-    <div className="task_container">
-      <div className="task_container1">
+    <div className="task-page-container">
+      <div className="task-container1">
         <SideNav />
       </div>
-      <div className="task_container2">
-        <h1>Tasks</h1>
-        <button onClick={() => navigate("/create-task")}>Create Task</button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {tasks.length > 0 ? (
-          <table
-            border="1"
-            style={{ width: "100%", borderCollapse: "collapse" }}
-          >
-            <thead>
-              <tr>
-                <th>Subject</th>
-                <th>Contact</th>
-                <th>Due Date</th>
-                <th>Assigned User</th>
-                <th>Created Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tasks.map((task) => (
-                <tr key={task.id}>
-                  <td>
-                    <button
-                      onClick={() => navigate(`/task-details/${task.id}`)}
-                      style={{
-                        color: "blue",
-                        textDecoration: "none",
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        cursor: "pointer",
-                        fontSize: "16px",
-                      }}
-                    >
-                      {task.subject}
-                    </button>
-                  </td>
-                  <td>{task.contact_name_full}</td>
-                  <td>{task.due_date}</td>
-                  <td>{task.assigned_to_username}</td>
-                  <td>{task.start_date}</td>
+      <div className="task-container2">
+        <div className="task-header">
+          <h1 className="task-title">Tasks</h1>
+          <div className="task-actions">
+            <button 
+              className="create-task-btn"
+              onClick={() => navigate("/create-task")}
+            >
+              <FiPlus /> Create Task
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="error-message">
+            <FiAlertCircle /> {error}
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="loading-state">
+            <FiLoader className="spin" size={24} />
+          </div>
+        ) : tasks.length > 0 ? (
+          <div className="task-table-container">
+            <table className="task-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Contact</th>
+                  <th>Assigned To</th>
+                  <th>Due Date</th>
+                  <th>Created Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {tasks.map((task) => (
+                  <tr key={task.id}>
+                    <td>
+                      <span 
+                        className="task-link" 
+                        onClick={() => navigate(`/task-details/${task.id}`)}
+                      >
+                        {task.subject || "-"}
+                      </span>
+                    </td>
+                    <td>{getStatusBadge(task.status)}</td>
+                    <td className={getPriorityClass(task.priority)}>
+                      {task.priority || "-"}
+                    </td>
+                    <td>{task.contact_name_full || "-"}</td>
+                    <td>{task.assigned_to_username || "-"}</td>
+                    <td>{formatDate(task.due_date)}</td>
+                    <td>{formatDate(task.start_date)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
-          <p>No tasks found.</p>
+          <div className="empty-state">
+            <div className="empty-state-icon">
+              <FiAlertCircle size={48} />
+            </div>
+            <p className="empty-state-text">No tasks found</p>
+            <button 
+              className="create-task-btn"
+              onClick={() => navigate("/create-task")}
+            >
+              <FiPlus /> Create Your First Task
+            </button>
+          </div>
         )}
       </div>
     </div>
