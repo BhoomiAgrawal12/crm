@@ -7,7 +7,7 @@ from .views import (
     user_list,
     account_list_create,
     account_detail,
-    account_choices,  # Import the new account choices view
+    account_choices,
     contact_detail,
     contact_list_create,
     current_user,
@@ -22,7 +22,8 @@ from .views import (
     task_detail,
     quote_list_create,
     quote_detail,
-    quote_choices
+    quote_choices,
+    user_choices
 )
 
 urlpatterns = [
@@ -31,12 +32,13 @@ urlpatterns = [
     path('create-user/', user_create_list, name='user-create-list'),
     path('users/', user_list, name='user-list'),
     path('users/<str:username>/', user_detail, name='user-detail'),
+    path('current-user/<str:username>/', current_user, name='current-user'),
+    path('user-choices/', user_choices, name='user-choices'),
     path('accounts/', account_list_create, name='account-list-create'),
     path('accounts/<int:account_id>/', account_detail, name='account-detail'),
     path('account/choices/', account_choices, name='account-choices'),  
     path('contacts/', contact_list_create, name='contact-list-create'),
     path('contacts/<int:contact_id>/', contact_detail, name='contact-detail'),
-    path('current-user/', current_user, name='current-user'),
     path('opportunities/', opportunity_list_create, name='opportunity-list-create'),
     path('opportunity/<int:opportunity_id>/', opportunity_detail, name='opportunity-detail'),
     path("opportunity-choices/", opportunity_choices, name="opportunity-choices"),
