@@ -81,16 +81,11 @@ def user_detail(request, username):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
-        data = request.data
-        user.username = data.get("username", user.username)
-        user.email = data.get("email", user.email)
-        if data.get("password"):
-            user.password = make_password(data["password"])
-        user.is_staff = data.get("is_staff", user.is_staff)
-        user.is_active = data.get("is_active", user.is_active)
-        user.save()
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":
         user.delete()
@@ -99,15 +94,26 @@ def user_detail(request, username):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def current_user(request):
-    user = request.user
+def current_user(request, username):
+    # Check if the username matches the authenticated user's username
+    if request.user.username != username and not request.user.is_superuser:
+        return Response({"error": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
+
+    # Return the current user's details
     return Response({
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "is_staff": user.is_staff,
-        "is_active": user.is_active,
+        "is_staff": request.user.is_staff,
+        "is_active": request.user.is_active,
+        "is_admin": request.user.is_superuser,
+        "is_self": request.user.username == username,
     })
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_choices(request):
+    choices = {
+        "user_type": User.user_type_choices
+    }
+    return Response(choices)
 
 
 # @api_view(["POST"])

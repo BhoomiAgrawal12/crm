@@ -57,9 +57,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     address_state = models.CharField(max_length=255, blank=True, null=True)
     address_country = models.CharField(max_length=255, blank=True, null=True)
     address_postal_code = models.CharField(max_length=20, blank=True, null=True)
+    user_type_choices = [
+        ('Admin', 'Admin'),
+        ('Employee', 'Employee'),
+        ('Guest', 'Guest'),
+        ('Manager', 'Manager')
+        
+    ]
     user_type = models.CharField(
         max_length=50,
-        choices=[('Admin', 'Admin'), ('Employee', 'Employee'), ('Guest', 'Guest')],
+        choices=user_type_choices,
         default='Employee'
     )
 
@@ -116,7 +123,7 @@ class Account(models.Model):
         ('Other', 'Other')
     ]
     
-    name = models.CharField(max_length=255, null=False)
+    name = models.CharField(max_length=255, null=False, unique=True)
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_accounts")
     website = models.URLField(blank=True, null=True)
     office_phone = models.CharField(max_length=20)
