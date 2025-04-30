@@ -491,3 +491,25 @@ class Quote(models.Model):
     
     def __str__(self):
         return self.quote_title
+
+
+class Note(models.Model):
+    subject = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    related_to_type_choices = [
+        ('Account', 'Account'),
+        ('Contact', 'Contact'),
+        ('Opportunity', 'Opportunity'),
+        ('Lead', 'Lead'),
+        ('Task', 'Task'),
+    ]
+    related_to_type = models.CharField(max_length=50, choices=related_to_type_choices, blank=True, null=True)
+    related_to_id = models.IntegerField(blank=True, null=True)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_notes")
+    created_at = models.DateTimeField(default=timezone_now)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_notes")
+    modified_at = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="modified_notes")
+    
+    def __str__(self):
+        return self.subject

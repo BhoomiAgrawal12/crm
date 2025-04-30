@@ -38,10 +38,13 @@ const AccountDetails = () => {
         }),
       ]);
 
-      setAccount(accountResponse.data);
-      setFormData(accountResponse.data);
-      setAccountTypes(choicesResponse.data.account_type);
-      setIndustries(choicesResponse.data.industry);
+      const accountData = accountResponse.data;
+      accountData.member_of = accountData.member_of?.id || "";
+      setAccount(accountData);
+      setFormData(accountData);
+
+      setAccountTypes(choicesResponse.data.account_type || []);
+      setIndustries(choicesResponse.data.industry || []);
       setAccounts(accountsResponse.data);
     } catch (err) {
       console.error("Error fetching account details:", err.response?.data || err.message);
@@ -86,33 +89,11 @@ const AccountDetails = () => {
   }, [fetchAccountDetails]);
 
   if (isLoading && !account) {
-    return (
-      <div className="AccountDetails_container">
-        <div className="AccountDetails_container1">
-          <SideNav />
-        </div>
-        <div className="AccountDetails_container2">
-          <div className="account-details-container">
-            <p>Loading account details...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <div>Loading account details...</div>;
   }
 
   if (!account) {
-    return (
-      <div className="AccountDetails_container">
-        <div className="AccountDetails_container1">
-          <SideNav />
-        </div>
-        <div className="AccountDetails_container2">
-          <div className="account-details-container">
-            <p>Unable to load account details.</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <div>Unable to load account details.</div>;
   }
 
   return (
@@ -123,7 +104,7 @@ const AccountDetails = () => {
       <div className="AccountDetails_container2">
         <div className="account-details-container">
           <h1>Account Details</h1>
-          
+
           {error && <div className="error-message">{error}</div>}
           {success && <div className="success-message">{success}</div>}
 
@@ -131,234 +112,74 @@ const AccountDetails = () => {
             <form className="edit-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="required-field">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name || ""}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="name" value={formData.name || ""} onChange={handleChange} required />
               </div>
 
               <div className="form-group">
                 <label>Assigned To</label>
-                <input
-                  type="text"
-                  name="assigned_to_username"
-                  value={formData.assigned_to_username || "Unassigned"}
-                  disabled
-                />
+                <input type="text" name="assigned_to_username" value={formData.assigned_to_username ?? "Unassigned"} disabled />
               </div>
 
               <div className="form-group">
                 <label>Website</label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website || ""}
-                  onChange={handleChange}
-                  placeholder="https://example.com"
-                />
+                <input type="url" name="website" value={formData.website || ""} onChange={handleChange} placeholder="https://example.com" />
               </div>
 
               <div className="form-group">
                 <label className="required-field">Phone</label>
-                <input
-                  type="text"
-                  name="office_phone"
-                  value={formData.office_phone || ""}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="office_phone" value={formData.office_phone || ""} onChange={handleChange} required />
               </div>
 
               <div className="form-group">
                 <label className="required-field">Email</label>
-                <input
-                  type="email"
-                  name="email_address"
-                  value={formData.email_address || ""}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="email" name="email_address" value={formData.email_address || ""} onChange={handleChange} required />
               </div>
 
               <div className="form-group">
                 <label>Account Type</label>
-                <select
-                  name="account_type"
-                  value={formData.account_type || ""}
-                  onChange={handleChange}
-                >
+                <select name="account_type" value={formData.account_type || ""} onChange={handleChange}>
                   <option value="">Select an account type</option>
                   {accountTypes.map((type) => (
-                    <option key={type[0]} value={type[0]}>
-                      {type[1]}
-                    </option>
+                    <option key={type[0]} value={type[0]}>{type[1]}</option>
                   ))}
                 </select>
               </div>
 
               <div className="form-group">
                 <label>Industry</label>
-                <select
-                  name="industry"
-                  value={formData.industry || ""}
-                  onChange={handleChange}
-                >
+                <select name="industry" value={formData.industry || ""} onChange={handleChange}>
                   <option value="">Select an industry</option>
                   {industries.map((industry) => (
-                    <option key={industry[0]} value={industry[0]}>
-                      {industry[1]}
-                    </option>
+                    <option key={industry[0]} value={industry[0]}>{industry[1]}</option>
                   ))}
                 </select>
               </div>
 
               <div className="form-group">
                 <label>Annual Revenue</label>
-                <input
-                  type="number"
-                  name="annual_revenue"
-                  value={formData.annual_revenue || ""}
-                  onChange={handleChange}
-                  min="0"
-                  step="0.01"
-                />
+                <input type="number" name="annual_revenue" value={formData.annual_revenue || ""} onChange={handleChange} min="0" step="0.01" />
               </div>
 
               <div className="form-group">
                 <label>Employees</label>
-                <input
-                  type="number"
-                  name="employees"
-                  value={formData.employees || ""}
-                  onChange={handleChange}
-                  min="0"
-                />
+                <input type="number" name="employees" value={formData.employees || ""} onChange={handleChange} min="0" />
               </div>
 
               <div className="form-group">
                 <label>Parent Account</label>
-                <select
-                  name="member_of"
-                  value={formData.member_of || ""}
-                  onChange={handleChange}
-                >
+                <select name="member_of" value={formData.member_of || ""} onChange={handleChange}>
                   <option value="">Select a parent account</option>
                   {accounts.map((acc) => (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.name}
-                    </option>
+                    <option key={acc.id} value={acc.id}>{acc.name}</option>
                   ))}
                 </select>
               </div>
 
-              <div className="address-group">
-                <label>Billing Address</label>
-                <div className="address-inputs">
-                  <input
-                    type="text"
-                    name="billing_street"
-                    value={formData.billing_street || ""}
-                    onChange={handleChange}
-                    placeholder="Street"
-                  />
-                  <input
-                    type="text"
-                    name="billing_city"
-                    value={formData.billing_city || ""}
-                    onChange={handleChange}
-                    placeholder="City"
-                  />
-                  <input
-                    type="text"
-                    name="billing_state"
-                    value={formData.billing_state || ""}
-                    onChange={handleChange}
-                    placeholder="State"
-                  />
-                  <input
-                    type="text"
-                    name="billing_country"
-                    value={formData.billing_country || ""}
-                    onChange={handleChange}
-                    placeholder="Country"
-                  />
-                  <input
-                    type="text"
-                    name="billing_postal_code"
-                    value={formData.billing_postal_code || ""}
-                    onChange={handleChange}
-                    placeholder="Postal Code"
-                  />
-                </div>
-              </div>
-
-              <div className="address-group">
-                <label>Shipping Address</label>
-                <div className="address-inputs">
-                  <input
-                    type="text"
-                    name="shipping_street"
-                    value={formData.shipping_street || ""}
-                    onChange={handleChange}
-                    placeholder="Street"
-                  />
-                  <input
-                    type="text"
-                    name="shipping_city"
-                    value={formData.shipping_city || ""}
-                    onChange={handleChange}
-                    placeholder="City"
-                  />
-                  <input
-                    type="text"
-                    name="shipping_state"
-                    value={formData.shipping_state || ""}
-                    onChange={handleChange}
-                    placeholder="State"
-                  />
-                  <input
-                    type="text"
-                    name="shipping_country"
-                    value={formData.shipping_country || ""}
-                    onChange={handleChange}
-                    placeholder="Country"
-                  />
-                  <input
-                    type="text"
-                    name="shipping_postal_code"
-                    value={formData.shipping_postal_code || ""}
-                    onChange={handleChange}
-                    placeholder="Postal Code"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description || ""}
-                  onChange={handleChange}
-                  placeholder="Enter account description..."
-                />
-              </div>
-
               <div className="form-buttons">
-                <button 
-                  type="submit" 
-                  className="btn btn-primary"
-                  disabled={isLoading}
-                >
+                <button type="submit" className="btn btn-primary" disabled={isLoading}>
                   {isLoading ? "Saving..." : "Save Changes"}
                 </button>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setIsEditing(false)}
-                >
+                <button type="button" className="btn btn-secondary" onClick={() => setIsEditing(false)}>
                   Cancel
                 </button>
               </div>
@@ -378,39 +199,14 @@ const AccountDetails = () => {
                 <p><strong>Annual Revenue:</strong> {account.annual_revenue ? `$${account.annual_revenue}` : "-"}</p>
                 <p><strong>Employees:</strong> {account.employees || "-"}</p>
                 <p><strong>Parent Account:</strong> {account.member_of?.name || "None"}</p>
-                <p>
-                  <strong>Billing Address:</strong><br />
-                  {account.billing_street || "-"}<br />
-                  {account.billing_city || ""} {account.billing_state || ""}<br />
-                  {account.billing_country || ""} {account.billing_postal_code || ""}
-                </p>
               </div>
               <div>
-                <p>
-                  <strong>Shipping Address:</strong><br />
-                  {account.shipping_street || "-"}<br />
-                  {account.shipping_city || ""} {account.shipping_state || ""}<br />
-                  {account.shipping_country || ""} {account.shipping_postal_code || ""}
-                </p>
-                <p>
-                  <strong>Description:</strong><br />
-                  {account.description || "No description provided"}
-                </p>
+                <p><strong>Description:</strong><br />{account.description || "No description provided"}</p>
               </div>
 
               <div className="form-buttons">
-                <button 
-                  onClick={() => setIsEditing(true)}
-                  className="btn btn-primary"
-                >
-                  Edit Account
-                </button>
-                <button 
-                  onClick={() => navigate("/accounts")}
-                  className="btn btn-secondary"
-                >
-                  Back to Accounts
-                </button>
+                <button onClick={() => setIsEditing(true)} className="btn btn-primary">Edit Account</button>
+                <button onClick={() => navigate("/accounts")} className="btn btn-secondary">Back to Accounts</button>
               </div>
             </div>
           )}

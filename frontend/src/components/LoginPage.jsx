@@ -28,6 +28,7 @@ function Login() {
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
       localStorage.setItem("username", username);
+      localStorage.setItem("is_admin", response.data.is_admin.toString());
 
       // Redirect to home for all authenticated users
       navigate("/");
