@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 import requests
 import base64
 from rest_framework import status
@@ -50,17 +51,27 @@ def logout_user(request):
 def user_list(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    filtered_data = [
+        {
+            "username": user["username"],
+            "email": user["email"],
+            "full_name": user["full_name"],
+            "user_type": user["user_type"],
+            "is_active": user["is_active"],
+        }
+        for user in serializer.data
+    ]
+    return Response(filtered_data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated, IsAdmin])
 def user_create_list(request):
-    if request.method == "GET":
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    elif request.method == "POST":
+    # if request.method == "GET":
+    #     users = User.objects.all()
+    #     serializer = UserSerializer(users, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == "POST":
         data = request.data
         if User.objects.filter(username=data["username"]).exists():
             return Response({"error": "User already exists"}, status=status.HTTP_400_BAD_REQUEST)
@@ -398,7 +409,7 @@ def user_activity_logs(request):
 def task_list_create(request):
     if request.method == "GET":
         # Retrieve all tasks
-        tasks = Task.objects.all()
+        tasks = Task.objects.all().order_by('created_at')
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -438,6 +449,18 @@ def task_detail(request, task_id):
         task.delete()
         return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
 
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_task_update(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    update_text = request.data.get("text", "").strip()
+    if not update_text:
+        return Response({"error": "Update text cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    task.add_update(update_text)
+    serializer = TaskSerializer(task, context={"request": request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])

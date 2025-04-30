@@ -37,19 +37,26 @@ class UserSerializer(serializers.ModelSerializer):
             'address_postal_code',
             'user_type',
             'modified_by',
-            'modified_by_username',  # Include the username of the user who modified
+            'modified_by_username', 
             'assigned_to',
-            'assigned_to_username',  # Include the username of the assigned user
+            'assigned_to_username', 
             'created_by',
-            'created_by_username',  # Include the username of the user who created
+            'created_by_username', 
         ]
 
     def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user
+            validated_data['modified_by'] = request.user
         if 'password' in validated_data:
             validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['modified_by'] = request.user
         for attr, value in validated_data.items():
             if attr == 'password' and value:
                 setattr(instance, attr, make_password(value))
@@ -292,6 +299,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'contact_name_full',  # Include the full name of the contact
             'parent_type',
             'description',
+            'updates',
         ]
         read_only_fields = ['created_by', 'modified_by', 'created_at', 'modified_at']
 

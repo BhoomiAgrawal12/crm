@@ -27,6 +27,7 @@ function Login() {
       // Save tokens to localStorage or cookies
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
+      localStorage.setItem("username", username);
 
       // Redirect to home for all authenticated users
       navigate("/");
