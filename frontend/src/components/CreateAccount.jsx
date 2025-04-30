@@ -27,9 +27,9 @@ const CreateAccount = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const [activeTab, setActiveTab] = useState('overview');
+  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [choices, setChoices] = useState({account_type: [], industry_type: []});
+  const [choices, setChoices] = useState({ account_type: [], industry_type: [] });
   const [assignedToUsername, setAssignedToUsername] = useState('');
 
   // Fetch users and current user
@@ -37,7 +37,6 @@ const CreateAccount = () => {
     const fetchChoices = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
-
         const response = await axios.get('http://localhost:8000/api/account/choices/', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -53,28 +52,25 @@ const CreateAccount = () => {
         alert('Failed to fetch choices. Please try again later.');
       }
     };
+
     const fetchUsersAndCurrentUser = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
-
-        // Fetch current user
         const currentUserResponse = await axios.get('http://localhost:8000/api/current-user/', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
 
-        // Automatically set the current user's ID and username
         const currentUserId = currentUserResponse.data.id;
-        console.log(currentUserId);
         const currentUsername = currentUserResponse.data.username;
 
         setFormData((prev) => ({
           ...prev,
-          assigned_to: currentUserId, // Set the user ID for the backend
+          assigned_to: currentUserId,
         }));
 
-        setAssignedToUsername(currentUsername); // Set the username for display
+        setAssignedToUsername(currentUsername);
       } catch (error) {
         console.error('Error fetching current user:', error);
         alert('Failed to fetch current user. Please try again later.');
@@ -89,48 +85,55 @@ const CreateAccount = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
-  const validateForm = () => {
+  const validateStep = (step) => {
     const newErrors = {};
     
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+    if (step === 1) {
+      if (!formData.name.trim()) {
+        newErrors.name = 'Name is required';
+      }
+      
+      if (formData.email_address && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email_address)) {
+        newErrors.email_address = 'Invalid email format';
+      }
+      
+      if (formData.office_phone && !/^[\d\s\-()+]+$/.test(formData.office_phone)) {
+        newErrors.office_phone = 'Invalid phone number';
+      }
+      
+      if (formData.website && !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(formData.website)) {
+        newErrors.website = 'Invalid website URL';
+      }
     }
     
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
-    }
-    
-    if (formData.office_phone && !/^[\d\s\-()+]+$/.test(formData.office_phone)) {
-      newErrors.office_phone = 'Invalid phone number';
-    }
-    
-    if (formData.website && !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(formData.website)) {
-      newErrors.website = 'Invalid website URL';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep(currentStep - 1);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
-
-    console.log('Form data before submission:', formData); // Debugging
+    if (!validateStep(currentStep)) return;
 
     setIsSubmitting(true);
 
     try {
       const accessToken = localStorage.getItem('access_token');
-
-      // Send form data to the backend
       const response = await axios.post(
         'http://localhost:8000/api/accounts/',
         formData,
@@ -144,11 +147,10 @@ const CreateAccount = () => {
 
       console.log('Response from backend:', response.data);
       alert('Account created successfully!');
-
       // Reset form after successful submission
       setFormData({
         name: '',
-        assigned_to: formData.assigned_to, // Retain the current user's ID
+        assigned_to: formData.assigned_to,
         website: '',
         office_phone: '',
         email_address: '',
@@ -168,6 +170,7 @@ const CreateAccount = () => {
         annual_revenue: '',
         employees: '',
       });
+      setCurrentStep(1);
     } catch (error) {
       console.error('Error submitting form:', error.response?.data || error.message);
       alert('Failed to create account. Please try again.');
@@ -187,37 +190,28 @@ const CreateAccount = () => {
     }));
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
   return (
     <div className="create-account-container">
       <h2>Create Account</h2>
 
-      <div className="section-tabs">
-        <button
-          className={activeTab === 'overview' ? 'active-tab' : ''}
-          onClick={() => handleTabChange('overview')}
-        >
-          Overview
-        </button>
-        <button
-          className={activeTab === 'more-info' ? 'active-tab' : ''}
-          onClick={() => handleTabChange('more-info')}
-        >
-          More Information
-        </button>
-        <button
-          className={activeTab === 'other' ? 'active-tab' : ''}
-          onClick={() => handleTabChange('other')}
-        >
-          Other
-        </button>
+      {/* Progress Indicator */}
+      <div className="progress-indicator">
+        <div className="progress-step">
+          <div className={`step-number ${currentStep >= 1 ? 'active' : ''}`}>1</div>
+          <div className={`step-label ${currentStep === 1 ? 'active' : ''}`}>Overview</div>
+        </div>
+        <div className="progress-step">
+          <div className={`step-number ${currentStep >= 2 ? 'active' : ''}`}>2</div>
+          <div className={`step-label ${currentStep === 2 ? 'active' : ''}`}>More Info</div>
+        </div>
+        <div className="progress-step">
+          <div className={`step-number ${currentStep >= 3 ? 'active' : ''}`}>3</div>
+          <div className={`step-label ${currentStep === 3 ? 'active' : ''}`}>Other</div>
+        </div>
       </div>
 
       <form className="form-grid" onSubmit={handleSubmit}>
-        {activeTab === 'overview' && (
+        {currentStep === 1 && (
           <>
             <div className="form-group">
               <label>
@@ -237,8 +231,8 @@ const CreateAccount = () => {
             <div className="form-group">
               <label>Assigned To</label>
               <input
-                type='text'
-                name='assigned_to'
+                type="text"
+                name="assigned_to"
                 value={assignedToUsername}
                 readOnly
                 className="select-input"
@@ -340,7 +334,7 @@ const CreateAccount = () => {
           </>
         )}
 
-        {activeTab === 'more-info' && (
+        {currentStep === 2 && (
           <div className="address-section">
             <div className="address-column">
               <h3>Billing Address</h3>
@@ -429,7 +423,7 @@ const CreateAccount = () => {
           </div>
         )}
 
-        {activeTab === 'other' && (
+        {currentStep === 3 && (
           <div className="description-group">
             <label>Description</label>
             <textarea
@@ -443,12 +437,34 @@ const CreateAccount = () => {
         )}
 
         <div className="form-buttons">
-          <button type="submit" className="save-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save'}
-          </button>
-          <button type="button" className="cancel-btn">
-            Cancel
-          </button>
+          {currentStep > 1 && (
+            <button 
+              type="button" 
+              className="cancel-btn" 
+              onClick={handlePrevious}
+            >
+              Previous
+            </button>
+          )}
+          
+          {currentStep < 3 ? (
+            <button 
+              type="button" 
+              className="next-btn" 
+              onClick={handleNext}
+              disabled={isSubmitting}
+            >
+              Next
+            </button>
+          ) : (
+            <button 
+              type="submit" 
+              className="save-btn" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Saving...' : 'Save'}
+            </button>
+          )}
         </div>
       </form>
     </div>
