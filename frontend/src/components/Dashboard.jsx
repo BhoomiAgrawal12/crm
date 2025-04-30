@@ -5,6 +5,9 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ControlCameraIcon from '@mui/icons-material/ControlCamera';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios'; // Import axios
 import { colors } from '@mui/material';
 
@@ -14,6 +17,18 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]); // State to store tasks
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [showNoteForm, setShowNoteForm] = useState(false);
+  const [newNote, setNewNote] = useState({
+    subject: '',
+    description: '',
+    related_to_type: '',
+    related_to_id: '',
+    assigned_to: '',
+  });
+  const [users, setUsers] = useState([]);
+  const [relatedTypes, setRelatedTypes] = useState([]);
+  const [editingNoteId, setEditingNoteId] = useState(null);
   const [metrics, setMetrics] = useState({
     customer_count: 0,
     deal_count: 0,
@@ -60,6 +75,14 @@ const Dashboard = () => {
         });
         setTasks(tasksResponse.data);
 
+        // Fetch notes
+        const notesResponse = await axios.get('http://localhost:8000/api/notes/', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setNotes(notesResponse.data);
+
         // Fetch dashboard metrics
         const metricsResponse = await axios.get('http://localhost:8000/api/dashboard-metrics/', {
           headers: {
@@ -67,6 +90,22 @@ const Dashboard = () => {
           },
         });
         setMetrics(metricsResponse.data);
+
+        // Fetch users for assigning notes
+        const usersResponse = await axios.get('http://localhost:8000/api/users/', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setUsers(usersResponse.data);
+
+        // Fetch note choices
+        const noteChoicesResponse = await axios.get('http://localhost:8000/api/note-choices/', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setRelatedTypes(noteChoicesResponse.data.related_to_type);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -89,6 +128,104 @@ const Dashboard = () => {
     if (!dateString) return '';
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Handle note form input changes
+  const handleNoteInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewNote(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Submit new note
+  const handleNoteSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      if (!accessToken) {
+        navigate('/login');
+        return;
+      }
+
+      const url = editingNoteId 
+        ? `http://localhost:8000/api/note/${editingNoteId}/`
+        : 'http://localhost:8000/api/notes/';
+      
+      const method = editingNoteId ? 'put' : 'post';
+      
+      const response = await axios({
+        method,
+        url,
+        data: newNote,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Update notes list
+      if (editingNoteId) {
+        setNotes(notes.map(note => 
+          note.id === editingNoteId ? response.data : note
+        ));
+        setEditingNoteId(null);
+      } else {
+        setNotes([response.data, ...notes]);
+      }
+
+      // Reset form
+      setNewNote({
+        subject: '',
+        description: '',
+        related_to_type: '',
+        related_to_id: '',
+        assigned_to: '',
+      });
+      setShowNoteForm(false);
+    } catch (error) {
+      console.error('Error saving note:', error);
+    }
+  };
+
+  // Edit note
+  const handleEditNote = (note) => {
+    setNewNote({
+      subject: note.subject,
+      description: note.description,
+      related_to_type: note.related_to_type || '',
+      related_to_id: note.related_to_id || '',
+      assigned_to: note.assigned_to,
+    });
+    setEditingNoteId(note.id);
+    setShowNoteForm(true);
+  };
+
+  // Delete note
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm('Are you sure you want to delete this note?')) {
+      return;
+    }
+    
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      if (!accessToken) {
+        navigate('/login');
+        return;
+      }
+
+      await axios.delete(`http://localhost:8000/api/note/${noteId}/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Update notes list
+      setNotes(notes.filter(note => note.id !== noteId));
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
   };
 
   return (
@@ -269,6 +406,145 @@ const Dashboard = () => {
                   </li>
                 ))}
               </ul>
+            )}
+          </div>
+        </div>
+        
+        {/* Notes Section */}
+        <div className='notes-section'>
+          <div className='notes-header'>
+            <h2>Notes</h2>
+            <button 
+              className='add-note-btn' 
+              onClick={() => {
+                setEditingNoteId(null);
+                setNewNote({
+                  subject: '',
+                  description: '',
+                  related_to_type: '',
+                  related_to_id: '',
+                  assigned_to: '',
+                });
+                setShowNoteForm(!showNoteForm);
+              }}
+            >
+              <NoteAddIcon /> {showNoteForm ? 'Cancel' : 'Add Note'}
+            </button>
+          </div>
+          
+          {showNoteForm && (
+            <div className='note-form-container'>
+              <form onSubmit={handleNoteSubmit} className='note-form'>
+                <h3>{editingNoteId ? 'Edit Note' : 'Add New Note'}</h3>
+                
+                <div className='form-group'>
+                  <label htmlFor='subject'>Subject</label>
+                  <input
+                    type='text'
+                    id='subject'
+                    name='subject'
+                    value={newNote.subject}
+                    onChange={handleNoteInputChange}
+                    required
+                  />
+                </div>
+                
+                <div className='form-group'>
+                  <label htmlFor='description'>Description</label>
+                  <textarea
+                    id='description'
+                    name='description'
+                    value={newNote.description}
+                    onChange={handleNoteInputChange}
+                    rows='3'
+                  />
+                </div>
+                
+                <div className='form-row'>
+                  <div className='form-group'>
+                    <label htmlFor='related_to_type'>Related To Type</label>
+                    <select
+                      id='related_to_type'
+                      name='related_to_type'
+                      value={newNote.related_to_type}
+                      onChange={handleNoteInputChange}
+                    >
+                      <option value=''>None</option>
+                      {relatedTypes.map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  {newNote.related_to_type && (
+                    <div className='form-group'>
+                      <label htmlFor='related_to_id'>Related To ID</label>
+                      <input
+                        type='number'
+                        id='related_to_id'
+                        name='related_to_id'
+                        value={newNote.related_to_id}
+                        onChange={handleNoteInputChange}
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                <div className='form-group'>
+                  <label htmlFor='assigned_to'>Assigned To</label>
+                  <select
+                    id='assigned_to'
+                    name='assigned_to'
+                    value={newNote.assigned_to}
+                    onChange={handleNoteInputChange}
+                    // required
+                  >
+                    <option value=''>Select a user</option>
+                    {users.map(user => (
+                      <option key={user.id} value={user.id}>{user.username}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className='form-actions'>
+                  <button type='submit' className='save-note-btn'>
+                    {editingNoteId ? 'Update Note' : 'Save Note'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+          
+          <div className='notes-list'>
+            {loading ? (
+              <p>Loading notes...</p>
+            ) : notes.length === 0 ? (
+              <p>No notes available.</p>
+            ) : (
+              notes.map(note => (
+                <div key={note.id} className='note-item'>
+                  <div className='note-header'>
+                    <h4>{note.subject}</h4>
+                    <div className='note-actions'>
+                      <button onClick={() => handleEditNote(note)} className='edit-btn'>
+                        <EditIcon fontSize='small' />
+                      </button>
+                      <button onClick={() => handleDeleteNote(note.id)} className='delete-btn'>
+                        <DeleteIcon fontSize='small' />
+                      </button>
+                    </div>
+                  </div>
+                  <p className='note-description'>{note.description}</p>
+                  <div className='note-meta'>
+                    {note.related_to_type && note.related_to_id && (
+                      <span>Related to: {note.related_to_type} #{note.related_to_id}</span>
+                    )}
+                    <span>Assigned to: {note.assigned_to_username}</span>
+                    <span>Created: {formatTimestamp(note.created_at)}</span>
+                    <span>By: {note.created_by_username}</span>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>

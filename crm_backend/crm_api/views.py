@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password, make_password
-from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task, Quote, Note
 from .permissions import IsAdmin
-from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer, QuoteSerializer, NoteSerializer
 
 # Google Mail
 # from email.message import EmailMessage
@@ -494,3 +494,69 @@ def dashboard_metrics(request):
         'task_stats': task_stats,
         'tasks_by_status': tasks_by_status,
     }, status=status.HTTP_200_OK)
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def note_list_create(request):
+    if request.method == "GET":
+        # Get optional filter parameters
+        related_to_type = request.query_params.get('related_to_type')
+        related_to_id = request.query_params.get('related_to_id')
+        
+        # Apply filters if provided
+        if related_to_type and related_to_id:
+            notes = Note.objects.filter(related_to_type=related_to_type, related_to_id=related_to_id)
+        else:
+            notes = Note.objects.all()
+            
+        # Order by most recent
+        notes = notes.order_by('-created_at')
+        
+        serializer = NoteSerializer(notes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "POST":
+        # Create a new note
+        serializer = NoteSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated])
+def note_detail(request, note_id):
+    try:
+        # Retrieve the note by ID
+        note = Note.objects.get(id=note_id)
+    except Note.DoesNotExist:
+        return Response({"error": "Note not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        # Retrieve note details
+        serializer = NoteSerializer(note)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == "PUT":
+        # Update note details
+        serializer = NoteSerializer(note, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        # Delete the note
+        note.delete()
+        return Response({"message": "Note deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def note_choices(request):
+    choices = {
+        "related_to_type": Note.related_to_type_choices,
+    }
+    return Response(choices)
