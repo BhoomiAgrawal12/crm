@@ -24,6 +24,7 @@ const Dashboard = () => {
           // Token expired or unauthorized
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
+          localStorage.removeItem('username');
           navigate('/login'); // Redirect to login page
         }
         return Promise.reject(error);
@@ -139,6 +140,7 @@ const Dashboard = () => {
                 // Clear tokens from localStorage
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
+                localStorage.removeItem('username');
 
                 // Redirect to login page
                 navigate('/login');
