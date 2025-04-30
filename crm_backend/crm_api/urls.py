@@ -20,10 +20,14 @@ from .views import (
     user_activity_logs,
     task_list_create,
     task_detail,
-    quote_list_create,
-    quote_detail,
-    quote_choices,
-    user_choices
+    dashboard_metrics,  # Import the dashboard metrics view
+    # quote_list_create,
+    # quote_detail,
+    # quote_choices,
+    user_choices,
+    note_list_create,
+    note_detail,
+    note_choices
 )
 
 urlpatterns = [
@@ -48,7 +52,11 @@ urlpatterns = [
     path("activity-logs/", user_activity_logs, name="user-activity-logs"),
     path("tasks/", task_list_create, name="task-list-create"),
     path("task/<int:task_id>/", task_detail, name="task-detail"),
-    path('quotes/', quote_list_create, name='quote-list-create'),
-    path('quotes/<int:quote_id>/', quote_detail, name='quote-detail'),
-    path('quote-choices/', quote_choices, name='quote-choices'),
+    path("dashboard-metrics/", dashboard_metrics, name="dashboard-metrics"),  # New endpoint for dashboard metrics
+    # path("quotes/", quote_list_create, name="quote-list-create"),
+    # path("quote/<int:quote_id>/", quote_detail, name="quote-detail"),
+    # path("quote-choices/", quote_choices, name="quote-choices"),
+    path("notes/", note_list_create, name="note-list-create"),
+    path("note/<int:note_id>/", note_detail, name="note-detail"),
+    path("note-choices/", note_choices, name="note-choices"),
 ]
