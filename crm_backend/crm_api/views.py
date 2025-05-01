@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 import requests
 import base64
 from rest_framework import status
@@ -6,10 +7,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import check_password, make_password
-from rest_framework.pagination import PageNumberPagination
-from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task, Quote
+from .models import User, Account, Contact, Opportunity, Lead, ActivityLog, Task, Quote, Note
 from .permissions import IsAdmin
-from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer, QuoteSerializer
+from .serializers import UserSerializer, UserRegisterSerializer, AccountSerializer, ContactSerializer, OpportunitySerializer, LeadSerializer, ActivityLogSerializer, TaskSerializer, QuoteSerializer, NoteSerializer
 
 # Google Mail
 # from email.message import EmailMessage
@@ -50,17 +50,27 @@ def logout_user(request):
 def user_list(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    filtered_data = [
+        {
+            "username": user["username"],
+            "email": user["email"],
+            "full_name": user["full_name"],
+            "user_type": user["user_type"],
+            "is_active": user["is_active"],
+        }
+        for user in serializer.data
+    ]
+    return Response(filtered_data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated, IsAdmin])
 def user_create_list(request):
-    if request.method == "GET":
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    elif request.method == "POST":
+    # if request.method == "GET":
+    #     users = User.objects.all()
+    #     serializer = UserSerializer(users, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == "POST":
         data = request.data
         if User.objects.filter(username=data["username"]).exists():
             return Response({"error": "User already exists"}, status=status.HTTP_400_BAD_REQUEST)
@@ -71,7 +81,7 @@ def user_create_list(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdmin])
 def user_detail(request, username):
     user = User.objects.filter(username=username).first()
     if not user:
@@ -385,12 +395,10 @@ def lead_detail(request, lead_id):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def user_activity_logs(request):
-    activities = ActivityLog.objects.filter(user=request.user).order_by("-timestamp")
-    paginator = PageNumberPagination()
-    paginator.page_size = int(request.query_params.get("page_size", 10))  # Default page size is 10
-    paginated_activities = paginator.paginate_queryset(activities, request)
-    serializer = ActivityLogSerializer(paginated_activities, many=True)
-    return paginator.get_paginated_response(serializer.data)
+    limit = int(request.query_params.get("limit", 10))  # Default limit is 10
+    activities = ActivityLog.objects.filter(user=request.user).order_by("-timestamp")[:limit]
+    serializer = ActivityLogSerializer(activities, many=True)
+    return Response(serializer.data, status=200)
 
 
 @api_view(["GET", "POST"])
@@ -398,7 +406,7 @@ def user_activity_logs(request):
 def task_list_create(request):
     if request.method == "GET":
         # Retrieve all tasks
-        tasks = Task.objects.all()
+        tasks = Task.objects.all().order_by('created_at')
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -439,18 +447,101 @@ def task_detail(request, task_id):
         return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
 
 
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def dashboard_metrics(request):
+    # Count customers (accounts with account_type='Customer')
+    customer_count = Account.objects.filter(account_type='Customer').count()
+    
+    # Count all opportunities (deals)
+    deal_count = Opportunity.objects.all().count()
+    
+    # Get recent leads (only for admins)
+    recent_leads_data = []
+    if request.user.is_superuser:
+        recent_leads = Lead.objects.all().order_by('-created_at')[:6]
+        
+        for lead in recent_leads:
+            lead_data = {
+                'id': lead.id,
+                'first_name': lead.first_name,
+                'last_name': lead.last_name,
+                'status': lead.status,
+                'email': lead.email_address,
+                'phone': lead.mobile,
+                'created_at': lead.created_at,
+                'lead_source': lead.lead_source,
+            }
+            recent_leads_data.append(lead_data)
+    
+    # Get task statistics grouped by status
+    from django.db.models import Count
+    task_stats = Task.objects.values('status').annotate(count=Count('status'))
+    
+    # Get recent tasks with details for the task section
+    tasks_by_status = {}
+    for status_choice, _ in Task.status_choices:
+        tasks_data = []
+        tasks = Task.objects.filter(status=status_choice).order_by('-modified_at')[:3]
+        
+        for task in tasks:
+            task_data = {
+                'id': task.id,
+                'subject': task.subject,
+                'date': task.modified_at,
+                'due_date': task.due_date,
+                'priority': task.priority,
+                'assigned_to': task.assigned_to.username if task.assigned_to else None,
+            }
+            tasks_data.append(task_data)
+        
+        tasks_by_status[status_choice] = tasks_data
+    
+    return Response({
+        'customer_count': customer_count,
+        'deal_count': deal_count,
+        'recent_leads': recent_leads_data,
+        'task_stats': task_stats,
+        'tasks_by_status': tasks_by_status,
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_task_update(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    update_text = request.data.get("text", "").strip()
+    if not update_text:
+        return Response({"error": "Update text cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    task.add_update(update_text)
+    serializer = TaskSerializer(task, context={"request": request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
-def quote_list_create(request):
+def note_list_create(request):
     if request.method == "GET":
-        # Retrieve all quotes
-        quotes = Quote.objects.all()
-        serializer = QuoteSerializer(quotes, many=True)
+        # Get optional filter parameters
+        related_to_type = request.query_params.get('related_to_type')
+        related_to_id = request.query_params.get('related_to_id')
+        
+        # Apply filters if provided
+        if related_to_type and related_to_id:
+            notes = Note.objects.filter(related_to_type=related_to_type, related_to_id=related_to_id)
+        else:
+            notes = Note.objects.all()
+            
+        # Order by most recent
+        notes = notes.order_by('-created_at')
+        
+        serializer = NoteSerializer(notes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == "POST":
-        # Create a new quote
-        serializer = QuoteSerializer(data=request.data, context={'request': request})
+        # Create a new note
+        serializer = NoteSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -459,40 +550,36 @@ def quote_list_create(request):
 
 @api_view(["GET", "PUT", "DELETE"])
 @permission_classes([IsAuthenticated])
-def quote_detail(request, quote_id):
+def note_detail(request, note_id):
     try:
-        # Retrieve the quote by ID
-        quote = Quote.objects.get(id=quote_id)
-    except Quote.DoesNotExist:
-        return Response({"error": "Quote not found"}, status=status.HTTP_404_NOT_FOUND)
+        # Retrieve the note by ID
+        note = Note.objects.get(id=note_id)
+    except Note.DoesNotExist:
+        return Response({"error": "Note not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "GET":
-        # Retrieve quote details
-        serializer = QuoteSerializer(quote)
+        # Retrieve note details
+        serializer = NoteSerializer(note)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
-        # Update quote details
-        serializer = QuoteSerializer(quote, data=request.data, partial=True, context={'request': request})
+        # Update note details
+        serializer = NoteSerializer(note, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":
-        # Delete the quote
-        quote.delete()
-        return Response({"message": "Quote deleted successfully"}, status=status.HTTP_200_OK)
+        # Delete the note
+        note.delete()
+        return Response({"message": "Note deleted successfully"}, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def quote_choices(request):
+def note_choices(request):
     choices = {
-        "approval_status": Quote.approval_status_choices,
-        "quote_stage": Quote.quote_stage_choices,
-        "invoice_status": Quote.invoice_status_choices,
-        "payment_terms": Quote.payment_terms_choices,
-        "currency": Quote.currency_choices,
+        "related_to_type": Note.related_to_type_choices,
     }
     return Response(choices)

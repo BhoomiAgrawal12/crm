@@ -121,7 +121,7 @@ const UserDetails = () => {
       });
 
       alert("Account deleted successfully.");
-      navigate("/users"); // Redirect to the users list or another appropriate page
+      navigate("/users-list");
     } catch (err) {
       console.error("Error deleting account:", err.response?.data || err.message);
       alert("Failed to delete the account. Please try again later.");
@@ -384,6 +384,11 @@ const UserDetails = () => {
               <p><strong>Is Active:</strong> {user.is_active ? "Yes" : "No"}</p>
               <p><strong>Is Manager:</strong> {user.is_staff ? "Yes" : "No"}</p>
               <p><strong>Is Admin:</strong> {user.is_superuser ? "Yes" : "No"}</p>
+              <p><strong>Assigned To:</strong> {user.assigned_to_username || "N/A"}</p>
+              <p><strong>Created By:</strong> {user.created_by_username || "N/A"}</p>
+              <p><strong>Modified By:</strong> {user.modified_by_username || "N/A"}</p>
+              <p><strong>Created At:</strong> {user.created_at || "N/A"}</p>
+
 
               {!isAdmin && (
                 <p>Something is wrong? Contact Administrator to update your details.</p>

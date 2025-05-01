@@ -20,10 +20,15 @@ from .views import (
     user_activity_logs,
     task_list_create,
     task_detail,
-    quote_list_create,
-    quote_detail,
-    quote_choices,
-    user_choices
+    add_task_update,
+    dashboard_metrics,  # Import the dashboard metrics view
+    # quote_list_create,
+    # quote_detail,
+    # quote_choices,
+    user_choices,
+    note_list_create,
+    note_detail,
+    note_choices
 )
 
 urlpatterns = [
