@@ -34,9 +34,11 @@ h2 {
 
 /* Form grid layout */
 form {
+  .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+  }
 }
 
 .input-field {

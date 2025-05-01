@@ -4,11 +4,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
 import "./OpportunityDetails.css";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+
 const OpportunityDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [opportunity, setOpportunity] = useState(null);
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [choices, setChoices] = useState({
     sales_stage: [],
@@ -32,16 +34,16 @@ const OpportunityDetails = () => {
       }
 
       const [opportunityResponse, choicesResponse, accountsResponse, usersResponse] = await Promise.all([
-        axios.get(`http://localhost:8000/api/opportunity/${id}/`, {
+        axios.get(`${API_BASE_URL}/api/opportunity/${id}/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        axios.get("http://localhost:8000/api/opportunity-choices/", {
+        axios.get(`${API_BASE_URL}/api/opportunity-choices/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        axios.get("http://localhost:8000/api/accounts/", {
+        axios.get(`${API_BASE_URL}/api/accounts/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        axios.get("http://localhost:8000/api/users/", {
+        axios.get(`${API_BASE_URL}/api/users/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
       ]);
@@ -77,7 +79,7 @@ const OpportunityDetails = () => {
     try {
       const accessToken = localStorage.getItem("access_token");
       const response = await axios.put(
-        `http://localhost:8000/api/opportunity/${id}/`,
+        `${API_BASE_URL}/api/opportunity/${id}/`,
         formData,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
@@ -93,6 +95,15 @@ const OpportunityDetails = () => {
     }
   };
 
+  const renderDetail = (label, value, isCurrency = false) => (
+    <div className="detail-section">
+      <div className="detail-label">{label}</div>
+      <div className={`detail-value ${!value ? 'empty' : ''}`}>
+        {isCurrency && value ? `$${value}` : value || 'Not specified'}
+      </div>
+    </div>
+  );
+
   if (isLoading && !opportunity) {
     return (
       <div className="OpportunityDetails_container">
@@ -100,8 +111,9 @@ const OpportunityDetails = () => {
           <SideNav />
         </div>
         <div className="OpportunityDetails_container2">
-          <div className="opportunity-details-container">
-            <p>Loading opportunity details...</p>
+          <div className="loading-message">
+            <div className="spinner"></div>
+            Loading opportunity details...
           </div>
         </div>
       </div>
@@ -115,8 +127,8 @@ const OpportunityDetails = () => {
           <SideNav />
         </div>
         <div className="OpportunityDetails_container2">
-          <div className="opportunity-details-container">
-            <p>Unable to load opportunity details.</p>
+          <div className="error-message">
+            Failed to load opportunity details. Please try again.
           </div>
         </div>
       </div>
@@ -129,233 +141,274 @@ const OpportunityDetails = () => {
         <SideNav />
       </div>
       <div className="OpportunityDetails_container2">
-        <div className="opportunity-details-container">
-          <h1>Opportunity Details</h1>
-          
+        <div className="opportunity-details-card">
           {error && <div className="error-message">{error}</div>}
           {success && <div className="success-message">{success}</div>}
+
+          <div className="opportunity-header">
+            <h1 className="opportunity-title">
+              {isEditing ? "Edit Opportunity" : opportunity.opportunity_name}
+            </h1>
+            <div className="button-group">
+              {!isEditing ? (
+                <>
+                  <button
+                    className="button button-primary"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Edit Opportunity
+                  </button>
+                  <button
+                    className="button button-secondary"
+                    onClick={() => navigate("/opportunities")}
+                  >
+                    Back to Opportunities
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="button button-secondary"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData(opportunity);
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </div>
 
           {!isEditing ? (
             <div className="detail-view">
               <div>
-                <p><strong>Name:</strong> {opportunity.opportunity_name}</p>
-                <p><strong>Currency:</strong> {opportunity.currency}</p>
-                <p><strong>Amount:</strong> {opportunity.opportunity_amount ? `$${opportunity.opportunity_amount}` : "-"}</p>
-                <p><strong>Sales Stage:</strong> {opportunity.sales_stage || "-"}</p>
-                <p><strong>Probability:</strong> {opportunity.probability ? `${opportunity.probability}%` : "-"}</p>
-                <p><strong>Next Step:</strong> {opportunity.next_step || "-"}</p>
+                {renderDetail("Name", opportunity.opportunity_name)}
+                {renderDetail("Currency", opportunity.currency)}
+                {renderDetail("Amount", opportunity.opportunity_amount, true)}
+                {renderDetail("Sales Stage", opportunity.sales_stage)}
+                {renderDetail("Probability", opportunity.probability ? `${opportunity.probability}%` : null)}
+                {renderDetail("Next Step", opportunity.next_step)}
               </div>
               <div>
-                <p><strong>Account:</strong> {opportunity.account_name || "-"}</p>
-                <p><strong>Expected Close Date:</strong> {opportunity.expected_close_date || "-"}</p>
-                <p><strong>Business Type:</strong> {opportunity.business_type || "-"}</p>
-                <p><strong>Lead Source:</strong> {opportunity.lead_source || "-"}</p>
-                <p><strong>Assigned To:</strong> {opportunity.assigned_to_username || "-"}</p>
+                {renderDetail("Account", opportunity.account_name)}
+                {renderDetail("Expected Close Date", opportunity.expected_close_date)}
+                {renderDetail("Business Type", opportunity.business_type)}
+                {renderDetail("Lead Source", opportunity.lead_source)}
+                {renderDetail("Assigned To", opportunity.assigned_to_username)}
               </div>
-              <div>
-                <p><strong>Created By:</strong> {opportunity.created_by_username || "-"}</p>
-                <p><strong>Modified By:</strong> {opportunity.modified_by_username || "-"}</p>
-                <p>
-                  <strong>Description:</strong><br />
-                  {opportunity.description || "No description provided"}
-                </p>
-              </div>
-
-              <div className="form-buttons">
-                <button 
-                  onClick={() => setIsEditing(true)}
-                  className="btn btn-primary"
-                >
-                  Edit Opportunity
-                </button>
-                <button 
-                  onClick={() => navigate("/opportunities")}
-                  className="btn btn-secondary"
-                >
-                  Back to Opportunities
-                </button>
+              <div className="full-width-section">
+                {renderDetail("Description", opportunity.description)}
               </div>
             </div>
           ) : (
-            <form className="edit-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label className="required-field">Name</label>
-                <input
-                  type="text"
-                  name="opportunity_name"
-                  value={formData.opportunity_name || ""}
-                  onChange={handleChange}
-                  required
-                />
+            <form onSubmit={handleSubmit} className="edit-form">
+              <div>
+                <div className="form-group">
+                  <label className="required">Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="opportunity_name"
+                    value={formData.opportunity_name || ""}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="required">Currency</label>
+                  <select
+                    className="form-control"
+                    name="currency"
+                    value={formData.currency || ""}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Currency</option>
+                    {choices.currency?.map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="required">Amount</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="opportunity_amount"
+                    value={formData.opportunity_amount || ""}
+                    onChange={handleChange}
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="required">Sales Stage</label>
+                  <select
+                    className="form-control"
+                    name="sales_stage"
+                    value={formData.sales_stage || ""}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Sales Stage</option>
+                    {choices.sales_stage?.map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="required-field">Currency</label>
-                <select
-                  name="currency"
-                  value={formData.currency || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Currency</option>
-                  {choices.currency?.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
+              <div>
+                <div className="form-group">
+                  <label>Probability (%)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="probability"
+                    value={formData.probability || ""}
+                    onChange={handleChange}
+                    min="0"
+                    max="100"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Next Step</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="next_step"
+                    value={formData.next_step || ""}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="required">Account</label>
+                  <select
+                    className="form-control"
+                    name="account"
+                    value={formData.account || ""}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select an account</option>
+                    {accounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Expected Close Date</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    name="expected_close_date"
+                    value={formData.expected_close_date || ""}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="required-field">Amount</label>
-                <input
-                  type="number"
-                  name="opportunity_amount"
-                  value={formData.opportunity_amount || ""}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  step="0.01"
-                />
+              <div className="full-width-section">
+                <div className="form-group">
+                  <label>Business Type</label>
+                  <select
+                    className="form-control"
+                    name="business_type"
+                    value={formData.business_type || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Business Type</option>
+                    {choices.business_type?.map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Lead Source</label>
+                  <select
+                    className="form-control"
+                    name="lead_source"
+                    value={formData.lead_source || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Lead Source</option>
+                    {choices.lead_source?.map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="required">Assigned To</label>
+                  <select
+                    className="form-control"
+                    name="assigned_to"
+                    value={formData.assigned_to || ""}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select a user</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.username}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea
+                    className="form-control"
+                    name="description"
+                    value={formData.description || ""}
+                    onChange={handleChange}
+                    placeholder="Enter opportunity description..."
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="required-field">Sales Stage</label>
-                <select
-                  name="sales_stage"
-                  value={formData.sales_stage || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Sales Stage</option>
-                  {choices.sales_stage?.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Probability (%)</label>
-                <input
-                  type="number"
-                  name="probability"
-                  value={formData.probability || ""}
-                  onChange={handleChange}
-                  min="0"
-                  max="100"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Next Step</label>
-                <input
-                  type="text"
-                  name="next_step"
-                  value={formData.next_step || ""}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="required-field">Account</label>
-                <select
-                  name="account"
-                  value={formData.account || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select an account</option>
-                  {accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Expected Close Date</label>
-                <input
-                  type="date"
-                  name="expected_close_date"
-                  value={formData.expected_close_date || ""}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Business Type</label>
-                <select
-                  name="business_type"
-                  value={formData.business_type || ""}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Business Type</option>
-                  {choices.business_type?.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Lead Source</label>
-                <select
-                  name="lead_source"
-                  value={formData.lead_source || ""}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Lead Source</option>
-                  {choices.lead_source?.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="required-field">Assigned To</label>
-                <select
-                  name="assigned_to"
-                  value={formData.assigned_to || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select a user</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.username}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description || ""}
-                  onChange={handleChange}
-                  placeholder="Enter opportunity description..."
-                />
-              </div>
-
-              <div className="form-buttons">
-                <button 
-                  type="submit" 
-                  className="btn btn-primary"
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  className="button button-primary"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Saving..." : "Save Changes"}
+                  {isLoading ? (
+                    <>
+                      <span className="spinner"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
                 </button>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setIsEditing(false)}
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData(opportunity);
+                  }}
+                  disabled={isLoading}
                 >
                   Cancel
                 </button>
