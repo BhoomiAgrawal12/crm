@@ -21,6 +21,10 @@ import TaskDetails from './components/TaskDetails';
 import QuotesPage from './components/QuotesPage';
 import QuoteDetails from './components/QuoteDetails';
 import CreateQuote from './components/CreateQuote';
+import UsersList from './components/UsersList';
+import CreateUser from './components/CreateUser';
+import LogCalls from './components/LogCalls';
+import ViewCalls from './components/ViewCalls';
 
 function App() {
   return (

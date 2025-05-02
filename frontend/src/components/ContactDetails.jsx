@@ -4,7 +4,7 @@ import axios from "axios";
 import SideNav from "./SideNav";
 import "./ContactDetails.css";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
 const ContactDetails = () => {
   const { id } = useParams();
@@ -45,18 +45,19 @@ const ContactDetails = () => {
 
       const contactData = contactResponse.data;
       // Initialize address fields if they don't exist
-      contactData.billing_street = contactData.billing_street || "";
-      contactData.billing_city = contactData.billing_city || "";
-      contactData.billing_state = contactData.billing_state || "";
-      contactData.billing_country = contactData.billing_country || "";
-      contactData.billing_postal_code = contactData.billing_postal_code || "";
-      contactData.shipping_street = contactData.shipping_street || "";
-      contactData.shipping_city = contactData.shipping_city || "";
-      contactData.shipping_state = contactData.shipping_state || "";
-      contactData.shipping_country = contactData.shipping_country || "";
-      contactData.shipping_postal_code = contactData.shipping_postal_code || "";
+      const initializeAddressFields = (prefix) => ({
+        [`${prefix}_street`]: contactData[`${prefix}_street`] || "",
+        [`${prefix}_city`]: contactData[`${prefix}_city`] || "",
+        [`${prefix}_state`]: contactData[`${prefix}_state`] || "",
+        [`${prefix}_country`]: contactData[`${prefix}_country`] || "",
+        [`${prefix}_postal_code`]: contactData[`${prefix}_postal_code`] || "",
+      });
 
-      setContact(contactData);
+      setContact({
+        ...contactData,
+        ...initializeAddressFields("primary_address"),
+        ...initializeAddressFields("alternate_address"),
+      });
       setFormData(contactData);
       setAccounts(accountsResponse.data);
       setContacts(contactsResponse.data);
@@ -69,9 +70,17 @@ const ContactDetails = () => {
     }
   }, [id, navigate]);
 
+  const initializeAddressFields = (prefix, data) => ({
+    [`${prefix}_street`]: data[`${prefix}_street`] || "",
+    [`${prefix}_city`]: data[`${prefix}_city`] || "",
+    [`${prefix}_state`]: data[`${prefix}_state`] || "",
+    [`${prefix}_country`]: data[`${prefix}_country`] || "",
+    [`${prefix}_postal_code`]: data[`${prefix}_postal_code`] || "",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -99,6 +108,15 @@ const ContactDetails = () => {
     }
   };
 
+  const handleEditClick = () => {
+    setFormData({
+      ...contact,
+      ...initializeAddressFields("primary_address", contact),
+      ...initializeAddressFields("alternate_address", contact),
+    });
+    setIsEditing(true);
+  };
+
   const renderAddress = (prefix, data) => {
     const street = data[`${prefix}_street`];
     const city = data[`${prefix}_city`];
@@ -107,7 +125,7 @@ const ContactDetails = () => {
     const country = data[`${prefix}_country`];
 
     if (!street && !city && !state && !postalCode && !country) {
-      return "-";
+      return "No address provided";
     }
 
     return (
@@ -121,51 +139,51 @@ const ContactDetails = () => {
 
   const AddressSection = ({ prefix, data }) => (
     <div className="address-section">
-      <h3>{prefix} Address</h3>
+      <h3>{prefix === "primary_address" ? "Primary Address" : "Alternate Address"}</h3>
       <div className="address-inputs">
         <div className="form-group">
           <label>Street</label>
-          <input 
-            type="text" 
-            name={`${prefix}_street`} 
-            value={data[`${prefix}_street`] || ""} 
-            onChange={handleChange} 
+          <input
+            type="text"
+            name={`${prefix}_street`}
+            value={data[`${prefix}_street`] || ""}
+            onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>City</label>
-          <input 
-            type="text" 
-            name={`${prefix}_city`} 
-            value={data[`${prefix}_city`] || ""} 
-            onChange={handleChange} 
+          <input
+            type="text"
+            name={`${prefix}_city`}
+            value={data[`${prefix}_city`] || ""}
+            onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>State</label>
-          <input 
-            type="text" 
-            name={`${prefix}_state`} 
-            value={data[`${prefix}_state`] || ""} 
-            onChange={handleChange} 
+          <input
+            type="text"
+            name={`${prefix}_state`}
+            value={data[`${prefix}_state`] || ""}
+            onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>Country</label>
-          <input 
-            type="text" 
-            name={`${prefix}_country`} 
-            value={data[`${prefix}_country`] || ""} 
-            onChange={handleChange} 
+          <input
+            type="text"
+            name={`${prefix}_country`}
+            value={data[`${prefix}_country`] || ""}
+            onChange={handleChange}
           />
         </div>
         <div className="form-group">
           <label>Postal Code</label>
-          <input 
-            type="text" 
-            name={`${prefix}_postal_code`} 
-            value={data[`${prefix}_postal_code`] || ""} 
-            onChange={handleChange} 
+          <input
+            type="text"
+            name={`${prefix}_postal_code`}
+            value={data[`${prefix}_postal_code`] || ""}
+            onChange={handleChange}
           />
         </div>
       </div>
@@ -191,15 +209,15 @@ const ContactDetails = () => {
       </div>
       <div>
         <div className="address-section">
-          <p><strong>Billing Address:</strong></p>
+          <p><strong>Primary Address:</strong></p>
           <div className="address-value">
-            {renderAddress('billing', contact)}
+            {renderAddress("primary_address", contact)}
           </div>
         </div>
         <div className="address-section">
-          <p><strong>Shipping Address:</strong></p>
+          <p><strong>Alternate Address:</strong></p>
           <div className="address-value">
-            {renderAddress('shipping', contact)}
+            {renderAddress("alternate_address", contact)}
           </div>
         </div>
         <p><strong>Description:</strong><br />{contact.description || "No description provided"}</p>
@@ -430,7 +448,7 @@ const ContactDetails = () => {
               <ContactDetailView contact={contact} />
               <div className="form-buttons">
                 <button 
-                  onClick={() => setIsEditing(true)}
+                  onClick={handleEditClick}
                   className="btn btn-primary"
                 >
                   Edit Contact

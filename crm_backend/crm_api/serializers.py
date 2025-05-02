@@ -131,6 +131,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
 # Contact Serializer
 class ContactSerializer(serializers.ModelSerializer):
+    account_name = serializers.CharField(source='account.name', read_only=True)  # Include account name
+
     class Meta:
         model = Contact
         fields = [
@@ -143,6 +145,7 @@ class ContactSerializer(serializers.ModelSerializer):
             'email_address',
             'job_title',
             'account',
+            'account_name',  # Add account name to the serializer
             'department',
             'primary_address_street',
             'primary_address_postal_code',
