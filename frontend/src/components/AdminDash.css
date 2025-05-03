@@ -1,0 +1,56 @@
+.admin-grid-container {
+  display: grid;
+  grid-template-areas:
+    "header   header   header"
+    "task     deals    calllogs"
+    "ravi     assign    assign"
+    "ayush    assign   assign"
+    "graph    graph   graph"
+    "footer   footer   footer";
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto 3fr 1fr 1fr auto auto;
+  gap: 10px;
+  padding: 10px;
+  height: 100vh;
+}
+
+.admin-header {
+  grid-area: header;
+}
+.admin-task {
+  grid-area: task;
+}
+.admin-deals {
+  grid-area: deals;
+}
+.admin-call-logs {
+  grid-area: calllogs;
+}
+.admin-ravi {
+  grid-area: ravi;
+}
+.admin-ayush {
+  grid-area: ayush;
+}
+.admin-assign {
+  grid-area: assign;
+}
+.admin-graph {
+  grid-area: graph;
+}
+.admin-footer {
+  grid-area: footer;
+}
+
+.admin-grid-container > div {
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: bisque;
+}
+
+.admin-header {
+  overflow: hidden; /* Prevents content from overflowing */
+  text-overflow: ellipsis; /* Adds ellipsis (...) for overflowing text */
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  color: white; /* Ensures text is readable */
+}

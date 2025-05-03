@@ -1,0 +1,60 @@
+.user-grid-container {
+  display: grid;
+  grid-template-areas:
+    "header   header   header"
+    "task     deals    calllogs"
+    "ravi     assign   TaskToDO"
+    "ayush    assign   TaskToDO"
+    "notes   notes   notes"
+    "footer   footer   footer";
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto 3fr 1fr 1fr auto auto;
+  gap: 10px;
+  padding: 10px;
+  height: 100vh;
+  margin: 0px;
+}
+
+.user-header {
+  grid-area: header;
+}
+.user-task {
+  grid-area: task;
+}
+.user-deals {
+  grid-area: deals;
+}
+.user-call-logs {
+  grid-area: calllogs;
+}
+.user-ravi {
+  grid-area: ravi;
+}
+.user-ayush {
+  grid-area: ayush;
+}
+.user-assign {
+  grid-area: assign;
+}
+.user-notes {
+  grid-area: notes;
+}
+.user-footer {
+  grid-area: footer;
+}
+.user-TaskToDO {
+  grid-area: TaskToDO;
+}
+
+.user-grid-container > div {
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: bisque;
+}
+
+.user-header {
+  overflow: hidden; /* Prevents content from overflowing */
+  text-overflow: ellipsis; /* Adds ellipsis (...) for overflowing text */
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  color: white; /* Ensures text is readable */
+}
