@@ -33,6 +33,13 @@
   font-size: 1.8rem;
 }
 
+.loading-message,
+.error-message {
+  padding: 20px;
+  text-align: center;
+  color: #495057;
+}
+
 .detail-view {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -93,23 +100,28 @@
   resize: vertical;
 }
 
-.address-group {
-  margin-top: 15px;
+.address-section {
+  margin-top: 20px;
   padding: 15px;
   background-color: #f8f9fa;
   border-radius: 4px;
   border: 1px solid #dee2e6;
+  grid-column: 1 / -1;
 }
 
-.address-group label {
-  font-weight: 600;
-  margin-bottom: 10px;
+.address-section h3 {
+  margin-top: 0;
+  color: #343a40;
+  font-size: 1.2rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .address-inputs {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
+  gap: 15px;
+  margin-top: 10px;
 }
 
 .form-buttons {
@@ -128,12 +140,17 @@
   transition: all 0.2s ease;
 }
 
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .btn-primary {
   background-color: #28a745;
   color: white;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background-color: #218838;
 }
 
@@ -142,7 +159,7 @@
   color: white;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background-color: #5a6268;
 }
 
@@ -174,7 +191,9 @@
   .detail-view,
   .edit-form {
     grid-template-columns: 1fr;
-.AccountDetails_container{
+  }
+  
+  .AccountDetails_container {
     display: grid;
     grid-template-rows: 50px 7fr;
     height: 100vh;
@@ -194,5 +213,8 @@
   .detail-view strong {
     min-width: 120px;
   }
-}
+  
+  .address-inputs {
+    grid-template-columns: 1fr;
+  }
 }

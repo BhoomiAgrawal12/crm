@@ -4,6 +4,8 @@ import axios from "axios";
 import SideNav from "./SideNav";
 import "./ContactDetails.css";
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
+
 const ContactDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -27,25 +29,39 @@ const ContactDetails = () => {
       }
 
       const [contactResponse, accountsResponse, contactsResponse, leadSourceResponse] = await Promise.all([
-        axios.get(`http://localhost:8000/api/contacts/${id}/`, {
+        axios.get(`${API_BASE_URL}/api/contacts/${id}/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        axios.get("http://localhost:8000/api/accounts/", {
+        axios.get(`${API_BASE_URL}/api/accounts/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        axios.get("http://localhost:8000/api/contacts/", {
+        axios.get(`${API_BASE_URL}/api/contacts/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        axios.get("http://localhost:8000/api/lead-choices/", {
+        axios.get(`${API_BASE_URL}/api/lead-choices/`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
       ]);
 
-      setContact(contactResponse.data);
-      setFormData(contactResponse.data);
+      const contactData = contactResponse.data;
+      // Initialize address fields if they don't exist
+      const initializeAddressFields = (prefix) => ({
+        [`${prefix}_street`]: contactData[`${prefix}_street`] || "",
+        [`${prefix}_city`]: contactData[`${prefix}_city`] || "",
+        [`${prefix}_state`]: contactData[`${prefix}_state`] || "",
+        [`${prefix}_country`]: contactData[`${prefix}_country`] || "",
+        [`${prefix}_postal_code`]: contactData[`${prefix}_postal_code`] || "",
+      });
+
+      setContact({
+        ...contactData,
+        ...initializeAddressFields("primary_address"),
+        ...initializeAddressFields("alternate_address"),
+      });
+      setFormData(contactData);
       setAccounts(accountsResponse.data);
       setContacts(contactsResponse.data);
-      setLeadSources(leadSourceResponse.data.lead_source);
+      setLeadSources(leadSourceResponse.data.lead_source || []);
     } catch (err) {
       console.error("Error fetching contact details:", err.response?.data || err.message);
       setError("Failed to fetch contact details. Please try again later.");
@@ -54,9 +70,17 @@ const ContactDetails = () => {
     }
   }, [id, navigate]);
 
+  const initializeAddressFields = (prefix, data) => ({
+    [`${prefix}_street`]: data[`${prefix}_street`] || "",
+    [`${prefix}_city`]: data[`${prefix}_city`] || "",
+    [`${prefix}_state`]: data[`${prefix}_state`] || "",
+    [`${prefix}_country`]: data[`${prefix}_country`] || "",
+    [`${prefix}_postal_code`]: data[`${prefix}_postal_code`] || "",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -68,7 +92,7 @@ const ContactDetails = () => {
     try {
       const accessToken = localStorage.getItem("access_token");
       const response = await axios.put(
-        `http://localhost:8000/api/contacts/${id}/`,
+        `${API_BASE_URL}/api/contacts/${id}/`,
         formData,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
@@ -84,6 +108,123 @@ const ContactDetails = () => {
     }
   };
 
+  const handleEditClick = () => {
+    setFormData({
+      ...contact,
+      ...initializeAddressFields("primary_address", contact),
+      ...initializeAddressFields("alternate_address", contact),
+    });
+    setIsEditing(true);
+  };
+
+  const renderAddress = (prefix, data) => {
+    const street = data[`${prefix}_street`];
+    const city = data[`${prefix}_city`];
+    const state = data[`${prefix}_state`];
+    const postalCode = data[`${prefix}_postal_code`];
+    const country = data[`${prefix}_country`];
+
+    if (!street && !city && !state && !postalCode && !country) {
+      return "No address provided";
+    }
+
+    return (
+      <>
+        {street && <div>{street}</div>}
+        {(city || state) && <div>{[city, state].filter(Boolean).join(", ")}</div>}
+        {(postalCode || country) && <div>{[postalCode, country].filter(Boolean).join(" ")}</div>}
+      </>
+    );
+  };
+
+  const AddressSection = ({ prefix, data }) => (
+    <div className="address-section">
+      <h3>{prefix === "primary_address" ? "Primary Address" : "Alternate Address"}</h3>
+      <div className="address-inputs">
+        <div className="form-group">
+          <label>Street</label>
+          <input
+            type="text"
+            name={`${prefix}_street`}
+            value={data[`${prefix}_street`] || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>City</label>
+          <input
+            type="text"
+            name={`${prefix}_city`}
+            value={data[`${prefix}_city`] || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>State</label>
+          <input
+            type="text"
+            name={`${prefix}_state`}
+            value={data[`${prefix}_state`] || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>Country</label>
+          <input
+            type="text"
+            name={`${prefix}_country`}
+            value={data[`${prefix}_country`] || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-group">
+          <label>Postal Code</label>
+          <input
+            type="text"
+            name={`${prefix}_postal_code`}
+            value={data[`${prefix}_postal_code`] || ""}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const ContactDetailView = ({ contact }) => (
+    <div className="detail-view">
+      <div>
+        <p><strong>Title:</strong> {contact.title || "-"}</p>
+        <p><strong>First Name:</strong> {contact.first_name}</p>
+        <p><strong>Last Name:</strong> {contact.last_name}</p>
+        <p><strong>Job Title:</strong> {contact.job_title || "-"}</p>
+        <p><strong>Account:</strong> {contact.account_name || "-"}</p>
+        <p><strong>Email:</strong> {contact.email_address}</p>
+      </div>
+      <div>
+        <p><strong>Office Phone:</strong> {contact.office_phone || "-"}</p>
+        <p><strong>Mobile:</strong> {contact.mobile || "-"}</p>
+        <p><strong>Department:</strong> {contact.department || "-"}</p>
+        <p><strong>Lead Source:</strong> {contact.lead_source || "-"}</p>
+        <p><strong>Reports To:</strong> {contact.reports_to ? `${contact.reports_to.first_name} ${contact.reports_to.last_name}` : "None"}</p>
+      </div>
+      <div>
+        <div className="address-section">
+          <p><strong>Primary Address:</strong></p>
+          <div className="address-value">
+            {renderAddress("primary_address", contact)}
+          </div>
+        </div>
+        <div className="address-section">
+          <p><strong>Alternate Address:</strong></p>
+          <div className="address-value">
+            {renderAddress("alternate_address", contact)}
+          </div>
+        </div>
+        <p><strong>Description:</strong><br />{contact.description || "No description provided"}</p>
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     fetchContactDetails();
   }, [fetchContactDetails]);
@@ -95,9 +236,7 @@ const ContactDetails = () => {
           <SideNav />
         </div>
         <div className="ContactDetails_container2">
-          <div className="contact-details-container">
-            <p>Loading contact details...</p>
-          </div>
+          <div className="loading-message">Loading contact details...</div>
         </div>
       </div>
     );
@@ -110,9 +249,7 @@ const ContactDetails = () => {
           <SideNav />
         </div>
         <div className="ContactDetails_container2">
-          <div className="contact-details-container">
-            <p>Unable to load contact details.</p>
-          </div>
+          <div className="error-message">Unable to load contact details.</div>
         </div>
       </div>
     );
@@ -272,7 +409,10 @@ const ContactDetails = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <AddressSection prefix="billing" data={formData} />
+              <AddressSection prefix="shipping" data={formData} />
+
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                 <label>Description</label>
                 <textarea
                   name="description"
@@ -293,41 +433,22 @@ const ContactDetails = () => {
                 <button 
                   type="button" 
                   className="btn btn-secondary"
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData(contact);
+                  }}
+                  disabled={isLoading}
                 >
                   Cancel
                 </button>
               </div>
             </form>
           ) : (
-            <div className="detail-view">
-              <div>
-                <p><strong>Title:</strong> {contact.title || "-"}</p>
-                <p><strong>First Name:</strong> {contact.first_name}</p>
-                <p><strong>Last Name:</strong> {contact.last_name}</p>
-                <p><strong>Job Title:</strong> {contact.job_title || "-"}</p>
-                <p><strong>Account:</strong> {contact.account_name || "-"}</p>
-                <p><strong>Email:</strong> {contact.email_address}</p>
-              </div>
-              <div>
-                <p><strong>Office Phone:</strong> {contact.office_phone || "-"}</p>
-                <p><strong>Mobile:</strong> {contact.mobile || "-"}</p>
-                <p><strong>Department:</strong> {contact.department || "-"}</p>
-                <p><strong>Lead Source:</strong> {contact.lead_source || "-"}</p>
-                <p><strong>Reports To:</strong> {contact.reports_to ? `${contact.reports_to.first_name} ${contact.reports_to.last_name}` : "None"}</p>
-              </div>
-              <div>
-                <p><strong>Created By:</strong> {contact.created_by || "-"}</p>
-                <p><strong>Modified By:</strong> {contact.modified_by || "-"}</p>
-                <p>
-                  <strong>Description:</strong><br />
-                  {contact.description || "No description provided"}
-                </p>
-              </div>
-
+            <>
+              <ContactDetailView contact={contact} />
               <div className="form-buttons">
                 <button 
-                  onClick={() => setIsEditing(true)}
+                  onClick={handleEditClick}
                   className="btn btn-primary"
                 >
                   Edit Contact
@@ -339,7 +460,7 @@ const ContactDetails = () => {
                   Back to Contacts
                 </button>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>

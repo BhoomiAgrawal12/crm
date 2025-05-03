@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils.timezone import now as timezone_now
+from django.contrib.postgres.fields import JSONField
 
 
 class UserManager(BaseUserManager):
@@ -39,15 +40,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     description = models.TextField(blank=True, null=True)
     password_last_changed = models.DateTimeField(auto_now=True)
     modified_at = models.DateTimeField(auto_now=True)
-    modified_by = models.ForeignKey(
-        'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='modified_users'
-    )
-    assigned_to = models.ForeignKey(
-        'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_users'
-    )
-    created_by = models.ForeignKey(
-        'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_users'
-    )
+    modified_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='modified_users')
+    assigned_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_users')
+    created_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_users')
     department = models.CharField(max_length=255, blank=True, null=True)
     home_phone = models.CharField(max_length=20, blank=True, null=True)
     mobile = models.CharField(max_length=20, blank=True, null=True)
@@ -409,6 +404,14 @@ class Task(models.Model):
     contact_name = models.ForeignKey(Contact, on_delete=models.CASCADE, related_name="contact_tasks")
     parent_type = models.CharField(max_length=100, choices=parent_type_choices)
     description = models.TextField(blank=True, null=True)
+    updates = models.JSONField(default=list, blank=True)
+    
+    def add_update(self, update_text):
+        self.updates.append({
+            "text": update_text,
+            "timestamp": timezone_now().isoformat()
+        })
+        self.save()
 
     def __str__(self):
         return self.subject
@@ -488,3 +491,25 @@ class Quote(models.Model):
     
     def __str__(self):
         return self.quote_title
+
+
+class Note(models.Model):
+    subject = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    related_to_type_choices = [
+        ('Account', 'Account'),
+        ('Contact', 'Contact'),
+        ('Opportunity', 'Opportunity'),
+        ('Lead', 'Lead'),
+        ('Task', 'Task'),
+    ]
+    related_to_type = models.CharField(max_length=50, choices=related_to_type_choices, blank=True, null=True)
+    related_to_id = models.IntegerField(blank=True, null=True)
+    assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name="assigned_notes")
+    created_at = models.DateTimeField(default=timezone_now)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_notes")
+    modified_at = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="modified_notes")
+    
+    def __str__(self):
+        return self.subject
