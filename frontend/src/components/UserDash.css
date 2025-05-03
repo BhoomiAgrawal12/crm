@@ -53,7 +53,6 @@
 }
 
 .user-header {
-  overflow: hidden; /* Prevents content from overflowing */
   text-overflow: ellipsis; /* Adds ellipsis (...) for overflowing text */
   white-space: nowrap; /* Prevents text from wrapping to the next line */
   color: white; /* Ensures text is readable */
