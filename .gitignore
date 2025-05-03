@@ -3,6 +3,5 @@ venv/
 pycache/
 *.pyc
 __pycache__/
-New Folder/
 .gitignore
 gmail/

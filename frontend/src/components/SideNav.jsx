@@ -9,8 +9,8 @@ import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SettingsIcon from "@mui/icons-material/Settings";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import WebStoriesIcon from '@mui/icons-material/WebStories';
-
 
 const SideNav = () => {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -20,7 +20,6 @@ const SideNav = () => {
   const [showOpportunityDropdown, setShowOpportunityDropdown] = useState(false);
   const [showLeadsDropdown, setShowLeadsDropdown] = useState(false);
   const [showCallsDropdown, setShowCallsDropdown] = useState(false);
-  
 
   return (
     <div className="side_nav">
