@@ -1,12 +1,11 @@
+/* .create-account-container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  background-color: #f8f9fa;
+} */
+
 .create-account-container {
-  padding: 25px;
-  max-width: 1000px;
-  margin: 0 auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-.CreateAccount_container {
   display: grid;
   grid-template-rows: 50px 7fr;
   height: 100vh;
@@ -14,6 +13,28 @@
   margin: 0px;
   padding: 0px;
 }
+
+.create-account-container1 {
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.create-account-container2{
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.createAccount-container {
+  padding: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+
 
 h2 {
   margin-bottom: 25px;
@@ -238,7 +259,7 @@ textarea {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .create-account-container {
+  .create-account-container2 {
     padding: 15px;
   }
   

@@ -10,6 +10,7 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SettingsIcon from "@mui/icons-material/Settings";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import WebStoriesIcon from '@mui/icons-material/WebStories';
 
 const SideNav = () => {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -18,6 +19,7 @@ const SideNav = () => {
   const [showContactDropdown, setShowContactDropdown] = useState(false);
   const [showOpportunityDropdown, setShowOpportunityDropdown] = useState(false);
   const [showLeadsDropdown, setShowLeadsDropdown] = useState(false);
+  const [showCallsDropdown, setShowCallsDropdown] = useState(false);
 
   return (
     <div className="side_nav">
@@ -206,6 +208,45 @@ const SideNav = () => {
                 onClick={() => console.log("item2 clicked")}
               >
                 item2
+              </div>
+            </div>
+          )}
+        </div>
+        <div
+          className="nav_icon"
+          onMouseEnter={() => setShowCallsDropdown(true)} // Show dropdown on hover
+          onMouseLeave={() => setShowCallsDropdown(false)} // Hide dropdown when hover ends
+          onClick={() => navigate("/log-calls")} // Navigate to "Accounts" page on click
+        >
+          <WebStoriesIcon />
+          {showCallsDropdown && (
+            <div className="dropdown_menu">
+              <div
+                className="dropdown_item"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent parent click event
+                  navigate("/log-calls");
+                }}
+              >
+                Log Call
+              </div>
+              <div
+                className="dropdown_item"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent parent click event
+                  navigate("/view-calls");
+                }}
+              >
+                View Calls
+              </div>
+              <div
+                className="dropdown_item"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent parent click event
+                  console.log("ravi3 clicked");
+                }}
+              >
+                other
               </div>
             </div>
           )}
