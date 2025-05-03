@@ -105,14 +105,6 @@ const Dashboard = () => {
         });
         setNotes(notesResponse.data);
 
-        // Fetch dashboard metrics
-        const metricsResponse = await axios.get('http://localhost:8000/api/dashboard-metrics/', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setMetrics(metricsResponse.data);
-
         // Fetch users for assigning notes
         const usersResponse = await axios.get('http://localhost:8000/api/users/', {
           headers: {
