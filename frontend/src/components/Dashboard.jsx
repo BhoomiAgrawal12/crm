@@ -13,8 +13,26 @@ import { colors } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  // Define missing states
+  const [isAdmin, setIsAdmin] = useState(false); // State to track if the user is an admin
+  const [notes, setNotes] = useState([]); // State to store notes
+  const [metrics, setMetrics] = useState({}); // State to store dashboard metrics
+  const [users, setUsers] = useState([]); // State to store users
+  const [relatedTypes, setRelatedTypes] = useState([]); // State to store related types for notes
+  const [newNote, setNewNote] = useState({
+    subject: '',
+    description: '',
+    related_to_type: '',
+    related_to_id: '',
+    assigned_to: '',
+  }); // State for the new note form
+  const [editingNoteId, setEditingNoteId] = useState(null); // State to track the note being edited
+  const [showNoteForm, setShowNoteForm] = useState(false); // State to toggle the note form
+
+  // Existing states
   const [activities, setActivities] = useState([]);
-  const [tasks, setTasks] = useState([]); // State to store tasks
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [nextPage, setNextPage] = useState(null);
   const [previousPage, setPreviousPage] = useState(null);
@@ -332,7 +350,7 @@ const Dashboard = () => {
               <div className='recent_block2'>
                 {loading ? (
                   <p>Loading recent leads...</p>
-                ) : metrics.recent_leads.length === 0 ? (
+                ) : !metrics.recent_leads || metrics.recent_leads.length === 0 ? (
                   <p>No leads available.</p>
                 ) : (
                   metrics.recent_leads.map((lead) => (
