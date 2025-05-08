@@ -21,6 +21,12 @@ import TaskDetails from './components/TaskDetails';
 import QuotesPage from './components/QuotesPage';
 import QuoteDetails from './components/QuoteDetails';
 import CreateQuote from './components/CreateQuote';
+import AdminDash from './components/AdminDash';
+import UserDash from './components/UserDash';
+import ViewCalls from './components/ViewCalls';
+import LogCalls from './components/LogCalls';
+import UsersList from './components/UsersList';
+import CreateUser from './components/CreateUser';
 
 function App() {
   return (
@@ -46,7 +52,13 @@ function App() {
         <Route path="/task-details/:id" element={<TaskDetails />} />
         <Route path="/quotes" element={<QuotesPage />} />
         <Route path="/create-quote" element={<CreateQuote />} />
-        <Route path="/quote-details/:id" element={<QuoteDetails />} />      
+        <Route path="/quote-details/:id" element={<QuoteDetails />} />
+        <Route path="/admin-dash" element={<AdminDash />} />
+        <Route path="/user-dash" element={<UserDash />} />
+        <Route path="/view-calls" element={<ViewCalls />} />
+        <Route path="/log-calls" element={<LogCalls />} />
+        <Route path='/users-list' element={<UsersList />} />
+        <Route path='/create-user' element={<CreateUser />} />
       </Routes>
     </Router>
   );

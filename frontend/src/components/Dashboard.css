@@ -30,14 +30,19 @@
 }
 
 .dash-2_1 .task_tab{
-    background: linear-gradient(blue,rgba(38, 2, 247, 0.847), rgb(24, 12, 191));
+    /* background: linear-gradient(blue,rgba(38, 2, 247, 0.847), rgb(24, 12, 191)); */
     margin: 4px;
     padding: 20px 20px;
     border: 1px solid black;
     border-radius: 10px;
-    color: aliceblue;
+    color: rgb(0, 0, 0);
+    background-color: rgb(180, 212, 235);
+
 }
 
+.dash-2_1 .task_link{
+    color: black;
+}
 /* ----------------------------------------------------------- */
 
 .dash-2_1 .task_tab div:nth-child(1){

@@ -148,7 +148,7 @@ const CreateContact = () => {
           {success && <div className="success-message">{success}</div>}
 
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Title</label>
               <select
                 name="title"
@@ -164,7 +164,7 @@ const CreateContact = () => {
               </select>
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>First Name *</label>
               <input
                 type="text"
@@ -175,7 +175,7 @@ const CreateContact = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Last Name *</label>
               <input
                 type="text"
@@ -186,7 +186,7 @@ const CreateContact = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Office Phone *</label>
               <input
                 type="tel"
@@ -197,7 +197,7 @@ const CreateContact = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Mobile</label>
               <input
                 type="tel"
@@ -207,7 +207,7 @@ const CreateContact = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Email Address *</label>
               <input
                 type="email"
@@ -218,7 +218,7 @@ const CreateContact = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Job Title</label>
               <input
                 type="text"
@@ -228,7 +228,7 @@ const CreateContact = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Account *</label>
               <select
                 name="account"
@@ -245,7 +245,7 @@ const CreateContact = () => {
               </select>
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Department</label>
               <input
                 type="text"
@@ -255,7 +255,7 @@ const CreateContact = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Lead Source</label>
               <select
                 name="lead_source"
@@ -271,7 +271,7 @@ const CreateContact = () => {
               </select>
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Reports To</label>
               <select
                 name="reports_to"
@@ -287,7 +287,7 @@ const CreateContact = () => {
               </select>
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Assigned To *</label>
               <select
                 name="assigned_to"
@@ -391,7 +391,7 @@ const CreateContact = () => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="contact-form-group">
               <label>Description</label>
               <textarea
                 name="description"

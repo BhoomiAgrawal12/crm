@@ -140,7 +140,7 @@ const CreateLead = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="form-row">
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label className="required-field">Title</label>
                 <select
                   name="title"
@@ -157,7 +157,7 @@ const CreateLead = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label className="required-field">First Name</label>
                 <input
                   type="text"
@@ -168,7 +168,7 @@ const CreateLead = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label className="required-field">Last Name</label>
                 <input
                   type="text"
@@ -181,7 +181,7 @@ const CreateLead = () => {
             </div>
 
             <div className="form-row">
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label className="required-field">Email</label>
                 <input
                   type="email"
@@ -192,7 +192,7 @@ const CreateLead = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Mobile</label>
                 <input
                   type="tel"
@@ -204,7 +204,7 @@ const CreateLead = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Office Phone</label>
                 <input
                   type="tel"
@@ -216,7 +216,7 @@ const CreateLead = () => {
             </div>
 
             <div className="form-row">
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Job Title</label>
                 <input
                   type="text"
@@ -226,7 +226,7 @@ const CreateLead = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Department</label>
                 <input
                   type="text"
@@ -236,7 +236,7 @@ const CreateLead = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Account Name</label>
                 <input
                   type="text"
@@ -248,7 +248,7 @@ const CreateLead = () => {
             </div>
 
             <div className="form-row">
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label className="required-field">Status</label>
                 <select
                   name="status"
@@ -265,7 +265,7 @@ const CreateLead = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label className="required-field">Lead Source</label>
                 <select
                   name="lead_source"
@@ -282,7 +282,7 @@ const CreateLead = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Opportunity Amount</label>
                 <input
                   type="number"
@@ -296,7 +296,7 @@ const CreateLead = () => {
             </div>
 
             <div className="form-row">
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Referred By</label>
                 <input
                   type="text"
@@ -306,7 +306,7 @@ const CreateLead = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label>Reports To</label>
                 <select
                   name="reports_to"
@@ -322,7 +322,7 @@ const CreateLead = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="lead-form-group">
                 <label className="required-field">Assigned To</label>
                 <select
                   name="assigned_to"
@@ -340,7 +340,7 @@ const CreateLead = () => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="lead-form-group">
               <label>Status Description</label>
               <textarea
                 name="status_description"
@@ -350,7 +350,7 @@ const CreateLead = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="lead-form-group">
               <label>Lead Source Description</label>
               <textarea
                 name="lead_source_description"
@@ -442,7 +442,7 @@ const CreateLead = () => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="lead-form-group">
               <label>Description</label>
               <textarea
                 name="description"

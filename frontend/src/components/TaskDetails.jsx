@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
-import { FiEdit, FiSave, FiX, FiArrowLeft, FiAlertCircle, FiLoader } from "react-icons/fi";
+import { FiEdit, FiSave, FiX, FiArrowLeft, FiAlertCircle, FiLoader, FiPlus } from "react-icons/fi";
 import "./TaskDetails.css";
 
 const TaskDetails = () => {
@@ -18,6 +18,7 @@ const TaskDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newUpdate, setNewUpdate] = useState(""); // State for new update text
 
   useEffect(() => {
     const fetchData = async () => {
@@ -135,6 +136,54 @@ const TaskDetails = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleAddUpdate = async () => {
+    if (!newUpdate.trim()) {
+      setError("Update text cannot be empty.");
+      return;
+    }
+
+    try {
+      const accessToken = localStorage.getItem("access_token");
+      if (!accessToken) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.post(
+        `http://localhost:8000/api/task/${id}/add-update/`,
+        { text: newUpdate },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+
+      setTask(response.data); // Update the task with the new updates
+      setNewUpdate(""); // Clear the input field
+      setError("");
+      setSuccess("Update added successfully!");
+    } catch (err) {
+      console.error("Error adding update:", err.response?.data || err.message);
+      setError("Failed to add update. Please try again.");
+    }
+  };
+
+  const renderUpdates = () => {
+    if (!task?.updates || task.updates.length === 0) {
+      return <p>No updates available.</p>;
+    }
+
+    return (
+      <ul className="updates-list">
+        {task.updates.map((update, index) => (
+          <li key={index} className="update-item">
+            <p>{update.text}</p>
+            <small>{new Date(update.timestamp).toLocaleString()}</small>
+          </li>
+        ))}
+      </ul>
+    );
   };
 
   const getStatusBadge = (status) => {
@@ -455,6 +504,22 @@ const TaskDetails = () => {
               </div>
             </form>
           )}
+
+          <div className="updates-section">
+            <h2>Updates</h2>
+            {renderUpdates()}
+            <div className="add-update">
+              <textarea
+                className="form-control"
+                placeholder="Add a new update..."
+                value={newUpdate}
+                onChange={(e) => setNewUpdate(e.target.value)}
+              />
+              <button className="button button-primary" onClick={handleAddUpdate}>
+                <FiPlus /> Add Update
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

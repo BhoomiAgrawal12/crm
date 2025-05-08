@@ -1,6 +1,6 @@
 .CreateOpportunity_container {
     display: grid;
-    grid-template-rows: auto 1fr;
+    /* grid-template-rows: auto 1fr; */
     grid-template-rows: 50px 7fr;
     height: 100vh;
     background-color: #f8f9fa;

@@ -30,7 +30,7 @@ const CreateAccount = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [choices, setChoices] = useState({ account_type: [], industry_type: [] });
-  const [assignedToUsername, setAssignedToUsername] = useState('');
+  const [users, setUsers] = useState([]);
 
   // Fetch users and current user
   useEffect(() => {
@@ -53,32 +53,23 @@ const CreateAccount = () => {
       }
     };
 
-    const fetchUsersAndCurrentUser = async () => {
+    const fetchUsers = async () => {
       try {
         const accessToken = localStorage.getItem('access_token');
-        const currentUserResponse = await axios.get('http://localhost:8000/api/current-user/', {
+        const response = await axios.get('http://localhost:8000/api/users/', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-
-        const currentUserId = currentUserResponse.data.id;
-        const currentUsername = currentUserResponse.data.username;
-
-        setFormData((prev) => ({
-          ...prev,
-          assigned_to: currentUserId,
-        }));
-
-        setAssignedToUsername(currentUsername);
+        setUsers(response.data);
       } catch (error) {
-        console.error('Error fetching current user:', error);
-        alert('Failed to fetch current user. Please try again later.');
+        console.error('Error fetching users:', error);
+        alert('Failed to fetch users. Please try again later.');
       }
     };
 
-    fetchUsersAndCurrentUser();
     fetchChoices();
+    fetchUsers();
   }, []);
 
   const handleChange = (e) => {
@@ -230,13 +221,19 @@ const CreateAccount = () => {
 
             <div className="form-group">
               <label>Assigned To</label>
-              <input
-                type="text"
+              <select
                 name="assigned_to"
-                value={assignedToUsername}
-                readOnly
+                value={formData.assigned_to}
+                onChange={handleChange}
                 className="select-input"
-              />
+              >
+                <option value="">Select a user</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.username}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group">
@@ -424,7 +421,7 @@ const CreateAccount = () => {
         )}
 
         {currentStep === 3 && (
-          <div className="description-group">
+          <div className="form-group full-width">
             <label>Description</label>
             <textarea
               name="description"

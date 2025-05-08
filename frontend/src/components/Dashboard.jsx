@@ -13,29 +13,51 @@ import { colors } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [activities, setActivities] = useState([]);
-  const [tasks, setTasks] = useState([]); // State to store tasks
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [notes, setNotes] = useState([]);
-  const [showNoteForm, setShowNoteForm] = useState(false);
+
+  // Define missing states
+  const [isAdmin, setIsAdmin] = useState(false); // State to track if the user is an admin
+  const [notes, setNotes] = useState([]); // State to store notes
+  const [metrics, setMetrics] = useState({}); // State to store dashboard metrics
+  const [users, setUsers] = useState([]); // State to store users
+  const [relatedTypes, setRelatedTypes] = useState([]); // State to store related types for notes
   const [newNote, setNewNote] = useState({
     subject: '',
     description: '',
     related_to_type: '',
     related_to_id: '',
     assigned_to: '',
-  });
-  const [users, setUsers] = useState([]);
-  const [relatedTypes, setRelatedTypes] = useState([]);
-  const [editingNoteId, setEditingNoteId] = useState(null);
-  const [metrics, setMetrics] = useState({
-    customer_count: 0,
-    deal_count: 0,
-    recent_leads: [],
-    task_stats: [],
-    tasks_by_status: {}
-  });
+  }); // State for the new note form
+  const [editingNoteId, setEditingNoteId] = useState(null); // State to track the note being edited
+  const [showNoteForm, setShowNoteForm] = useState(false); // State to toggle the note form
+
+  // Existing states
+  const [activities, setActivities] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [nextPage, setNextPage] = useState(null);
+  const [previousPage, setPreviousPage] = useState(null);
+
+  // Add Axios interceptor to handle token expiration
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response, // Pass through successful responses
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          // Token expired or unauthorized
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('username');
+          navigate('/login'); // Redirect to login page
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    // Cleanup interceptor on component unmount
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [navigate]);
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -82,14 +104,6 @@ const Dashboard = () => {
           },
         });
         setNotes(notesResponse.data);
-
-        // Fetch dashboard metrics
-        const metricsResponse = await axios.get('http://localhost:8000/api/dashboard-metrics/', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setMetrics(metricsResponse.data);
 
         // Fetch users for assigning notes
         const usersResponse = await axios.get('http://localhost:8000/api/users/', {
@@ -255,7 +269,6 @@ const Dashboard = () => {
                 // Clear tokens from localStorage
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
-                localStorage.removeItem('is_admin');
 
                 // Redirect to login page
                 navigate('/login');
@@ -329,7 +342,7 @@ const Dashboard = () => {
               <div className='recent_block2'>
                 {loading ? (
                   <p>Loading recent leads...</p>
-                ) : metrics.recent_leads.length === 0 ? (
+                ) : !metrics.recent_leads || metrics.recent_leads.length === 0 ? (
                   <p>No leads available.</p>
                 ) : (
                   metrics.recent_leads.map((lead) => (
