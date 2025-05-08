@@ -1,171 +1,138 @@
-/* .create-account-container {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  height: 100vh;
-  background-color: #f8f9fa;
-} */
-
+:root {
+  /* Color variables for consistent theming throughout the application */
+  --primary-color: #3498db; /* Main brand color Light blue for primary actions */
+  --primary-hover: #2980b9; /* Darke blue shade for primary hover states */
+  --success-color: #2ecc71;
+  --success-hover: #27ae60;
+  --error-color: #e74c3c;
+  --border-color: #ddd;
+  --text-color: #555;
+  --text-light: #777;
+  --background-light: #f8f9fa;
+  --background-hover: #e9ecef;
+  --white: #fff;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* This is for Default box shadow */
+}
+/* --------------Main container styling for the create account form-------------- */
 .create-account-container {
-  display: grid;
-  grid-template-rows: 50px 7fr;
-  height: 100vh;
-  gap: 1px;
-  margin: 0px;
-  padding: 0px;
-}
-
-.create-account-container1 {
-  background-color: #f8f9fa;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-}
-
-.create-account-container2{
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.createAccount-container {
-  padding: 25px;
   max-width: 1000px;
   margin: 0 auto;
+  padding: 2rem; /* Padding is added for Internal spacing */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #fff;
+  background-color: var(--white);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
+}
+/*--- shows when form data is being fetched/processed--- */
+.create-account-container.loading {
+  display: flex;
+  justify-content: center; /* For horizontally Center content  */
+  align-items: center; /* For vertically Center content  */
+  min-height: 300px;
 }
 
+.loader {
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
 
-h2 {
-  margin-bottom: 25px;
+.create-account-container h2 {
+  margin-bottom: 1.5rem;
   color: #2c3e50;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
+  text-align: center;
 }
 
-.section-tabs {
-  display: flex;
-  margin-bottom: 25px;
-  border-bottom: 1px solid #e0e0e0;
+.step-content {
+  margin: 1.5rem 0;
 }
 
-.section-tabs button {
-  padding: 12px 24px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  margin-right: 5px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #555;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.section-tabs button:hover {
-  color: #3498db;
-}
-
-.section-tabs .active-tab {
-  color: #3498db;
-  font-weight: 600;
-}
-
-.section-tabs .active-tab::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background-color: #3498db;
-  border-radius: 3px 3px 0 0;
-}
-
+/*------ Using CSS Grid for responsive form layout that automatically 
+   adjusts columns based on available space, with a minimum column width of 300px -----*/
 .form-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
 .form-group {
-  flex: 1 1 45%;
   display: flex;
   flex-direction: column;
-  min-width: 250px;
+  margin-bottom: 1rem;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-group label {
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #555;
-  font-size: 14px;
+  color: var(--text-color);
+  font-size: 0.875rem;
 }
 
-.required {
-  color: #e74c3c;
-  margin-left: 4px;
+.create-account-container .required {
+  color: var(--error-color);
+  margin-left: 0.25rem;
 }
 
+/* Input Styles */
 input[type="text"],
 input[type="email"],
 input[type="tel"],
+input[type="url"],
+input[type="number"],
 textarea,
 .select-input {
-  padding: 10px 12px;
-  border: 1px solid #ddd;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   width: 100%;
-  box-sizing: border-box;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
 textarea:focus,
 .select-input:focus {
-  border-color: #3498db;
+  border-color: var(--primary-color);
   outline: none;
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-.error-input {
-  border-color: #e74c3c !important;
+.create-account-container .error-input {
+  border-color: var(--error-color) !important; /* Red border for errors for invalid inputs*/
 }
 
-.error-message {
-  color: #e74c3c;
-  font-size: 12px;
-  margin-top: 5px;
+.create-account-container .error-message {
+  color: var(--error-color);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
 }
 
-.email-group {
-  flex: 1 1 100%;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Address Section */
 .address-section {
-  display: flex;
-  gap: 30px;
-  margin-top: 15px;
-  flex-wrap: wrap;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 1.5rem 0;
 }
 
 .address-column {
-  flex: 1 1 45%;
   display: flex;
   flex-direction: column;
-  min-width: 250px;
 }
 
 .address-column h3 {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
   color: #2c3e50;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -173,73 +140,62 @@ textarea:focus,
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .copy-address-btn {
-  padding: 6px 12px;
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  padding: 0.5rem 1rem;
+  background-color: var(--background-light);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   cursor: pointer;
-  font-size: 12px;
-  color: #555;
+  font-size: 0.75rem;
+  color: var(--text-color);
   transition: all 0.2s ease;
 }
 
 .copy-address-btn:hover {
-  background-color: #e9ecef;
+  background-color: var(--background-hover);
   border-color: #ccc;
 }
 
-.address-column input {
-  margin-bottom: 12px;
-}
-
-.description-group {
-  flex: 1 1 100%;
-  margin-top: 15px;
-}
-
-.description-group label {
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #555;
-  font-size: 14px;
-}
-
-textarea {
-  min-height: 100px;
+/* Textarea Styling */
+.create-account-container textarea {
+  min-height: 120px;
   resize: vertical;
 }
 
 .form-buttons {
-  margin-top: 30px;
+  margin-top: 2rem;
   display: flex;
-  gap: 15px;
+  gap: 1rem;
   justify-content: flex-end;
   border-top: 1px solid #eee;
-  padding-top: 20px;
+  padding-top: 1.5rem;
 }
 
 .save-btn,
 .next-btn,
 .cancel-btn {
-  padding: 10px 24px;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .save-btn {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 .save-btn:hover {
-  background-color: #2980b9;
+  background-color: var(--primary-hover);
 }
 
 .save-btn:disabled {
@@ -248,12 +204,12 @@ textarea {
 }
 
 .next-btn {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--success-color);
+  color: var(--white);
 }
 
 .next-btn:hover {
-  background-color: #27ae60;
+  background-color: var(--success-hover);
 }
 
 .next-btn:disabled {
@@ -262,29 +218,30 @@ textarea {
 }
 
 .cancel-btn {
-  background-color: #f8f9fa;
-  color: #555;
-  border: 1px solid #ddd;
+  background-color: var(--background-light);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
 }
 
 .cancel-btn:hover {
-  background-color: #e9ecef;
+  background-color: var(--background-hover);
   border-color: #ccc;
 }
 
-/* Progress indicator */
+/* ----Progress Indicator Start here for multi-step form representation-----*/
 .progress-indicator {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
+  gap: 2rem;
 }
 
 .progress-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 15px;
   position: relative;
+  min-width: 80px;
 }
 
 .progress-step:not(:last-child)::after {
@@ -294,7 +251,7 @@ textarea {
   left: 50%;
   width: 100%;
   height: 2px;
-  background-color: #ddd;
+  background-color: var(--border-color);
   z-index: 0;
 }
 
@@ -302,61 +259,68 @@ textarea {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #ddd;
-  color: #555;
+  background-color: var(--border-color);
+  color: var(--text-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
   z-index: 1;
 }
 
 .step-number.active {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 .step-label {
-  font-size: 12px;
-  color: #777;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  text-transform: capitalize;
 }
 
 .step-label.active {
-  color: #3498db;
+  color: var(--primary-color);
   font-weight: 500;
+}
+
+/* Loading Spinner is added for - Animation*/
+.create-account-container .spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--white);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .create-account-container2 {
-    padding: 15px;
+  .create-account-container {
+    padding: 1rem;
   }
   
-  .form-group,
-  .address-column {
-    flex: 1 1 100%;
+  .progress-indicator {
+    gap: 1rem;
   }
   
-  .section-tabs {
-    flex-wrap: wrap;
+  .progress-step {
+    min-width: 60px;
   }
   
-  .section-tabs button {
-    margin-bottom: 5px;
+  .step-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.75rem;
   }
   
   .form-buttons {
     justify-content: center;
-  }
-
-  .progress-step {
-    margin: 0 5px;
-  }
-
-  .step-number {
-    width: 30px;
-    height: 30px;
-    font-size: 12px;
   }
 }

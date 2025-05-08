@@ -145,28 +145,30 @@ const CreateTask = () => {
           {isLoading && !error ? (
             <div>Loading data...</div>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="grid-container">
               <div className="input-field">
-                <label htmlFor="subject">Subject *</label>
-                <input
-                  id="subject"
-                  type="text"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter task subject"
+              <label htmlFor="subject" className="label">Subject *</label>
+              <input
+                id="subject"
+                type="text"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                required
+                placeholder="Enter task subject"
+                className="input-element"
                 />
               </div>
 
               <div className="input-field">
-                <label htmlFor="assigned_to">Assigned To *</label>
+                <label htmlFor="assigned_to" className="label">Assigned To *</label>
                 <select
                   id="assigned_to"
                   name="assigned_to"
                   value={formData.assigned_to}
                   onChange={handleChange}
                   required
+                  className="input-element"
                 >
                   <option value="">Select a user</option>
                   {users.map((user) => (
@@ -178,13 +180,14 @@ const CreateTask = () => {
               </div>
 
               <div className="input-field">
-                <label htmlFor="status">Status *</label>
+                <label htmlFor="status" className="label">Status *</label>
                 <select
                   id="status"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
                   required
+                  className="input-element"
                 >
                   <option value="">Select status</option>
                   <option value="Not Started">Not Started</option>
@@ -196,7 +199,7 @@ const CreateTask = () => {
               </div>
 
               <div className="input-field">
-                <label htmlFor="start_date">Start Date *</label>
+                <label htmlFor="start_date" className="label">Start Date *</label>
                 <input
                   id="start_date"
                   type="date"
@@ -204,11 +207,12 @@ const CreateTask = () => {
                   value={formData.start_date}
                   onChange={handleChange}
                   required
+                  className="input-element"
                 />
               </div>
 
               <div className="input-field">
-                <label htmlFor="due_date">Due Date *</label>
+                <label htmlFor="due_date" className="label">Due Date *</label>
                 <input
                   id="due_date"
                   type="date"
@@ -216,17 +220,19 @@ const CreateTask = () => {
                   value={formData.due_date}
                   onChange={handleChange}
                   required
+                  className="input-element"
                 />
               </div>
 
               <div className="input-field">
-                <label htmlFor="priority">Priority *</label>
+                <label htmlFor="priority" className="label">Priority *</label>
                 <select
                   id="priority"
                   name="priority"
                   value={formData.priority}
                   onChange={handleChange}
                   required
+                  className="input-element"
                 >
                   <option value="">Select priority</option>
                   <option value="High">High</option>
@@ -236,13 +242,14 @@ const CreateTask = () => {
               </div>
 
               <div className="input-field">
-                <label htmlFor="contact_name">Contact *</label>
+                <label htmlFor="contact_name" className="label">Contact *</label>
                 <select
                   id="contact_name"
                   name="contact_name"
                   value={formData.contact_name}
                   onChange={handleChange}
                   required
+                  className="input-element"
                 >
                   <option value="">Select a contact</option>
                   {contacts.map((contact) => (
@@ -254,13 +261,14 @@ const CreateTask = () => {
               </div>
 
               <div className="input-field">
-                <label htmlFor="parent_type">Parent Type *</label>
+                <label htmlFor="parent_type" className="label">Parent Type *</label>
                 <select
                   id="parent_type"
                   name="parent_type"
                   value={formData.parent_type}
                   onChange={handleChange}
                   required
+                  className="input-element"
                 >
                   <option value="">Select parent type</option>
                   <option value="Account">Account</option>
@@ -271,13 +279,14 @@ const CreateTask = () => {
               </div>
 
               <div className="input-field">
-                <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Enter task details..."
+              <label htmlFor="description" className="label">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Enter task details..."
+                className="input-element textarea-element"
                 />
               </div>
 

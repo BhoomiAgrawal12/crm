@@ -203,7 +203,7 @@ const OpportunityDetails = () => {
           ) : (
             <form onSubmit={handleSubmit} className="edit-form">
               <div>
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label className="required">Name</label>
                   <input
                     type="text"
@@ -215,7 +215,7 @@ const OpportunityDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label className="required">Currency</label>
                   <select
                     className="form-control"
@@ -233,7 +233,7 @@ const OpportunityDetails = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label className="required">Amount</label>
                   <input
                     type="number"
@@ -247,7 +247,7 @@ const OpportunityDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label className="required">Sales Stage</label>
                   <select
                     className="form-control"
@@ -267,7 +267,7 @@ const OpportunityDetails = () => {
               </div>
 
               <div>
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label>Probability (%)</label>
                   <input
                     type="number"
@@ -280,7 +280,7 @@ const OpportunityDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label>Next Step</label>
                   <input
                     type="text"
@@ -291,7 +291,7 @@ const OpportunityDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label className="required">Account</label>
                   <select
                     className="form-control"
@@ -309,7 +309,7 @@ const OpportunityDetails = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label>Expected Close Date</label>
                   <input
                     type="date"
@@ -322,7 +322,7 @@ const OpportunityDetails = () => {
               </div>
 
               <div className="full-width-section">
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label>Business Type</label>
                   <select
                     className="form-control"
@@ -339,7 +339,7 @@ const OpportunityDetails = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label>Lead Source</label>
                   <select
                     className="form-control"
@@ -356,7 +356,7 @@ const OpportunityDetails = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label className="required">Assigned To</label>
                   <select
                     className="form-control"
@@ -374,7 +374,7 @@ const OpportunityDetails = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="opportunity-form-group">
                   <label>Description</label>
                   <textarea
                     className="form-control"

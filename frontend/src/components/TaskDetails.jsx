@@ -510,6 +510,7 @@ const TaskDetails = () => {
             {renderUpdates()}
             <div className="add-update">
               <textarea
+                className="form-control"
                 placeholder="Add a new update..."
                 value={newUpdate}
                 onChange={(e) => setNewUpdate(e.target.value)}

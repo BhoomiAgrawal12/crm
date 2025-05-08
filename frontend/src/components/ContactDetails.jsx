@@ -141,7 +141,7 @@ const ContactDetails = () => {
     <div className="address-section">
       <h3>{prefix === "primary_address" ? "Primary Address" : "Alternate Address"}</h3>
       <div className="address-inputs">
-        <div className="form-group">
+        <div className="contact-form-group">
           <label>Street</label>
           <input
             type="text"
@@ -150,7 +150,7 @@ const ContactDetails = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="form-group">
+        <div className="contact-form-group">
           <label>City</label>
           <input
             type="text"
@@ -159,7 +159,7 @@ const ContactDetails = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="form-group">
+        <div className="contact-form-group">
           <label>State</label>
           <input
             type="text"
@@ -168,7 +168,7 @@ const ContactDetails = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="form-group">
+        <div className="contact-form-group">
           <label>Country</label>
           <input
             type="text"
@@ -177,7 +177,7 @@ const ContactDetails = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="form-group">
+        <div className="contact-form-group">
           <label>Postal Code</label>
           <input
             type="text"
@@ -269,7 +269,7 @@ const ContactDetails = () => {
 
           {isEditing ? (
             <form className="edit-form" onSubmit={handleSubmit}>
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Title</label>
                 <select
                   name="title"
@@ -284,7 +284,7 @@ const ContactDetails = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label className="required-field">First Name</label>
                 <input
                   type="text"
@@ -295,7 +295,7 @@ const ContactDetails = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label className="required-field">Last Name</label>
                 <input
                   type="text"
@@ -306,7 +306,7 @@ const ContactDetails = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Job Title</label>
                 <input
                   type="text"
@@ -316,7 +316,7 @@ const ContactDetails = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Account</label>
                 <select
                   name="account"
@@ -332,7 +332,7 @@ const ContactDetails = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label className="required-field">Email</label>
                 <input
                   type="email"
@@ -343,7 +343,7 @@ const ContactDetails = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Office Phone</label>
                 <input
                   type="tel"
@@ -355,7 +355,7 @@ const ContactDetails = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Mobile</label>
                 <input
                   type="tel"
@@ -367,7 +367,7 @@ const ContactDetails = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Department</label>
                 <input
                   type="text"
@@ -377,7 +377,7 @@ const ContactDetails = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Lead Source</label>
                 <select
                   name="lead_source"
@@ -393,7 +393,7 @@ const ContactDetails = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="contact-form-group">
                 <label>Reports To</label>
                 <select
                   name="reports_to"
@@ -412,7 +412,7 @@ const ContactDetails = () => {
               <AddressSection prefix="billing" data={formData} />
               <AddressSection prefix="shipping" data={formData} />
 
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+              <div className="contact-form-group" style={{ gridColumn: '1 / -1' }}>
                 <label>Description</label>
                 <textarea
                   name="description"

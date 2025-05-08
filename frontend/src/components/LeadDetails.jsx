@@ -108,7 +108,7 @@ const LeadDetails = () => {
     <div className="address-section">
       <h3>{prefix} Address</h3>
       <div className="address-grid">
-        <div className="form-group">
+        <div className="lead-form-group">
           <label>Street</label>
           <input
             type="text"
@@ -119,7 +119,7 @@ const LeadDetails = () => {
             placeholder="Street"
           />
         </div>
-        <div className="form-group">
+        <div className="lead-form-group">
           <label>City</label>
           <input
             type="text"
@@ -130,7 +130,7 @@ const LeadDetails = () => {
             placeholder="City"
           />
         </div>
-        <div className="form-group">
+        <div className="lead-form-group">
           <label>State</label>
           <input
             type="text"
@@ -141,7 +141,7 @@ const LeadDetails = () => {
             placeholder="State"
           />
         </div>
-        <div className="form-group">
+        <div className="lead-form-group">
           <label>Postal Code</label>
           <input
             type="text"
@@ -152,7 +152,7 @@ const LeadDetails = () => {
             placeholder="Postal Code"
           />
         </div>
-        <div className="form-group">
+        <div className="lead-form-group">
           <label>Country</label>
           <input
             type="text"
@@ -362,7 +362,7 @@ const LeadDetails = () => {
           ) : (
             <form onSubmit={handleSubmit} className="edit-form">
               <div>
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label className="required">Title</label>
                   <select
                     className="form-control"
@@ -380,7 +380,7 @@ const LeadDetails = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label className="required">First Name</label>
                   <input
                     type="text"
@@ -392,7 +392,7 @@ const LeadDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label className="required">Last Name</label>
                   <input
                     type="text"
@@ -404,7 +404,7 @@ const LeadDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label className="required">Email</label>
                   <input
                     type="email"
@@ -416,7 +416,7 @@ const LeadDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label>Mobile</label>
                   <input
                     type="tel"
@@ -429,7 +429,7 @@ const LeadDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label>Office Phone</label>
                   <input
                     type="tel"
@@ -444,7 +444,7 @@ const LeadDetails = () => {
               </div>
 
               <div>
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label>Job Title</label>
                   <input
                     type="text"
@@ -455,7 +455,7 @@ const LeadDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label>Department</label>
                   <input
                     type="text"
@@ -466,7 +466,7 @@ const LeadDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label>Account</label>
                   <input
                     type="text"
@@ -477,7 +477,7 @@ const LeadDetails = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label>Status</label>
                   <select
                     className="form-control"
@@ -494,7 +494,7 @@ const LeadDetails = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="lead-form-group">
                   <label>Status Description</label>
                   <textarea
                     className="form-control"
@@ -508,7 +508,7 @@ const LeadDetails = () => {
               <AddressSection prefix="billing" data={formData} />
               <AddressSection prefix="shipping" data={formData} />
 
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+              <div className="lead-form-group" style={{ gridColumn: '1 / -1' }}>
                 <label>Description</label>
                 <textarea
                   className="form-control"

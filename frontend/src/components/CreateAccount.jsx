@@ -421,7 +421,7 @@ const CreateAccount = () => {
         )}
 
         {currentStep === 3 && (
-          <div className="description-group">
+          <div className="form-group full-width">
             <label>Description</label>
             <textarea
               name="description"

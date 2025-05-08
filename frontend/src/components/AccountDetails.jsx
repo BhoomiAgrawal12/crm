@@ -102,23 +102,27 @@ const AccountDetails = () => {
     <div className="address-section">
       <h3>{prefix} Address</h3>
       <div className="address-inputs">
-        <div className="form-group">
+        <div className="account-form-group">
           <label>Street</label>
           <input type="text" name={`${prefix}_street`} value={data[`${prefix}_street`] || ""} onChange={handleChange} />
         </div>
-        <div className="form-group">
+        <div className="account-form-group">
+
           <label>City</label>
           <input type="text" name={`${prefix}_city`} value={data[`${prefix}_city`] || ""} onChange={handleChange} />
         </div>
-        <div className="form-group">
+       <div className="account-form-group">
+
           <label>State</label>
           <input type="text" name={`${prefix}_state`} value={data[`${prefix}_state`] || ""} onChange={handleChange} />
         </div>
-        <div className="form-group">
+        <div className="account-form-group">
+
           <label>Country</label>
           <input type="text" name={`${prefix}_country`} value={data[`${prefix}_country`] || ""} onChange={handleChange} />
         </div>
-        <div className="form-group">
+        <div className="account-form-group">
+
           <label>Postal Code</label>
           <input type="text" name={`${prefix}_postal_code`} value={data[`${prefix}_postal_code`] || ""} onChange={handleChange} />
         </div>
@@ -170,32 +174,33 @@ const AccountDetails = () => {
 
           {isEditing ? (
             <form className="edit-form" onSubmit={handleSubmit}>
-              <div className="form-group">
+             <div className="account-form-group">
                 <label className="required-field">Name</label>
                 <input type="text" name="name" value={formData.name || ""} onChange={handleChange} required />
               </div>
 
-              <div className="form-group">
+              <div className="account-form-group">
                 <label>Assigned To</label>
                 <input type="text" name="assigned_to_username" value={formData.assigned_to_username ?? "Unassigned"} disabled />
               </div>
 
-              <div className="form-group">
+              <div className="account-form-group">
                 <label>Website</label>
                 <input type="url" name="website" value={formData.website || ""} onChange={handleChange} placeholder="https://example.com" />
               </div>
 
-              <div className="form-group">
+             <div className="account-form-group">
                 <label className="required-field">Phone</label>
                 <input type="text" name="office_phone" value={formData.office_phone || ""} onChange={handleChange} required />
               </div>
 
-              <div className="form-group">
+              <div className="account-form-group">
+
                 <label className="required-field">Email</label>
                 <input type="email" name="email_address" value={formData.email_address || ""} onChange={handleChange} required />
               </div>
 
-              <div className="form-group">
+             <div className="account-form-group">
                 <label>Account Type</label>
                 <select name="account_type" value={formData.account_type || ""} onChange={handleChange}>
                   <option value="">Select an account type</option>
@@ -205,7 +210,7 @@ const AccountDetails = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="account-form-group">
                 <label>Industry</label>
                 <select name="industry" value={formData.industry || ""} onChange={handleChange}>
                   <option value="">Select an industry</option>
@@ -215,17 +220,17 @@ const AccountDetails = () => {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="account-form-group">
                 <label>Annual Revenue</label>
                 <input type="number" name="annual_revenue" value={formData.annual_revenue || ""} onChange={handleChange} min="0" step="0.01" />
               </div>
 
-              <div className="form-group">
+              <div className="account-form-group">
                 <label>Employees</label>
                 <input type="number" name="employees" value={formData.employees || ""} onChange={handleChange} min="0" />
               </div>
 
-              <div className="form-group">
+              <div className="account-form-group">
                 <label>Parent Account</label>
                 <select name="member_of" value={formData.member_of || ""} onChange={handleChange}>
                   <option value="">Select a parent account</option>
@@ -238,7 +243,7 @@ const AccountDetails = () => {
               <AddressSection prefix="billing" data={formData} />
               <AddressSection prefix="shipping" data={formData} />
 
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+              <div className="account-form-group" style={{ gridColumn: '1 / -1' }}>
                 <label>Description</label>
                 <textarea 
                   name="description" 
